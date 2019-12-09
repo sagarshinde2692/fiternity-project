@@ -94,6 +94,8 @@ class MyrewardController extends BaseController {
 
             $myrewards = $myrewards->toArray();
 
+            $required_info = Config::get('loyalty_screens.voucher_required_info');
+            unset($required_info['address']);
             foreach ($myrewards as $key => &$value){
 
                 if(in_array($value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && floatval($this->app_version) < 4.9){
@@ -171,6 +173,9 @@ class MyrewardController extends BaseController {
                     $value["cta"] = "Claimed";
                 }
 
+                if(!empty($value['tshirt_include'])){
+                    $value['required_info'] = $required_info;
+                }
             }
         }
 

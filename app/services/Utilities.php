@@ -66,6 +66,7 @@ Class Utilities {
         
     $vendor_token = Request::header('Authorization-Vendor');
     $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    $this->app_version = Request::header('App-Version');
 
 
     if($vendor_token){
@@ -6456,6 +6457,14 @@ Class Utilities {
             $new_voucher->title = $voucher_category['title'];
         }
 
+        if(!empty($voucher_category['required_info'])){
+            $new_voucher->required_info = $voucher_category['required_info'];
+            !empty($customer->reward) ? $new_voucher->deleviry_details = $customer->reward : null;
+            if(empty($new_voucher->required_info->size) && !empty($new_voucher->deleviry_details->tshirt_size)){
+                unset($new_voucher->deleviry_details->tshirt_size);
+            }
+        }
+
         $new_voucher->update();
         try{
             $this->remaningVoucherNotification($voucher_category);
@@ -6561,6 +6570,10 @@ Class Utilities {
 			}
             $customer_id = $data['customer_id'];
             $customer = Customer::where('_id', $customer_id)->where('loyalty.start_date', 'exists', true)->first(['loyalty']);
+            $fitsquad_expired = $this->checkFitsquadExpired($customer);
+            if(!empty($fitsquad_expired['checkin_expired']['status'])){
+				return ['status' => 400, 'message' => $fitsquad_expired['checkin_expired']['message']];
+            }
             $brand_loyalty = !empty($customer->loyalty['brand_loyalty']) ? $customer->loyalty['brand_loyalty'] : null;
             $brand_loyalty_duration = !empty($customer->loyalty['brand_loyalty_duration']) ? $customer->loyalty['brand_loyalty_duration'] : null;
             $brand_version = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
@@ -7347,7 +7360,7 @@ Class Utilities {
 
                             $dontUpdateLoyalty = false;
                             Log::info("dontUpdateLoyalty 3",[$dontUpdateLoyalty]);
-                        }
+                        }                        
                     }
                     
                     // Log::info("finder_flags",[$data['finder_flags']['reward_type']]);
@@ -7378,6 +7391,40 @@ Class Utilities {
                 }
 
                 $loyalty['updated_at'] = new \MongoDate();
+
+                if(
+                    (
+                        (
+                            !empty($customer['loyalty']) 
+                            && 
+                            empty($customer['loyalty']['reward_type'])
+                            && 
+                            empty($customer['loyalty']['brand_loyalty'])
+                        ) 
+                        ||
+                        (
+                            !empty($customer['loyalty']['reward_type']) 
+                            && 
+                            $customer['loyalty']['reward_type'] == 2
+                        )
+                    )
+                    && 
+                    (
+                        empty($loyalty['reward_type'])
+                        ||
+                        (
+                            !empty($loyalty['reward_type']) 
+                            && 
+                            $loyalty['reward_type'] == 2
+                        )
+                    
+                    )
+                ){
+                    $dontUpdateLoyalty = true;
+                }
+                else{
+                    $this->checkForFittenityGrid($loyalty);
+                }
 
                 $update_data = [
                     'loyalty'=>$loyalty 
@@ -8240,12 +8287,28 @@ Class Utilities {
 
 			$brand_milestones = FinderMilestone::where('reward_type', $filter['reward_type']);
 
+            if(!empty($filter['grid_version'])){
+                $brand_milestones->where('grid_version', $filter['grid_version']);
+            }
+            else {
+                $brand_milestones->where('grid_version', null);
+            }
+            
 			if(in_array($filter['reward_type'], [3, 4, 5]) && !empty($filter['cashback_type'])){
 				$brand_milestones = $brand_milestones->where('cashback_type', $filter['cashback_type']);
 			}
 			
             $brand_milestones = $brand_milestones->first();
             
+        }
+        else if(!empty($filter['grid_version'])){
+            $brand_milestones = FinderMilestone::where('grid_version', $filter['grid_version']);
+            
+            if(!empty($filter['reward_type'])){
+                $brand_milestones = $brand_milestones->where('reward_type', $filter['reward_type']);
+            }
+
+            $brand_milestones = $brand_milestones->first();
         }
         
         if(empty($brand_milestones)){
@@ -8258,7 +8321,7 @@ Class Utilities {
     
     }
 
-    public function getMilestoneFilterData($customer, $includeCorporate=false){
+    public function getMilestoneFilterData($customer, $includeCorporate=false, $grid_version=null){
         $filter = [];
         if($includeCorporate) {
             $filter['corporate_id'] = !empty($customer->corporate_id) ? $customer->corporate_id : null;
@@ -8270,6 +8333,7 @@ Class Utilities {
         $filter['brand_version'] = !empty($customer->loyalty['brand_version']) ? $customer->loyalty['brand_version'] : null;
         $filter['reward_type'] = !empty($customer->loyalty['reward_type']) ? $customer->loyalty['reward_type'] : null;
         $filter['cashback_type'] = !empty($customer->loyalty['cashback_type']) ? $customer->loyalty['cashback_type'] : null;
+        $filter['grid_version'] = !empty($customer->loyalty['grid_version']) ? $customer->loyalty['grid_version'] : $grid_version;
         return $filter;
     }
 
@@ -8322,6 +8386,11 @@ Class Utilities {
                 }
             }
 
+            if(!empty($filter['grid_version'])){
+                $match['$match']['grid_version'] = $filter['grid_version'];
+            }else {
+                $match['$match']['grid_version'] = ['$exists' => false];
+            }
 
             // print_r($match);
             // exit();
@@ -8888,6 +8957,9 @@ Class Utilities {
 
     public function addFitcashforVoucherCatageory($data){
         $validity = strtotime('+1 year');
+        if(!empty($data['voucher_catageory']['validity_in_days'])){
+            $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
+        }
         $request = array(
             "customer_id"=> $data['id'],
             "amount"=> $data['voucher_catageory']['fitcash'],
@@ -9616,9 +9688,11 @@ Class Utilities {
         Log::info('chekcins:::::::::::;', [$device_token, $checkins, $customer_id]);
         $customer = Customer::active()->where('_id', (int)$customer_id)->first();
         
-        // if(!empty($customer['loyalty']['start_date']) && strtotime('midnight', strtotime('+1 year',$customer['loyalty']['start_date']->sec)) < strtotime('today')){
-        //     return $this->checkinCheckoutFailureMsg("Your Fitsquad program has been expired.");
-        // }
+
+        $fitsquad_expired = $this->checkFitsquadExpired($customer);
+        if(!empty($fitsquad_expired['checkin_expired']['status'])){
+            return $this->checkinCheckoutFailureMsg($fitsquad_expired['checkin_expired']['message']);
+        }
 
 		if(count($checkins)>0)
 		{
@@ -10862,20 +10936,102 @@ Class Utilities {
         return $fin_vouchers_arr;
     }
 
-    // public function checkFitsquadExpired($customer = null){
+    public function checkFitsquadExpired($customer = null){
 
-    //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year',$customer['loyalty']['start_date']->sec));
-    //     $current_date = date('Y-m-d');
+        $fitsquad_claim_expired = ['status' => false, "message"=>''];
+        $fitsquad_checkin_expired = ['status' => false, "message"=>''];
         
-    //     $fitsquad_expired = false;
+        if(!empty($customer['loyalty']['start_date']->sec)){
+            $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
+            $current_date = date('Y-m-d');
 
-    //     if($fitsquad_expiery_date < $current_date){
-    //         $fitsquad_expired = true;
-    //     }
+            if(strtotime('+15 days', strtotime($fitsquad_expiery_date)) < strtotime($current_date)){
+                $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
+            }
 
-    //     return $fitsquad_expired;
-    // }
+            if($fitsquad_expiery_date < $current_date){
+                $fitsquad_checkin_expired = [ 'status' => true, "message" => "Your Fitsquad program has been expired."];
+            }
+        }
 
+        return ['claim_expired'=> $fitsquad_claim_expired, 'checkin_expired'=> $fitsquad_checkin_expired];
+    }
+
+    public function checkForFittenityGrid(&$loyalty){
+        if(empty($loyalty['brand_loyalty']) && empty($loyalty['cashback_type']) && (empty($loyalty['reward_type']) || $loyalty['reward_type']==2)){
+            $loyalty['grid_version'] = 1;
+        }
+        return;
+    }
+
+    public function getVoucherImages($voucher){
+        $image = array_column($voucher, 'image');
+
+        $image_new = [];
+        foreach($image as $key=>$value){
+            if(is_array($value)){
+                $temp = array_column($value, 'url');
+                $image_new = array_merge($image_new, $temp);
+            }
+            else {
+                array_push($image_new, $value);
+            }
+        }
+        array_splice($image_new, 6);
+        return array_unique($image_new);
+    }
+
+    public function voucherImagebasedAppVersion(&$voucher, $from=null, $customer=null){
+
+        if(!newFitsquadCompatabilityVersion()){  
+            if(empty($from) && !empty($voucher['image']) && is_array($voucher['image'])){
+                $image = $voucher['image'];
+                unset($voucher['image']);
+                return !empty($image[0]['url']) ? $image[0]['url'] : "";
+            }
+            else{ 
+                unset($voucher['header']['image_new']); 
+            }
+        }else if(newFitsquadCompatabilityVersion() && !empty($from)){
+                $voucher['header']['image'] = $voucher['header']['image_new']; 
+                unset($voucher['header']['image_new']); 
+        }
+        
+        if(empty($from) && newFitsquadCompatabilityVersion() && empty($customer['loyalty']['grid_version'])) {
+            return [
+                [
+                    "text" => "",
+                    "url" => $voucher['image']
+                ]
+            ];
+        }
+        if(!empty($from)){
+            return;
+        }
+        $image = $voucher['image'];
+		unset($voucher['image']);
+        return $image;
+    }
+
+    public function checkRequriredDataForClaimingReward(&$post_reward_data_template, $customer, $voucher, $milestone, $milestone_no){
+
+        $voucher_required_info = Config::get('loyalty_screens.voucher_required_info');
+
+        $required_data = [];
+        if(!empty($voucher['required_info'])){
+
+            if(in_array('address', $voucher['required_info'])){
+                $required_data['address'] = $voucher_required_info['address'];
+            }
+
+            if(in_array('size',$voucher['required_info'])){
+                $required_data['size'] = $voucher_required_info['size'];
+            }
+
+            $post_reward_data_template['required_info'] = $required_data;
+        }
+    }
+     
     public function getPassBranding($args = null){
         $return_arr = array();
 
@@ -10905,24 +11061,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 27% Off, Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 30% Off + Addnl 27% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Flat 30% Off + Addnl 27% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 20% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
+                            $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 14% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 25% Off + Addnl 13% Off".getLineBreaker()."Use Code: STEAL Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 25% Off + Addnl 13% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL ".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 25% Off + Addnl 9% Off".getLineBreaker()."Use Code: STEAL Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 25% Off + Addnl 9% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
                             
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -10933,24 +11092,27 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 22% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
 
                             if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "26% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 26% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 26% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
 
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -10984,24 +11146,26 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 27% Off, Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 15% Off + Addnl 28% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Flat 15% Off + Addnl 28% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 15% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
+                            $return_arr['purchase_summary_value'] = "Flat 15% Off + Addnl 14% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 15% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Off".getLineBreaker()."Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 12% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 11% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Of".getLineBreaker()." Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 12% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
-                            
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11012,24 +11176,26 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 22% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
 
                             if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
 
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11066,24 +11232,26 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 25% Off, Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 30% Off + Addnl 21% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
+                            $return_arr['purchase_summary_value'] ="Flat 30% Off + Addnl 21% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Upto 30% Off + Addnl 20% Off, Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | 6-10 Dec";
+                            $return_arr['text'] = "Flat 35% Off + Addnl 20% Off".getLineBreaker()."Use Code: STEAL";
+                            $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 20% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
                             
                             if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 20% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 35% Off + Addnl 23% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 23% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Upto 30% Off + Addnl 17% Off, Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 35% Off + Addnl 16% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 16% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
-                            
-                            $return_arr['purchase_summary_value'] = "Up to 60% Off On OnePass Membership, Use Code: STEAL | Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11094,24 +11262,26 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "21% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = "Flat 21% Off. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 21% Off. Limited Slots | 6-10 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
 
                             if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "28% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                                $return_arr['text'] = "Flat 28% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+
+                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 28% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
                             }
 
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
 
                             $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
 
@@ -11126,5 +11296,92 @@ Class Utilities {
                 break;
             default: return $return_arr;
         }
+    }
+
+    public function voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check=null){
+        $resp =  [
+            'voucher_data'=>[
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : ""),
+                'coupon_title'=>(!empty($voucherAttached['description']) ? $voucherAttached['description'] : ""),
+                'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+                'coupon_image'=>(!empty($voucherAttached['image']) ? $voucherAttached['image'] : ""),
+                'coupon_code'=>strtoupper($voucherAttached['code']),
+                'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
+                'terms_text'=>'T & C applied.'
+            ]
+        ];
+        if(!empty($voucherAttached['flags']['manual_redemption']) && empty($voucherAttached['flags']['swimming_session'])){
+            $resp['voucher_data']['coupon_text']= $voucherAttached['name'];
+            $resp['voucher_data']['header']= "REWARD UNLOCKED";
+            
+            if(isset($voucherAttached['link'])){
+                $resp['voucher_data']['sub_header']= "You have unlocked ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name'])."<br> Share your details & get your insurance policy activated. " : "");
+                $resp['voucher_data']['coupon_text']= $voucherAttached['link'];
+            }
+            
+        }
+
+        if(!empty($voucher_category['email_text'])){
+            $resp['voucher_data']['email_text']= $voucher_category['email_text'];
+        }
+        $resp['voucher_data']['terms_detailed_text'] = strtr($voucherAttached['terms'], ['<li>'=>'<p> •', '</li>'=>'</p>', '<ul>'=>'', '</ul>'=>'']);
+        
+        if(!empty($voucher_category['flags'])){
+            $resp['voucher_data']['flags'] = $voucherAttached['flags'];
+        }
+
+        if(!empty($key)){
+            $resp['voucher_data']['key'] = $key;
+        }
+
+        if(!empty($voucher_category['flags']['instant_manual_redemption']) && empty($key)){
+            
+            $resp['voucher_data']['header'] = "VOUCHER SELECTED";
+            $resp['voucher_data']['sub_header'] = "You have selected ".(!empty($voucherAttached['name']) ? strtoupper($voucherAttached['name']) : "");
+            unset($resp['voucher_data']['coupon_title']);
+            $resp['voucher_data']['coupon_text'] = "Under Verification";
+            unset($resp['voucher_data']['terms_text']);
+            unset($resp['voucher_data']['terms_detailed_text']);
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+        
+        if(empty($email_communication_check)){
+            unset($resp['voucher_data']['coupon_subtext']);
+        }
+
+        if(!empty($resp['voucher_data']['coupon_image']) && is_array($resp['voucher_data']['coupon_image']) && !empty($resp['voucher_data']['coupon_image'][0]['url'])){
+            $resp['voucher_data']['coupon_image'] = $resp['voucher_data']['coupon_image'][0]['url'];
+        }
+
+        if(is_array($resp['voucher_data']['coupon_image'])){
+            unset($resp['voucher_data']['coupon_image']);
+        }
+
+        return $resp;
+    }
+
+    public function getComboVouchers($voucher_attached, $customer){
+        $combo_vouchers = [];
+        if(!empty($voucher_attached['flags']['combo_vouchers_list'])){
+            $vouchers_list = $voucher_attached['flags']['combo_vouchers_list'];
+            $combo_vouchers = \LoyaltyVoucher::active()->whereIn('voucher_category', $vouchers_list)->where('customer_id', $customer['id'])->orderBy('_id')->get();
+        }
+
+        return $combo_vouchers;
+    }
+
+    public function preRegisterDataFormatingOldVersion(&$preRegistrationScreenData){
+        if(empty(newFitsquadCompatabilityVersion())){
+
+            $preRegistrationScreenData['check_ins']['header'] =  $preRegistrationScreenData['check_ins']['ios_old'];
+
+            foreach($preRegistrationScreenData['check_ins']['data'] as &$value){
+                $value['milestone'] = $value['milestone']." - ".$value['count'];
+            }
+        }
+        unset($preRegistrationScreenData['partners_new']);
+        unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
 }

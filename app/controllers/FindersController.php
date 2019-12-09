@@ -5345,7 +5345,12 @@ class FindersController extends \BaseController {
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
             }
-    
+	
+			try{
+				$this->addAttachedPassDescription($finderData, 'app');
+			}catch(Exception $e){
+				Log::info("Error while attaching pass to ratecard", [$e]);
+			}
             // $workout_ratecard_arr = array();
             // foreach($finderData['finder']['services'] as $service){
             // 	foreach($service['ratecard'] as $ratecard){
@@ -7860,14 +7865,14 @@ class FindersController extends \BaseController {
 						'background'=>'https://b.fitn.in/global/banner%20image.png',
 						'header'=>[
 							'line1'=>"India's Biggest Rewards Club",
-							'line2'=>"Get Rewards Upto Rs 25,000 For Working Out!",
+							'line2'=>"Get Rewards Upto Rs 32,000 For Working Out!",
 							'line3'=>"Burn More, Earn More"
 						],
 						'title'=>"Workout at ".$finderDetails['title']." by buying a membership or booking a session & get rewarded in 3 easy steps",
 						'steps'=>[
 							"1. Check-in every time you workout",
 							"2. Workout more and level up",
-							"3. Earn rewards worth Rs.25,000",
+							"3. Earn rewards worth Rs.32,000",
 						],
 						// 'steps_image' => 'https://b.fitn.in/global/Group%20770%403x.png',
 						// 'steps_desc'=>[
@@ -7893,8 +7898,8 @@ class FindersController extends \BaseController {
 					'text'=>"Checkout Rewards",
 					// "image"=>'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
 					//'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/Edited%20Fitsquad%20Grid%20%281%29.jpg'
-					// 'image'=> 'https://b.fitn.in/global/fitsquad-225.jpg'
-					"image"=> "https://b.fitn.in/global/firsquad_grid_new.png"
+					//'image'=> 'https://b.fitn.in/global/fitsquad-225.jpg'
+					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
 				$data['checkout_summary'] = [
@@ -7907,7 +7912,7 @@ class FindersController extends \BaseController {
 						// 'image' => 'https://b.fitn.in/global/cashback/rewards/fitternity-new-rewards-all-cities.jpg'
 						//'image' => 'https://b.fitn.in/global/Homepage-branding-2018/srp/Edited%20Fitsquad%20Grid%20%281%29.jpg'
 						// 'image' => 'https://b.fitn.in/global/fitsquad-225.jpg'
-						"image"=> "https://b.fitn.in/global/firsquad_grid_new.png"
+						"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 					],
 					'know_more' => true
 				];
@@ -8810,6 +8815,70 @@ class FindersController extends \BaseController {
 				}
 			}
 		}
+	}
+
+	public function addAttachedPassDescription(&$finder){
+		$attach_pass_template_status = false;
+		if(!empty($finder['finder']['services'])){
+			$template = Config::get('pass.attached_pass');
+			foreach($finder['finder']['services'] as &$service){
+				foreach($service['ratecard'] as $key => &$ratecard){
+
+					if(!empty($ratecard['flags']['onepass_attachment_type'])){
+						$attach_pass_template = $template[$ratecard['flags']['onepass_attachment_type']];
+
+						if(empty($attach_pass_template)){
+							continue;
+						}
+
+						empty($attach_pass_template_status) ? $attach_pass_template_status = true: null;
+
+						$temp_data = [ 
+							'service_name' => $service['service_name'],
+							'vendor_name'=> $finder['finder']['title'],
+							'pass_details_duration_text' => $ratecard['pass_details']['duration_text'],
+							'membership_duration_text' => $ratecard['validity']." ".ucwords($ratecard['validity_type']),
+							'pass_details_total_sessions' => $ratecard['pass_details']['total_sessions_text'],
+							'pass_details_monthly_total_sessions_text' => !empty($ratecard['pass_details']['monthly_total_sessions_text']) ? $ratecard['pass_details']['monthly_total_sessions_text'] : '4 sessions'
+						];
+
+						if(!empty($attach_pass_template['extra_info'])){
+							$ratecard['extra_info'] = strtr($attach_pass_template['extra_info'], $temp_data);
+							unset($attach_pass_template['extra_info']);
+
+							if(!empty($attach_pass_template['extra_info_text_color'])){
+								$ratecard['extra_info_text_color'] = $attach_pass_template['extra_info_text_color'];
+								unset($attach_pass_template['extra_info_text_color']);
+							}
+						}
+
+						if(!empty($attach_pass_template['background_color'])){
+							$ratecard['background_color'] = $attach_pass_template['background_color'];
+							unset($attach_pass_template['background_color']);
+						}
+						
+						$attach_pass_template['header'] = strtr($attach_pass_template['header'], $temp_data);
+						$attach_pass_template['subheader'] = strtr($attach_pass_template['subheader'], $temp_data);
+
+						foreach($attach_pass_template['data'] as &$value){
+							$value['title'] = strtr($value['title'], $temp_data);
+							$value['text'] = strtr($value['text'], $temp_data);
+						}
+
+						foreach($attach_pass_template['remarks'] as &$remarks_value){
+							$remarks_value = strtr($remarks_value, $temp_data);
+						}
+
+						$ratecard['attached_pass_template'] = $attach_pass_template;
+					}
+				}
+			}
+
+			if(!empty($attach_pass_template_status)){
+				$finder['finder']['attached_pass_summary'] = Config::get('pass.attached_pass_summary');
+			}
+		}
+
 	}
 
 }

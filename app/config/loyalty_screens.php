@@ -5,26 +5,34 @@ return array(
 
 
     'pre_register' => [
+        "cover_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/cover%20image.jpg",
         'header' => [
-            'image' => 'https://b.fitn.in/loyalty/FITSQUAD-APP-Cover%20image-DESIGN.jpg',
+            'image' =>  'https://b.fitn.in/external-vouchers1/new_grid_images/old_fitsquad_app_cover.png',
+            'image_new' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png",
+            'background_image' => 'https://b.fitn.in/external-vouchers1/new_grid_images/cover_image_post.png',
             'ratio' => 1.23,
-            'url'=> Config::get('loyalty_constants.register_url')
-        ],
+            'logo_ratio' => 1.23,
+            'url'=> Config::get('loyalty_constants.register_url'),
+            'title' => 'GET REWARDED FOR EVERY WORKOUT',
+            'sub_title' => 'BURN MORE, EARN MORE',
+            'button_text' => 'JOIN THE CLUB',
+            'text' => 'workout and earn rewards worth ₹ 32,000'
+         ],
 
-        'partners' => [
-            'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'>10, 30, 75, 150 & 225</font> WORKOUTS</b>",
-            'data' => [
-                "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
-                "https://b.fitn.in/external-vouchers1/zomato-gold-mobile-logo.jpg",
-                "https://b.fitn.in/external-vouchers/JCB1.png",
-                "https://b.fitn.in/external-vouchers/epigamia.png",
-                "https://b.fitn.in/external-vouchers/small-cleartrip%20logo.jpg",
-                "https://b.fitn.in/external-vouchers/O21.png",
-                "https://b.fitn.in/external-vouchers/book%20my%20show.png",
-                "https://b.fitn.in/external-vouchers1/UberEats-Logo-OnWhite-Color-V.png",
-                "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg",
-            ]
-        ],
+        // 'partners' => [
+        //     'header' => "<b>GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'> 30, 75, 150 & 250 </font> WORKOUTS</b>",
+        //     'data' => [
+        //         "https://b.fitn.in/loyalty/vouchers3/AMAZON.png",
+        //         "https://b.fitn.in/external-vouchers1/zomato-gold-mobile-logo.jpg",
+        //         "https://b.fitn.in/external-vouchers/JCB1.png",
+        //         "https://b.fitn.in/external-vouchers/epigamia.png",
+        //         "https://b.fitn.in/external-vouchers/small-cleartrip%20logo.jpg",
+        //         "https://b.fitn.in/external-vouchers/O21.png",
+        //         "https://b.fitn.in/external-vouchers/book%20my%20show.png",
+        //         "https://b.fitn.in/external-vouchers1/UberEats-Logo-OnWhite-Color-V.png",
+        //         "https://b.fitn.in/loyalty/goqii---logo-mobile.jpg",
+        //     ]
+        // ],
 
         'steps' => [
             'header' => 'NO MATTER WHERE YOU WORKOUT | GET REWARDED IN 3 EASY STEPS',
@@ -40,7 +48,7 @@ return array(
                     'image' => 'https://b.fitn.in/loyalty/Group%20128.png'
                 ],
                 [
-                    'title' => 'EARN REWARDS WORTH Rs. 25,000',
+                    'title' => 'EARN REWARDS WORTH Rs. 32,000',
                     'description' => 'Exciting Rewards from Best Brands in the Country',
                     'image' => 'https://b.fitn.in/loyalty/Group%2049.png'
                 ],
@@ -49,26 +57,33 @@ return array(
 
 
         'check_ins' => [
-            'header' => 'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+            'header' => "<font color='#3B3B3B'> GET EXCITING REWARDS ON ACHIEVING MILESTONES OF <font color='#f8a81b'> 30, 75, 150 & 250 </font> WORKOUTS</font>",//'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+            'ios_old' => "GET EXCITING REWARDS ON ACHIEVING MILESTONES OF 30, 75, 150 & 250 WORKOUTS",
             'data' => []
         ],
 
         'footer' => [
-            'image' => 'https://b.fitn.in/loyalty/FITSQUAD-APP-Registration-design.jpg',
+            'image' => "https://b.fitn.in/external-vouchers1/new_grid_images/fitsquad_app_design_footer.png",
             'ratio' => 1.38,
-            'url'=> Config::get('loyalty_constants.register_url')
+            'url'=> Config::get('loyalty_constants.register_url'),
+            'button_text' => 'JOIN THE CLUB'
         ],
         'Terms' => [
             'Title' => 'FitSquad - FAQ and Terms and conditions',
             'text' => 'HTML Text',
-            'url' => Config::get('loyalty_constants.fitsquad_faq')
+            'url' => Config::get('loyalty_constants.fitsquad_faq'),
+            'button_text' => 'JOIN THE CLUB'
         ],
+        "partners_new" => [
+            "header" => '',
+            "data" => []
+        ]
     ],
     'post_register' => [
         'header' => [
-            'logo' => 'https://b.fitn.in/loyalty/MOBILE%20PROFILE%20LOGO.png',
+            'logo' => "https://b.fitn.in/external-vouchers1/new_grid_images/new%20logo.png",
             'text' => 'Hi <b>$customer_name</b>,<br/><br/>$check_ins/$next_milestone_checkins check-ins completed. $milestone_text',
-            'background_image' => 'https://b.fitn.in/loyalty/banner.jpg',
+            'background_image' => "https://b.fitn.in/external-vouchers1/new_grid_images/app/fitsquad_background.png",
             'ratio' => 0.36,
         ],
         'milestones' => [
@@ -104,7 +119,7 @@ return array(
 
     'pre_register_check_ins_data_template' => [
         'title' => 'Milestone milestone',
-        'milestone' => 'No of sessions - count',
+        'milestone' => 'No of check-ins required',
         'count'=> 'count',
         'amount' => 'amount',
         'images' => []
@@ -151,6 +166,51 @@ return array(
         "https://b.fitn.in/external-vouchers1/cleartrip.png",
         "https://b.fitn.in/external-vouchers1/o2.png",
         "https://b.fitn.in/external-vouchers1/book%20my%20show.png",
+    ],
+
+    "reward_pay_block_message" => "Plese do a transaction of reward_amount-/ Rs.", 
+
+    "voucher_required_info" => [
+        "address" => [
+            "header" => "Please Enter Your Number",
+            "text" => "We will user this address to deliver you Rewards and Hamper",
+        ],
+
+        "size" => [
+            "header" => "T-Shirt Size",
+            "data" => ["S", "M", "L", "XL"]
+        ]
+    ],
+    
+    "milestones_constant" => [
+        "Milestone 1" => [
+            "header" => "Cool Marvel starter kit with exciting vouchers",
+            "sub_title" => "___count Days",
+            "sub_header" => "Exclusive Marvel t-shirt or a gym bag along with exciting vouchers from The Man Company, Healthifyme ,The Label Life & Ease My Trip",
+            "backgroud_color" => "#9300FF",
+            "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_1_background.png"
+        ],
+        "Milestone 2" => [
+            "header" => "Exclusive Marvel merchandise/ healthy snacking hamper & exciting vouchers",
+            "sub_title" => "___count Days",
+            "sub_header" => "Exclusive Marvel t-shirt + shaker or Get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies and more along with exciting vouchers from O2 Spa, Fast & Up & Puma",
+            "backgroud_color" => "#12A960",
+            "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_2__background.png"
+        ],
+        "Milestone 3" => [
+            "header" => "Limited edition Marvel merchandise/ healthy snacking hamper",
+            "sub_title" => "___count Days",
+            "sub_header" => "Limited edition Marvel t-shirt + shaker or Get a curated healthy snacking hamper with protein bars, makhana, peanut butter, healthy cookies, muesli & much more",
+            "backgroud_color" => "#187CFF",
+            "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_3_background.png"
+        ],
+        "Milestone 4" => [
+            "header" => "Amazon Gift Card, Fitternity Fitcash or ONEPASS",
+            "sub_title" => "___count Days",
+            "sub_header" => "Exclusive voucher from Amazon or Earn Fitternity Fitcash or Get access to unlimited workout options with Fitternity Onepass",
+            "backgroud_color" => "#BA0000",
+            "background_image" => "https://b.fitn.in/external-vouchers1/new_grid_images/milestone_4_background.png"
+        ]
     ]
 );
 ?>
