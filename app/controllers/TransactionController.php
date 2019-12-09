@@ -6633,7 +6633,7 @@ class TransactionController extends \BaseController {
                 $payment_details['amount_summary'] = [];
                 $payment_details['amount_payable'] = array(
                     'field' => 'Total Amount Payable',
-                    'value' => Config::get('app.onepass_free_string')
+                    'value' => !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string')
                 );
                 unset($payment_details['payment_details']['savings']);
             }
