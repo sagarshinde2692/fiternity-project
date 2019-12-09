@@ -5347,7 +5347,6 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
-            return $this->listValidCouponsV2();
         	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
                 $data = $_GET;
