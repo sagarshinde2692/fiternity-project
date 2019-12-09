@@ -71,6 +71,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'header' => 'UNLIMITED VALIDITY PASS',
                     'text' => '(Unlimited Access)',
                     'ratecards' => []
