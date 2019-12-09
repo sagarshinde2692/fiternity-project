@@ -209,10 +209,25 @@ class PassService {
             $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
         }
 
-        $pass_coupons = $this->listValidCouponsOfOnePass('pass');
+        $red_pass_coupons = null;
+        $black_pass_coupons = null;
 
-        if(!empty($pass_coupons['options'])){
-            $response['coupons'] = $pass_coupons;
+        if(empty($pass_type)){
+            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+        }
+        else if(!empty($pass_type) && $pass_type=='red'){
+            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+        }
+        else {
+            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+        }
+    
+        if(!empty($red_pass_coupons['options'])){
+            $response['passes'][0]['coupons'] = $red_pass_coupons;
+        }
+        if(!empty($black_pass_coupons['options'])){
+            $response['passes'][1]['coupons'] = $red_pass_coupons;
         }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
@@ -2702,7 +2717,7 @@ class PassService {
 
     }
 
-    public function listValidCouponsOfOnePass($ratecard_type='pass'){
+    public function listValidCouponsOfOnePass($ratecard_type, $pass_type='red'){
         
         $resp=[
 
