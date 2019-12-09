@@ -117,9 +117,14 @@ return [
                         'Onepass Red gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Available in 2 options - OnePass and Pocket Friendly OnePass Lite"),
+                    'button_text' => 'Checkout Gyms/Studios'
+                ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
                     'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
                     'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
                 ],
@@ -164,6 +169,10 @@ return [
                         'OnePass Black gives you Membership Privileges',
                         'Onepass Black gives you the option to workout Anytime, Anywhere'
                     ]
+                ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')."  Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
+                    'button_text' => 'Checkout Gyms/Studios',
                 ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",

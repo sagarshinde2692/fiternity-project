@@ -203,10 +203,19 @@ class PassService {
         $brandingData1 = $utilities->getPassBranding($agrs1);
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
+
+            !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= "\n".json_decode('"'."\u2713".'"').$brandingData1['red_remarks_header'] : null;
         }
 
         if(!empty($brandingData1['black_remarks_header'])){
             $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
+            
+            !empty($response['passes'][1]['about_pass']['text']) ? $response['passes'][1]['about_pass']['text'] .= "\n".json_decode('"'."\u2713".'"').$brandingData1['black_remarks_header'] : null;
+        }
+
+        if(!empty($response['passes'][0]['about_pass']) && !empty($response['passes'][0]['offerings'][1]['offering_text'])){
+            $response['passes'][0]['offerings'][1]['text'] = $response['passes'][0]['offerings'][1]['offering_text'];
+            unset($response['passes'][0]['offerings'][1]['offering_text']);
         }
 
         $red_pass_coupons = null;
@@ -899,14 +908,8 @@ class PassService {
                     if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
                         $upper_amount = Config::get('pass.sodexo_price_upper_limit');
                     }
-                    // $duration = $passOrder['pass']['duration'];
-                    // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
-                    //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
-                    //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
-                    // }
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
-                        // $month=(int)date("n",strtotime($date));
 
                         Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
@@ -931,88 +934,22 @@ class PassService {
                                 
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
-                                    // Log::info('inside hybrid pass:::::::::::::::::::', [$trial_date, strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)), $i, strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))]);
+
                                     if(
                                         (
                                             $trial_date >= strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['start_date']->sec)) && $trial_date < strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))
                                         )
                                     ){
-                                        Log::info('inside hybrid pass:::::::::::::::::::', [$monthlySessionsTotal,  $monthly_bookings[$i]['count'], $date]);
                                         if($monthlySessionsTotal > $monthly_bookings[$i]['count']){
                                             $canBook= true;
                                         }
                                         break;
                                     }
                                 }
-                                // Booktrial::$withoutAppends = true;
-                                // $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
-                                // Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
-                                // if($monthlySessionsTotal>$monthlySessionsUsed) {
-                                //     $canBook = true;
-                                // }
+                                
                             }
                             $pass_branding = $passOrder['pass']['branding'];
 
-
-                            // $pass_order_id = $passOrder['_id'];//411922;
-                            // $booking_counters =Booktrial::raw(function($collection) use($month, $pass_order_id){
-                            //     $match = [
-                            //         '$match' => [
-                            //             'pass_order_id' => $pass_order_id,
-                            //             'going_status_txt' => [
-                            //                 '$ne' => 'cancel'
-                            //             ]
-                            //         ]
-                            //     ];
-                            //     $addField = [
-                            //         '$addFields' =>[
-                            //             'month_value' => [
-                            //                 '$month' => '$schedule_date'
-                            //             ]
-                            //         ]
-                            //     ];
-                            //     $group = [
-                            //         '$group' =>[
-                            //             '_id'=> null,
-                            //             'total_bookings' => [
-                            //                 '$sum' => 1
-                            //             ],
-
-                            //             'monthly_total_bookings' => [
-                            //                 '$sum' => [
-                            //                     '$cond' => [
-                            //                         [
-                            //                             '$eq' => ['$month_value', $month]
-                            //                         ],
-                            //                         1, 
-                            //                         0
-                            //                     ]
-                            //                 ]
-                            //             ]
-                            //         ]
-                            //     ];
-
-                            //     return $collection->aggregate([
-                            //         $match,
-                            //         $addField,
-                            //         $group
-                            //     ]);
-                            // });
-                            // Log::info('inside hybrid passs::::: counts', [$booking_counters['result'], $sessionsTotal, $monthlySessionsTotal]);
-                            
-                            // $totlaSessionsUsed = !empty($booking_counters['result'][0]['total_bookings']) ? $booking_counters['result'][0]['total_bookings'] : 0;
-                            // $BookingMonthSessionsUsed = !empty($booking_counters['result'][0]['monthly_total_bookings']) ? $booking_counters['result'][0]['monthly_total_bookings'] : 0;
-                            // Log::info('info::::::',[$BookingMonthSessionsUsed, $BookingMonthSessionsUsed >= $monthlySessionsTotal]);
-                            // if($totlaSessionsUsed >= $sessionsTotal) {
-                            //     $msg =  "You have used all ".$sessionsTotal." sessions.";
-                            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
-                            // }
-                            // if($BookingMonthSessionsUsed >= $monthlySessionsTotal){
-                            //     $msg =  "You have used all monthly ".$BookingMonthSessionsUsed." session";
-                            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
-                            // }
-                            // $canBook = true;
-                            // $pass_branding = $passOrder['pass']['branding'];
                         }
                         
                     }
@@ -1021,12 +958,12 @@ class PassService {
             Log::info('allow session uppper amount', [$upper_amount]);
             if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, /*'profile_incomplete' => !$profile_completed,*/ 'pass_branding' => $pass_branding];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding];
             }
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
@@ -2673,6 +2610,11 @@ class PassService {
         else if(!empty($include_onepass_lite_web)){
             $this->formatOfferingOnePassLite('passes', 0, $response);
             $this->formatOfferingOnePassLite('passes', 1, $response);
+        }
+        else {
+            Log::info('fvhbdfhdfdjfbdfjvdfjvhdfjvhdfvdfhj');
+            unset($response['app_passes'][0]['about_pass']);
+            unset($response['app_passes'][1]['about_pass']);
         }
     }
 
