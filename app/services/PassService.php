@@ -209,6 +209,11 @@ class PassService {
             $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
         }
 
+        $pass_coupons = $this->listValidCouponsOfOnePass('pass');
+
+        if(!empty($pass_coupons['options'])){
+            $response['coupons'] = $pass_coupons;
+        }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -2695,5 +2700,52 @@ class PassService {
             }
         }
 
+    }
+
+    public function listValidCouponsOfOnePass($ratecard_type='pass'){
+        
+        $resp=[
+
+            "header"=>"Available Coupons",
+            "options"=>[]
+        ];
+                
+        $customer_email=null;
+        $customer_id=null;
+        $customer_phone=null;
+
+        $jwt_token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+            $customer_email=$decoded->customer->email;
+            $customer_phone = $decoded->customer->contact_no;
+        }
+
+
+        $today_date = date("d-m-Y hh:mm:ss");
+
+        $coupons = Coupon::active()
+        ->where('show_on_front', true)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
+        ->where('total_available', '>', 0)
+        ->get(['code', 'description', 'terms', 'complementary']);
+
+        if(empty($coupons)) {
+            return $resp;
+        }
+        
+        $coupons=$coupons->toArray();
+        
+        if(!in_array($device, ['ios', 'android'])) {
+            $coupons=$this->utilities->removeMobileCodes($coupons);
+        }
+        $resp['options'] = $coupons;
+        return $resp;
+            
     }
 }
