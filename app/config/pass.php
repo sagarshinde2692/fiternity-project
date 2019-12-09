@@ -48,6 +48,7 @@ return [
                 ],
                 'offerings_lite' => [
                     "image" => "",
+                    "border_text" => "LITE",
                     'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
                     "onepass_lite" => true,
                     'button_text' => 'Check Options On OnePass Lite',
@@ -85,6 +86,7 @@ return [
                 ],
                 'offerings_lite' => [
                     "image" => "",
+                    "border_text" => "LITE",
                     'header' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     "onepass_lite" => true,
                     'text' => '(Limited Access)',
@@ -134,6 +136,7 @@ return [
                 ],
                 "offerings_lite" => [
                     "image" => "",
+                    "border_text" => "LITE",
                     'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
@@ -177,6 +180,7 @@ return [
                 ],
                 "offerings_lite" => [
                     "image" => "",
+                    "border_text" => "LITE",
                     'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
