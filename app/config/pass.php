@@ -31,6 +31,7 @@ return [
                 'offerings' => [
                     'header' => 'UNLIMITED USAGE PASS',
                     'text' => '(Limited Access)',
+                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [
@@ -48,6 +49,7 @@ return [
                     "image" => "",
                     'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
                     "onepass_lite" => true,
+                    'button_text' => 'Check Options On OnePass Lite',
                     'text' => '(Limited Access)',
                     'ratecards' => []
                 ]

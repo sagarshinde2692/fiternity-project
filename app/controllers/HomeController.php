@@ -5347,6 +5347,7 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
+            return $this->listValidCouponsV2();
         	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
                 $data = $_GET;
@@ -5541,4 +5542,67 @@ class HomeController extends BaseController {
 		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
 	}
 
+    public function listValidCouponsV2(){
+        
+        $resp=[
+            'status'=>200,
+            "message"=>"Success",
+            "header"=>"Available Coupons",
+            "options"=>[]
+        ];
+
+        $data = $_GET;
+        Log::info($_GET);
+        
+        $rules= [
+            'ratecard_type'=> 'required'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return [
+                'status' => 400,
+                'message' => error_message($validator->errors())
+            ];
+        }
+                
+        $customer_email=null;
+        $customer_id=null;
+        $customer_phone=null;
+
+        $jwt_token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+            $customer_email=$decoded->customer->email;
+            $customer_phone = $decoded->customer->contact_no;
+        }
+
+
+        $today_date = date("d-m-Y hh:mm:ss");
+
+        $coupons = Coupon::active()
+        ->where('show_on_front', true)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $data['ratecard_type'])
+        ->where('total_available', '>', 0)
+        ->get();
+
+        if(empty($coupons)) {
+            return $resp;
+        }
+        
+        $coupons=$coupons->toArray();
+        
+        if(!in_array($device, ['ios', 'android'])) {
+            $coupons=$this->utilities->removeMobileCodes($coupons);
+        }
+        
+        return $coupons;
+            
+    }
 }
