@@ -844,14 +844,14 @@ class PassService {
 
         $passType = null;
         $profile_completed = false;
+        $onepass_lite = false;
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
 
             if(!empty($passOrder['pass']['lite'])){
-                $upper_amount = Config::get('pass.onepass_lite_price_upper_limit');
+                $onepass_lite = true;
+                // $upper_amount = Config::get('pass.onepass_lite_price_upper_limit');
             }
-            // $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
-            // Log::info('pass orders:::::::::::::::::', [$amount, $passOrder, $profile_completed]);
         }
 
         $finder = null;
@@ -878,7 +878,7 @@ class PassService {
                     )
                 )
             ) {
-            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
         
@@ -963,7 +963,7 @@ class PassService {
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount];
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'pass_lite' => $onepass_lite];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }

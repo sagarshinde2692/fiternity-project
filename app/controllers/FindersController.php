@@ -5397,7 +5397,27 @@ class FindersController extends \BaseController {
                         
                         $_allowSession = false;
                         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-                            if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
+                            if(
+								!empty($allowSession['allow_session']) && $allowSession['allow_session'] 
+								&& 
+								(
+									(
+										($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) 
+										&& 
+										(!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])
+										&& 
+										empty($allowSession['onepass_lite'])
+									)
+									||
+									(
+										!empty($allowSession['onepass_lite'])
+										&&
+										!empty($service['flags']['lite_classpass_available']) 
+										&& 
+										$service['flags']['lite_classpass_available']
+									)
+								)
+							) {
                                 $_allowSession = $allowSession['allow_session'];
                             }
                         }
@@ -5413,7 +5433,7 @@ class FindersController extends \BaseController {
                             unset($finderData['fit_ex']);
     
                             $ratecard['price'] = $ratecard['special_price'] = "0";
-                            $ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+                            $ratecard['start_price_text'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string') : Config::get('app.onepass_free_string');
                             $ratecard['skip_share_detail'] = true;
                         }
                     }
@@ -8653,8 +8673,28 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-								$ratecards['price_text'] = 'Free for you';	
+							if(
+								$creditApplicable['allow_session'] 
+								&& 
+								(
+									(
+										!empty($service['flags']['classpass_available']) 
+										&& 
+										$service['flags']['classpass_available']
+										&& 
+										empty($creditApplicable['onepass_lite'])
+									)
+									||
+									(
+										!empty($creditApplicable['onepass_lite'])
+										&&
+										!empty($service['flags']['lite_classpass_available'])
+										 && 
+										 $service['flags']['lite_classpass_available']
+									)
+								)
+							){
+								$ratecards['price_text'] = !empty($creditApplicable['onepass_lite']) ?  Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string');	
 							}
 						}
 					}
@@ -8665,8 +8705,28 @@ class FindersController extends \BaseController {
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
-							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-								$ratecards['price_text'] = 'Free for you';	
+							if(
+								$creditApplicable['allow_session'] 
+								&& 
+								(
+									(
+										!empty($service['flags']['classpass_available']) 
+										&& 
+										$service['flags']['classpass_available']
+										&& 
+										empty($creditApplicable['onepass_lite'])
+									)
+									||
+									(
+										!empty($creditApplicable['onepass_lite'])
+										&&
+										!empty($service['flags']['lite_classpass_available'])
+										&& 
+										$service['flags']['lite_classpass_available']
+									)
+								)
+							){
+								$ratecards['price_text'] = !empty($creditApplicable['onepass_lite']) ?  Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string');	
 							}
 						}
 					}

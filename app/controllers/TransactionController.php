@@ -3745,7 +3745,28 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
-            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+            if(
+                $passSession['allow_session'] 
+                && 
+                (
+                    (
+                        !empty($data['service_flags']['classpass_available']) 
+                        && 
+                        $data['service_flags']['classpass_available']
+                        &&
+                        empty($passSession['onepass_lite'])
+                    )
+                    ||
+                    (
+                        !empty($passSession['onepass_lite'])
+                        &&
+                        !empty($data['service_flags']['lite_classpass_available'])
+                        && 
+                        $data['service_flags']['lite_classpass_available']
+                    )
+                )
+
+            ) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
@@ -6580,7 +6601,27 @@ class TransactionController extends \BaseController {
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
-                if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+                if(
+                    !empty($allowSession['allow_session']) 
+                    && 
+                    (   
+                        (
+                            !empty($data['service_flags']['classpass_available']) 
+                            && 
+                            $data['service_flags']['classpass_available']
+                            && 
+                            empty($allowSession['onepass_lite'])
+                        )
+                        ||
+                        (
+                            !empty($allowSession['onepass_lite'])
+                            &&
+                            !empty($data['service_flags']['lite_classpass_available'])
+                            && 
+                            $data['service_flags']['lite_classpass_available']
+                        )
+                    )
+                ) {
                     $allowSession = $allowSession['allow_session'];
                 }
                 else {
@@ -7633,7 +7674,26 @@ class TransactionController extends \BaseController {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-                    if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+                    if(
+                        $passSession['allow_session'] 
+                        &&
+                        (
+                            (
+                                !empty($data['service_flags']['classpass_available']) 
+                                && $data['service_flags']['classpass_available']
+                                &&
+                                empty($passSession['onepass_lite'])
+                            )
+                            ||
+                            (
+                                !empty($passSession['onepass_lite'])
+                                &&
+                                !empty($data['service_flags']['lite_classpass_available'])
+                                && 
+                                $data['service_flags']['lite_classpass_available']
+                            )
+                        )
+                    ) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
