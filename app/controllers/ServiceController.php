@@ -940,7 +940,7 @@ class ServiceController extends \BaseController {
 						$rsh['price_only']=(isset($p_np['peak']))?$p_np['peak']:((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $p_np['non_peak'] + $p_np['non_peak_discount']:"");
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
-                        Log::info("nrsh price",[$rsh['price_only']]);
+                        Log::info("nrsh price",[$rsh['price_only'], $allowSession]);
 						if(
 							!empty($allowSession['allow_session']) 
 							&& 
@@ -976,7 +976,7 @@ class ServiceController extends \BaseController {
 								$rsh['price'] = Config::get('app.onepass_lite_free_string');
 								$nrsh['price'] = Config::get('app.onepass_lite_free_string');
 							}
-							
+							Log::info('insoide fhbvdfvhbjdfvbjhdfvbjdfvdfjvdfbhdfjhvdfvjdfhjvf:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                             
                             $str = '';

@@ -849,6 +849,7 @@ class PassService {
             $passType = $passOrder['pass']['pass_type'];
 
             if(!empty($passOrder['pass']['lite'])){
+                Log::info('insode onepass lite orders::::');
                 $onepass_lite = true;
                 // $upper_amount = Config::get('pass.onepass_lite_price_upper_limit');
             }
@@ -963,8 +964,7 @@ class PassService {
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'pass_lite' => $onepass_lite];
-
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'onepass_lite' => $onepass_lite];
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
