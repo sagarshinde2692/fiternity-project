@@ -28,6 +28,7 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
         $source = null;
+        $corporateSource = null;
 
         if(!empty($input['category'])){
             $category = $input['category'];
@@ -41,11 +42,15 @@ class PassController extends \BaseController {
             $source = $input['source'];
         }
         
+        if(!empty($input['corporate_source'])) {
+            $corporateSource = $input['corporate_source'];
+        }
+        
         if(empty($input['city']) || !empty($source)) {
             $city = 'mumbai';
         }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $corporateSource);
         if(empty($passes)) {
             return [
                 "status" => 400,
