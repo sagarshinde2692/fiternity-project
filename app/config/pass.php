@@ -29,6 +29,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'header' => 'UNLIMITED USAGE PASS',
                     'text' => '(Limited Access)',
                     'button_text' => 'Check Options On OnePass',
@@ -114,6 +115,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
                     'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
@@ -160,6 +162,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
                     'button_text' => 'Checkout Gyms/Studios',
                     'ratecards' => []
