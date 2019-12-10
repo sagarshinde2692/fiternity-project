@@ -227,25 +227,24 @@ class PassService {
         }
         else if(!empty($pass_type) && $pass_type=='red'){
             $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
-
-            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){ 
-                unset($response['passes'][1]);
-            }
         }
         else {
             $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
-            
-            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
-                $response['passes'][0] = $response['passes'][1];  
-                unset($response['passes'][1]);
-            }
         }
     
         if(!empty($red_pass_coupons['options'])){
             $response['passes'][0]['coupons'] = $red_pass_coupons;
         }
         if(!empty($black_pass_coupons['options'])){
-            $response['passes'][1]['coupons'] = $red_pass_coupons;
+            $response['passes'][1]['coupons'] = $black_pass_coupons;
+        }
+
+        if((!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)) && !empty($pass_type)){
+            if($pass_type == 'black'){
+                $response['passes'][0] = $response['passes'][1];
+            }
+
+            unset($response['passes'][1]);
         }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
