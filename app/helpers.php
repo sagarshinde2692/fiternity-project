@@ -2936,10 +2936,8 @@ if (!function_exists(('getReversehash'))){
         $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['service_name']);
         $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['finder_name']);
 
-        // $key = 'gtKFFx';
-        // $salt = 'eCwWELxi';
-        $key = "smsplus";
-        $salt = "1b1b0";
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -2993,11 +2991,8 @@ if (!function_exists(('getHash'))){
         $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['service_name']));
         $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['finder_name']));
 
-        // $key = 'gtKFFx';
-        // $salt = 'eCwWELxi';
-
-        $key = "smsplus";
-        $salt = "1b1b0";
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -3113,11 +3108,8 @@ if (!function_exists(('getReverseHashProduct'))){
 				$env= 1;
 			} */
 			
-			// $key = 'gtKFFx';
-            // $salt = 'eCwWELxi';
-            
-            $key = "smsplus";
-            $salt = "1b1b0";
+			$key = 'gtKFFx';
+            $salt = 'eCwWELxi';
 			if($env == "production"){
 				$key = 'l80gyM';$salt = 'QBl78dtK';
 			}
