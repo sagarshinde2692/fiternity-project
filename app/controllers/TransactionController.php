@@ -6695,6 +6695,7 @@ class TransactionController extends \BaseController {
         }
 
         if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
+            array_push($payment_options['payment_options_order'], 'googlepay');
             $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
                 'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
