@@ -241,7 +241,7 @@ class PassService {
             }
 
         }
-        if(!empty($data['customer_source']) && (in_array($data['customer_source'], ['sodexo', 'thelabellife']) || in_array($data['corporate_source'], ['generic']))){
+        if(!empty($data['customer_source']) && (in_array($data['customer_source'], ['sodexo', 'thelabellife']) || (!empty($data['corporate_source']) && in_array($data['corporate_source'], ['generic'])))){
             // $data['customer_source'] = 'sodexo';
         }
         else {
@@ -331,7 +331,7 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        if(empty($data['customer_source']) || (!in_array($data['customer_source'], ['sodexo', 'thelabellife']) && !in_array($data['corporate_source'], ['generic']))){
+        if(empty($data['customer_source']) || (!in_array($data['customer_source'], ['sodexo', 'thelabellife']) && (empty($data['corporate_source']) || !in_array($data['corporate_source'], ['generic'])))){
             $rewardinfo = $this->addRewardInfo($data);
 		}
         if(!empty($rewardinfo)){
