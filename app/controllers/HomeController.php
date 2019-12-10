@@ -5544,5 +5544,9 @@ class HomeController extends BaseController {
     public function getCampaignData(){
         $currentCampDet = Cache::tags('campaign_data')->get('current');
         
+        if(empty($currentCampDet)){
+            
+        }
+
     }
 }
