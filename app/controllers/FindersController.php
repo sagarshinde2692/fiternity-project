@@ -496,12 +496,19 @@ class FindersController extends \BaseController {
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
 				$passCatIdArr = [];
+				$passLiteCatIdArr = [];
 				$pass_service_categories = [];
+				$pass_lite_service_categories = [];
 				// $pass_service_categories = array_where($finderarr['services'], function($key, $value) use ($category_slug){
 				foreach($finderarr['services'] as $value) {
 					if((!empty($value['flags']['classpass_available'])) && $value['flags']['classpass_available'] && !in_array($value['category']['_id'], $passCatIdArr)) {
 						array_push($pass_service_categories, ['_id' => $value['category']['_id'], 'slug' => $value['category']['slug'], 'name' => $value['category']['name']]); 
 						array_push($passCatIdArr, $value['category']['_id']);
+					}
+
+					if((!empty($value['flags']['lite_classpass_available'])) && $value['flags']['lite_classpass_available'] && !in_array($value['category']['_id'], $passLiteCatIdArr)) {
+						array_push($pass_lite_service_categories, ['_id' => $value['category']['_id'], 'slug' => $value['category']['slug'], 'name' => $value['category']['name']]); 
+						array_push($passLiteCatIdArr, $value['category']['_id']);
 					}
 				}
 				
@@ -513,6 +520,7 @@ class FindersController extends \BaseController {
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'pass_service_categories', pluck($pass_service_categories, array('_id', 'name', 'slug') ));
+				array_set($finder, 'pass_lite_service_categories', pluck($pass_lite_service_categories, array('_id', 'name', 'slug') ));
 				
 			   //return $finderarr['services'];
 
@@ -632,6 +640,7 @@ class FindersController extends \BaseController {
 				// end top selling and newly launched logic 
 				
 				$finderOnepassAvailable = false;
+				$finderOnepassLiteAvailable = false;
 				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
@@ -648,6 +657,9 @@ class FindersController extends \BaseController {
 								$finderOnepassAvailable = true;
 							}
 
+							if(!empty($service['flags']['lite_classpass_available'])) {
+								$finderOnepassLiteAvailable = true;
+							}
 							$service = $service;
 
 							$service['offer_icon'] = "";
@@ -894,6 +906,7 @@ class FindersController extends \BaseController {
 
 
 					array_set($finder, 'finder_onepass_available', $finderOnepassAvailable);
+					array_set($finder, 'finder_onepass_lite_available', $finderOnepassLiteAvailable);
 					array_set($finder, 'services', $serviceArr);
 
 					// $info_timing = $this->getInfoTiming($finder['services']);
