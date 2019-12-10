@@ -5545,7 +5545,8 @@ class HomeController extends BaseController {
         $currentCampDet = Cache::tags('campaign_data')->get('current');
         
         if(empty($currentCampDet)){
-            
+            // $currentCampDet = NewCampaign::active()->
+            Cache::tags('campaign_data')->put('current',$currentCampDet,Config::get('cache.cache_time'));
         }
 
     }
