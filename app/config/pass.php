@@ -206,7 +206,7 @@ return [
                 3) Offer is applicable on new users only<br>
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
+                6) Instant Cashback received expires within 60 days<br>
                 7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
@@ -287,7 +287,7 @@ return [
                 3) Offer is applicable on new users only<br>
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
+                6) Instant Cashback received expires within 60 days<br>
                 7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
@@ -367,7 +367,7 @@ return [
                 3) Offer is applicable on new users only<br>
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
+                6) Instant Cashback received expires within 60 days<br>
                 7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
