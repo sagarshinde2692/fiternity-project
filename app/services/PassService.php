@@ -227,9 +227,18 @@ class PassService {
         }
         else if(!empty($pass_type) && $pass_type=='red'){
             $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+
+            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){ 
+                unset($response['passes'][1]);
+            }
         }
         else {
             $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+            
+            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
+                $response['passes'][0] = $response['passes'][1];  
+                unset($response['passes'][1]);
+            }
         }
     
         if(!empty($red_pass_coupons['options'])){
@@ -2606,16 +2615,27 @@ class PassService {
         if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])){
             $this->formatOfferingOnePassLite('app_passes', 0, $response);
             $this->formatOfferingOnePassLite('app_passes', 1, $response);
+            
+            $response['faq'] = $response['faq_v_2'];
+
+            unset($response['app_passes'][0]['remarks']['text']);
+            unset($response['app_passes'][0]['remarks']['title']);
+            unset($response['app_passes'][0]['remarks']['url']);
+            unset($response['app_passes'][1]['remarks']['text']);
+            unset($response['app_passes'][1]['remarks']['title']);
+            unset($response['app_passes'][1]['remarks']['url']);
         }
         else if(!empty($include_onepass_lite_web)){
             $this->formatOfferingOnePassLite('passes', 0, $response);
             $this->formatOfferingOnePassLite('passes', 1, $response);
         }
         else {
-            Log::info('fvhbdfhdfdjfbdfjvdfjvhdfjvhdfvdfhj');
             unset($response['app_passes'][0]['about_pass']);
             unset($response['app_passes'][1]['about_pass']);
+            unset($response['app_passes'][0]['tnc']);
+            unset($response['app_passes'][1]['tnc']);
         }
+        unset($response['faq_v_2']);
     }
 
     public function formatOfferingOnePassLite($key, $index, &$response){
@@ -2687,6 +2707,7 @@ class PassService {
 
         $coupons = Coupon::active()
         ->where('show_on_front', true)
+        ->where('pass_type', $pass_type)
         ->where('start_date', '<=', new \DateTime())
         ->where('end_date', '>', new \DateTime())
         ->where('ratecard_type', $ratecard_type)

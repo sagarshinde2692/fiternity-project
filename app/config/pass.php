@@ -146,7 +146,13 @@ return [
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
                     'ratecards' => []
-                ]
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $apiUrl.'/passtermscondition?type=unlimited'
+                ],
             ],
             [
                 'header' => 'ONEPASS BLACK',
@@ -194,7 +200,13 @@ return [
                     'button_text' => 'Checkout Gyms/Studios',
                     "onepass_lite" => true,
                     'ratecards' => []
-                ]
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $apiUrl.'/passtermscondition?type=subscribe'
+                ],
             ]
         ],
         'faq' => [
@@ -202,6 +214,12 @@ return [
             'text' => 'Click here to view all FAQ`s ',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
+        ],
+        "faq_v_2" => [
+            "icon" =>  "https://b.fitn.in/onepass/FAQ_3x.png",
+            "header" => "Frequently Asked Questions",
+            "title" => "FAQ Title",
+            "url" =>  $apiUrl.'/passfaq'
         ],
         'subheader' => 'duration_text PASS FOR usage_text'
     ],
