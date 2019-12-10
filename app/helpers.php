@@ -4776,4 +4776,49 @@ if (!function_exists(('setPassToToken'))){
     }
 }
 
+if (!function_exists('isRequestFromApp')) {
+
+    function isRequestFromApp(){        
+
+        return checkAppVersionFromHeader(['ios'=>'0', 'android'=>0]);
+    }
+
+}
+
+if (!function_exists('getLineBreaker')) {
+
+    function getLineBreaker(){        
+
+        return "\n";
+    }
+}
+
+if(!function_exists('get_masterdata_from_cache')){
+
+    function get_masterdata_from_cache($slug){
+
+        $city_cache = Cache::tags('masterdata')->has('city-'.$slug) ? Cache::tags('masterdata')->get('city-'.$slug) : '';
+
+        if(!$city_cache){
+            $city_data = City::where('slug',$slug)->first();
+            Cache::tags('masterdata')->put('city-'.$slug,$city_data,1440);
+            $city_cache = Cache::tags('masterdata')->get('city-'.$slug);
+        }
+        
+        return $city_cache;
+    }
+}
+
+if (!function_exists(('newFitsquadCompatabilityVersion'))){
+    function newFitsquadCompatabilityVersion(){
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if(!empty($device_type) && !empty($app_version) && (($device_type=='android' && $app_version <= '5.31') || ($device_type=='ios' && $app_version <= '5.2.7'))){
+            return false;
+        }
+
+        return true;
+    }
+}
 ?>

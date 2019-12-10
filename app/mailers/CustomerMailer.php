@@ -190,6 +190,7 @@ Class CustomerMailer extends Mailer {
 			}
 			$label = "Pass-Purchase-Customer";
 			$this->passPurchaseAlert($data);
+			$this->onepassWelcome($data);
 		}
 
 		if(!empty($data['combo_pass_id'])){
@@ -1054,7 +1055,17 @@ Class CustomerMailer extends Mailer {
 		// exit();
 		return $this->common($label,$data,$message_data);
 	}
-    
+	
+	protected function onepassWelcome($data){
+		$label = 'OnePass-Welcome';
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
     protected function common($label,$data,$message_data,$delay = 0){
 
 		try{

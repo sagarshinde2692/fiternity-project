@@ -876,7 +876,7 @@ return array(
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com', 'kailash.cp2419@gmail.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
@@ -1104,7 +1104,8 @@ return array(
 	
 	// 'camp_excluded_vendor_id'=>[1935,9423,9481,9600,9932,9954,10674,10970,11021,11223,12208,13094,13898,13968,14102,14107,14622,14626,14627,15431,15775,15980,16062,16251,16449,16450,16562,16636,16644,579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
 	'camp_excluded_vendor_id'=>[579,1233,1260,1261,1262,1874,2105,9171,9178,5742,10675,13791],
-	'fitbox_reward_vendor_id'=>[9111,12516,15103,7335,11037,11103,5728,11363,5745,8871,6250,5746,5748,12221,16569,16209,10570,10568,13124,8823,7902,16591,4819,4823,4824,4825,4826,15758],
+	// 'fitbox_reward_vendor_id'=>[9111,12516,15103,7335,11037,11103,5728,11363,5745,8871,6250,5746,5748,12221,16569,16209,10570,10568,13124,8823,7902,16591,4819,4823,4824,4825,4826,15758],
+	'fitbox_reward_vendor_id'=>[],
 
 	'occasion_dates' => ['2019-10-26', '2019-10-29'],
     
