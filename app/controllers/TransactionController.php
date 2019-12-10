@@ -5197,8 +5197,11 @@ class TransactionController extends \BaseController {
         $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
         $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
 
-        $key = 'gtKFFx';
-        $salt = 'eCwWELxi';
+        // $key = 'gtKFFx';
+        // $salt = 'eCwWELxi';
+
+        $key = "smsplus";
+        $salt = "1b1b0";
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';

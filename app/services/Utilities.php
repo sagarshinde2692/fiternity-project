@@ -5048,8 +5048,11 @@ Class Utilities {
 				$createdData['payment_mode']=$data['payment_mode']:"";
 			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
 			
-			$key = 'gtKFFx';
-			$salt = 'eCwWELxi';
+			// $key = 'gtKFFx';
+            // $salt = 'eCwWELxi';
+            
+            $key = "smsplus";
+            $salt = "1b1b0";
 			if($env == "production"){
 				$key = 'l80gyM';$salt = 'QBl78dtK';
 			}
