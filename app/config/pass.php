@@ -162,7 +162,7 @@ return [
         "red"=>[
             "<ul>
                 <li>December Steal Sale</li>
-                <li><b>6th to 10th December 2019</b></li>
+                <li><b>Offer Ends Today</b></li>
                 
                 <li>A. Get Up to 60% off on OnePass Red Memberships, Use Code: STEAL<br> 
                 1) The discount of up to 30% off is pre-applied on MRP<br>
@@ -242,7 +242,7 @@ return [
         "black" =>[
             "<ul>
                 <li>December Steal Sale</li>
-                <li><b>6th to 10th December 2019</b></li>
+                <li><b>Offer Ends Today</b></li>
                 
                 <li>A. Get Up to 60% off on OnePass Red Memberships, Use Code: STEAL<br> 
                 1) The discount of up to 30% off is pre-applied on MRP<br>
@@ -321,7 +321,7 @@ return [
         "default"=>[
             "<ul>
                 <li>December Steal Sale</li>
-                <li><b>6th to 10th December 2019</b></li>
+                <li><b>Offer Ends Today</b></li>
                 
                 <li>A. Get Up to 60% off on OnePass Red Memberships, Use Code: STEAL<br> 
                 1) The discount of up to 30% off is pre-applied on MRP<br>
