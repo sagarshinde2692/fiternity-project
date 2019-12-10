@@ -198,7 +198,6 @@ return [
                 4) The offer is applicable only on OnePass Red: 6 months, 1 Year<br>
                 5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
                 6) The offer can be clubbed with other discount offers on OnePass<br>
-                7) All promotional offers from Fitternity will expire on 11th December 2019
                 <li>
                 
                 <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
@@ -208,6 +207,7 @@ return [
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
                 6) Instant Cashback received expires within 60 days
+                7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
@@ -279,7 +279,6 @@ return [
                 4) The offer is applicable only on OnePass Red: 6 months, 1 Year<br>
                 5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
                 6) The offer can be clubbed with other discount offers on OnePass<br>
-                7) All promotional offers from Fitternity will expire on 11th December 2019
                 <li>
                 
                 <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
@@ -289,6 +288,7 @@ return [
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
                 6) Instant Cashback received expires within 60 days
+                7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
@@ -359,7 +359,6 @@ return [
                 4) The offer is applicable only on OnePass Red: 6 months, 1 Year<br>
                 5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
                 6) The offer can be clubbed with other discount offers on OnePass<br>
-                7) All promotional offers from Fitternity will expire on 11th December 2019
                 <li>
                 
                 <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
@@ -369,6 +368,7 @@ return [
                 4) Instant cashback will be credited in the users PayPal wallet<br>
                 5) This offer is applicable along with Fitternity's promotional offers<br>
                 6) Instant Cashback received expires within 60 days
+                7) All promotional offers from Fitternity will expire on 11th December 2019
                 </li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
