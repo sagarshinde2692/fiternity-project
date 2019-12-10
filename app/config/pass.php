@@ -278,7 +278,7 @@ return [
                 3) The user is required to head to his Fitternity profile and fill in his delivery address once his OnePass is purchased<br>
                 4) The offer is applicable only on OnePass Red: 6 months, 1 Year<br>
                 5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
-                6) The offer can be clubbed with other discount offers on OnePass
+                6) The offer can be clubbed with other discount offers on OnePass<br>
                 7) All promotional offers from Fitternity will expire on 11th December 2019
                 <li>
                 
@@ -358,7 +358,7 @@ return [
                 3) The user is required to head to his Fitternity profile and fill in his delivery address once his OnePass is purchased<br>
                 4) The offer is applicable only on OnePass Red: 6 months, 1 Year<br>
                 5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
-                6) The offer can be clubbed with other discount offers on OnePass
+                6) The offer can be clubbed with other discount offers on OnePass<br>
                 7) All promotional offers from Fitternity will expire on 11th December 2019
                 <li>
                 
