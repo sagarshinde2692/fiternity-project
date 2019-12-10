@@ -2664,6 +2664,7 @@ class PassService {
         $resp=[
 
             "header"=>"Available Coupons",
+            "text" => "View Offers",
             "options"=>[]
         ];
                 
