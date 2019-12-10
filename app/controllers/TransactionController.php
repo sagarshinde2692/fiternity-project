@@ -6694,13 +6694,11 @@ class TransactionController extends \BaseController {
             ];
         }
 
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.33])){
-            $google_pay = [
+        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
+            $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
-                // 'subtitle' => 'GooglePay',
-                'value' => 'GooglePay'
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
             ];
-            array_push($payment_options['wallet']['options'], $google_pay);
         }
         
         $os_version = intval(Request::header('Os-Version'));
@@ -9112,13 +9110,11 @@ class TransactionController extends \BaseController {
         if($this->vendor_token)
             array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
     
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.33])){
-            $google_pay = [
+        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
+            $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
-                // 'subtitle' => 'GooglePay',
-                'value' => 'GooglePay'
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
             ];
-            array_push($payment_options['wallet']['options'], $google_pay);
         }
 
     	return $payment_modes;

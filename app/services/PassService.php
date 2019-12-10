@@ -670,13 +670,11 @@ class PassService {
             'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com', 'ss@relianceada.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
         ];
         
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.33])){
-            $google_pay = [
+        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
+            $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
-                // 'subtitle' => 'GooglePay',
-                'value' => 'GooglePay'
+                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
             ];
-            array_push($payment_options['wallet']['options'], $google_pay);
         }
 
         $payment_modes[] = array(
