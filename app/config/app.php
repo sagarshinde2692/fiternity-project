@@ -211,10 +211,8 @@ return array(
 			"url" => "https://info.payu.in/merchant/postservice.php?form=2"
 		),
 		'test'=>array(
-			"key_original" => 'gtKFFx',
-			"salt_original" => 'eCwWELxi',
-			"key" => "smsplus",
-			"salt" => "1b1b0",
+			"key" => 'gtKFFx',
+			"salt" => 'eCwWELxi',
 			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
 			)
 		),
