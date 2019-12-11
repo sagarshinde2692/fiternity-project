@@ -1574,7 +1574,7 @@ class PassService {
         $agrs = array('city' => $city, 'pass' => $data['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
         $utilities = new Utilities();    
         $brandingData = $utilities->getPassBranding($agrs);
-        if(!empty($brandingData['msg_data'])){
+        if(!empty($brandingData['msg_data']) && (!(!empty($data['pass']['duration']) && in_array($data['pass']['duration'],[15])))){
             $customersms = new CustomerSms();
         
             $sms_data = [];
@@ -2596,7 +2596,7 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [60,100])) || (!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [180,360]))){
+                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [60,100]))){
 
                     if(empty($data['membership_order_id'])){
                         $rewardinfo['mufm_kit_reward'] = true;
