@@ -1553,7 +1553,7 @@ class ServiceController extends \BaseController {
 							)
 						)
 					){
-						$sc['cost'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string') : Config::get('app.onepass_lite_free_string');
+						$sc['cost'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string') : Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
 					}
