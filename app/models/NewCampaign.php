@@ -16,7 +16,7 @@ class NewCampaign extends \Basemodel {
 		return parent::getArrayableAppends();
 	}
 
-	// protected $dates = array('schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time');
+	protected $dates = array('start_date', 'end_date');
 
     // protected $appends = array('fitapi_customoffer_order');
     
