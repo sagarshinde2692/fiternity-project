@@ -8524,7 +8524,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
 					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\nOffer Ends Today");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: GET20 \n\nLimited Period Offer");
 						}
 					}
                 }else{
