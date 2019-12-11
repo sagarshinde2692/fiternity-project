@@ -2711,7 +2711,7 @@ class PassService {
         ->where('end_date', '>', new \DateTime())
         ->where('ratecard_type', $ratecard_type)
         ->where('total_available', '>', 0)
-        ->get(['code', 'description', 'terms', 'complementary']);
+        ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
 
         if(empty($coupons)) {
             return $resp;
