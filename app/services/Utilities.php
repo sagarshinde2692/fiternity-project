@@ -28,6 +28,7 @@ use Ratecard;
 use Offer;
 use DateTime;
 use Order;
+use Pass;
 use Checkin;
 use FinderMilestone;
 use MongoDate;
@@ -11367,5 +11368,22 @@ Class Utilities {
         }
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
+    }
+    function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
+        $couponCode = null;
+        if(!empty($headerSource) && $headerSource==Config::get('app.sbig_acronym')){
+            if(empty($pass)) {
+                $pass = Pass::active()->where('pass_id', intval($passId))->first();
+            }
+            if(!empty($email) && !empty($passId) && (!empty($pass['complementary'])) && $pass['complementary']) {
+                $trialAvailedCustomer = Order::active()->where('customer_email', $email)->where('customer_source', $headerSource)->where('pass.corporate', $headerSource)->where('pass.complementary', true)->count();
+                if(empty($trialAvailedCustomer) || $trialAvailedCustomer<1) {
+                    $couponCode = Config::get('app.sbig_complementary_coupon_code');
+                }
+            } else if(!empty($email) && !empty($passId)) {
+                $couponCode = Config::get('app.sbig_coupon_code');
+            }
+        }
+        return $couponCode;
     }
 }

@@ -18,6 +18,7 @@ class PassController extends \BaseController {
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
         $version = Request::header('App-Version');
+        $token = Request::header('token'); // added for sbig
         $customer_id = null;
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
@@ -28,6 +29,7 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
         $source = null;
+        $email = null;
 
         if(!empty($input['category'])){
             $category = $input['category'];
@@ -44,8 +46,25 @@ class PassController extends \BaseController {
         if(empty($input['city']) || !empty($source)) {
             $city = 'mumbai';
         }
+        
+        if(!empty($input['email'])) {
+            $email = $input['email'];
+        }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
+        if($source=='sbig') {
+            $corporateToken = array_values(array_filter(Config::get('app.corporate_mapping'), function($corpMap) use ($source) {
+                return ($corpMap['acronym']==$source);
+            }))[0]['key'];
+            if($corporateToken!=$token) {
+                return [
+                    "status" => 400,
+                    "data" => "token mismatch",
+                    "msg" => "failed"
+                ];
+            }
+        }
+
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $email);
         if(empty($passes)) {
             return [
                 "status" => 400,
