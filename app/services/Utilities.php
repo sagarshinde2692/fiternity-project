@@ -10232,17 +10232,16 @@ Class Utilities {
 		$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
-		//Log::info('order summary ::::::', [$orderSummary]);
-		foreach($slotsdata as &$slot){
+        //Log::info('order summary ::::::', [$orderSummary]);
+        $camp_arg_data = array('finder' => $finder, 'source' => 'app', 'sub_source' => 'shareyourdetails');
+        $campBranding = $this->getCampaignBranding($camp_arg_data);
+        $concat_line = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+        
+        foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']."";
+                $slot['order_summary']['header'] = $orderSummary['header']." \n".$concat_line;
 
-                if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                    $slot['order_summary']['header'] = $orderSummary['header'];
-                
-
-                }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
-
+                if((!empty($finder['flags']['mfp']) && $finder['flags']['mfp']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled']) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
 		}
@@ -10252,15 +10251,17 @@ Class Utilities {
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
         $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
-		
+        
+        $camp_arg_data = array('finder' => $finder, 'source' => 'app', 'sub_source' => 'shareyourdetails');
+        $campBranding = $this->getCampaignBranding($camp_arg_data);
+        $concat_line = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']."";
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n".$concat_line;
 
-                    if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                        $sd['order_summary']['header'] = $orderSummary['header'];
-                    }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                    if((!empty($finder['flags']['mfp']) && $finder['flags']['mfp']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled']) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
                         $sd['order_summary']['header'] = $orderSummary['header'];
                     }
                 }

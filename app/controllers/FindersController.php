@@ -8518,21 +8518,12 @@ class FindersController extends \BaseController {
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				$price = (!empty($rc['special_price'])) ? $rc['special_price'] : $rc['price'];
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+
+					$camp_arg_data = array('finder' => $finder, 'price' => $price, 'source' => 'app', 'sub_source' => 'shareyourdetails');
+					$concat_str = $this->getheaderConcatData($camp_arg_data);
+
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])." \n".$concat_str);
 					
-					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
-						if($price >= 8000){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships \n\nUse Code: FITME15");
-						}else{
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices \n\nUse Code: FITME15");
-						}
-					}else if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [135])) {
-						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\n Membership Plus - ".ucwords($finder_name)." \n\n Lowest price Multifit membership + 6 Months All Access OnePass");
-					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n6-10 Dec");
-						}
-					}
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
@@ -8909,5 +8900,33 @@ class FindersController extends \BaseController {
 		}
 
 		return $f_vendor_stripe_line;
+	}
+
+	public function getheaderConcatData($data = null){
+		Log::info("getheaderConcatData");
+		$concat_line = "";
+
+		$campBranding = $this->utilities->getCampaignBranding($data);
+
+		if(!empty($campBranding)){
+			if(!empty($data['finder'])){
+				$finder = $data['finder'];
+				$price = $data['price'];
+
+				if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
+					if($price >= 8000){
+						$concat_line = !empty($campBranding['multifit8000_membership_text']) ? $campBranding['multifit8000_membership_text'] : "";
+					}else{
+						$concat_line = !empty($campBranding['multifit_membership_text']) ? $campBranding['multifit_membership_text'] : "";
+					}
+				}else if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [135])) {
+					$concat_line = !empty($campBranding['gold_membership_text']) ? $campBranding['gold_membership_text'] : "";
+				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
+					$concat_line = !empty($campBranding['membership_text']) ? $campBranding['membership_text'] : "";
+				}
+			}
+		}
+
+		return $concat_line;
 	}
 }
