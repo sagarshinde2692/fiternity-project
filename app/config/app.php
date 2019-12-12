@@ -106,7 +106,8 @@ return array(
 	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
     'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
 	"corporate_mapping" => [
-	    [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ]
+	    [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+		[ "id" => "347583457893", "key" => "yurbvfbhtruworthvfdfjgrk", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ]
 	],
 
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
