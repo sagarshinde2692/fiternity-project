@@ -31,7 +31,7 @@ class PassService {
         $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null, $email = null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null, $email = null, $corporateSource=null){
         
         $utilities = new Utilities();
 
@@ -119,7 +119,14 @@ class PassService {
 
             }
             else {
-                $passList = $passList->where('corporate', $source)->orderBy('duration')->get();
+                // $passList = $passList->where('corporate', $source)->orderBy('duration')->get();
+                $passList = null;
+                if(!empty($corporateSource)) {
+                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $corporateSource)->orderBy('duration')->get();
+                }
+                if(empty($passList) || count($passList)<1) {
+                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $source)->orderBy('duration')->get();
+                }
             }
         }
         else {
@@ -187,7 +194,7 @@ class PassService {
                 $passDetails['text'] = $brandingData['text'];
             }
 
-            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife'])) {
+            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
             }
             else if(!empty($source) && in_array($source, ['sbig'])) {
@@ -269,7 +276,7 @@ class PassService {
             }
 
         }
-        if(!empty($data['customer_source']) && in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
+        if(!empty($data['customer_source']) && (in_array($data['customer_source'], ['sodexo', 'thelabellife', 'corporate']) || (!empty($data['corporate_source']) && in_array($data['corporate_source'], ['generic'])))){
             // $data['customer_source'] = 'sodexo';
         }
         else {
@@ -359,7 +366,7 @@ class PassService {
         $data['order_id'] = $data['_id'];
         $data['orderid'] = $data['_id'];
 
-        if(empty($data['customer_source']) || !in_array($data['customer_source'], ['sodexo', 'thelabellife'])){
+        if(empty($data['customer_source']) || (!in_array($data['customer_source'], ['sodexo', 'thelabellife', 'corporate']) && (empty($data['corporate_source']) || !in_array($data['corporate_source'], ['generic'])))){
             $rewardinfo = $this->addRewardInfo($data);
 		}
         if(!empty($rewardinfo)){
@@ -1558,6 +1565,7 @@ class PassService {
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
             "customer_source" => $data['customer_source'],
+            "corporate_source" => $data['corporate_source'],
             "type" => $data['type'],
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],

@@ -116,6 +116,7 @@ return array(
 		[ "id" => "9934985980486", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJwcm9kIiwiaWF0IjoxNTc0MzI0NDMzfQ.-3VmCd-k8H01FZz1CB9mfCyk-UyxzO9R6U00ATmWtW4", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
 	],
 
+	"generic_corporate_exclude" => ['sodexo', 'sbig', 'thelabellife'],
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
