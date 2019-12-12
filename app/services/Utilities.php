@@ -11384,4 +11384,51 @@ Class Utilities {
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
+
+    public function getCampaignData(){
+        $currentCampDet = \Cache::tags('campaign_data')->get('current');
+        
+        if(empty($currentCampDet)){
+            Log::info("empty currentCampDet");
+            $currentCampDet = \NewCampaign::active()->where('start_date', '<=', new DateTime( date("Y-m-d") ))->where('end_date', '>=', new DateTime( date("Y-m-d") ))->first();
+            try{
+                \Cache::tags('campaign_data')->put('current',$currentCampDet,Config::get('cache.cache_time'));
+            }catch(Exception $e){
+                Log::info($e);
+            }
+        }
+
+        return $currentCampDet;
+    }
+
+    public function getCampaignBranding($data = null){
+        Log::info("getCampaignBranding");
+        $campaignData = $this->getCampaignData();
+        
+        if(!empty($campaignData) && !empty($data)){
+            
+            $branding = $campaignData['branding'];
+
+            // Log::info("branding", [$branding]);
+
+            $source = !empty($data['source']) ? $data['source'] : "web";
+            $sub_source = !empty($data['sub_source']) ? $data['sub_source'] : null;
+
+            Log::info("source", [$source]);
+            Log::info("sub_source", [$sub_source]);
+
+            $source_data = $return_data = $branding[$source];
+
+            if(!empty($sub_source)){
+                $return_data = array();
+                if(array_key_exists($sub_source, $source_data)){
+                    $return_data = $branding[$source][$sub_source];
+                }
+            }
+
+            return $return_data;            
+        }
+
+        return null;
+    }
 }

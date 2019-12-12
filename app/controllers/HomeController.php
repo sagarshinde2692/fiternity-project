@@ -5542,18 +5542,6 @@ class HomeController extends BaseController {
 	}
 
     public function getCampaignData(){
-        $currentCampDet = Cache::tags('campaign_data')->get('current');
-        
-        if(empty($currentCampDet)){
-            Log::info("empty currentCampDet");
-            $currentCampDet = NewCampaign::active()->where('start_date', '<=', new DateTime( date("Y-m-d") ))->where('end_date', '>=', new DateTime( date("Y-m-d") ))->first();
-            try{
-                Cache::tags('campaign_data')->put('current',$currentCampDet,Config::get('cache.cache_time'));
-            }catch(Exception $e){
-                Log::info($e);
-            }
-        }
-
-        return $currentCampDet;
+        return $this->utilities->getCampaignData();
     }
 }
