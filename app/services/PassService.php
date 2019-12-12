@@ -1522,6 +1522,7 @@ class PassService {
             "customer_phone" => $data['customer_phone'],
             "customer_email" => $data['customer_email'],
             "customer_source" => $data['customer_source'],
+            "corporate_source" => $data['corporate_source'],
             "type" => $data['type'],
             "customer_email" => $data['customer_email'],
             "customer_id" => $data['customer_id'],
