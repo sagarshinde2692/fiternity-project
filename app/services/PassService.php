@@ -994,7 +994,9 @@ class PassService {
             }
             else {
                 // below 1001
-                
+                empty($finderId) ? $finderId = null : '';
+                $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
+                Log::info('booking restrincton', [$booking_restrictions]);
             return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
@@ -2063,7 +2065,7 @@ class PassService {
         if(!empty($customerData)){
             $customerData = Customer::where('_id', $customerId)->first();
         }
-        
+
         $profile = array();
         if(!empty($customerData)){
 
@@ -2632,4 +2634,138 @@ class PassService {
 
         return $data;
     }
+
+    public function checkForVendorRestrictionPassBooking($customer, $passOrder, $finder_id){
+        $status = true;
+        if(empty($passOrder['pass']['vendor_restriction']) || empty( $finder_id)){
+            return ['stauts'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
+        }
+        $finder_found = false;
+        foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+            $finder_found =  $finder_fount = in_array($finder_id, $value['_ids']);
+            if(!empty($finder_found)){
+                break;
+            }
+        }
+
+        if(empty($finder_found)){
+            return ['stauts'=> $status, 'msg'=> 'finder not listed in restricted vendor list'];
+        }
+        
+        $customer_id = $customer['_id'];
+
+        $today = (new \DateTime())->setTime(0,0);
+        $month_start = (new \DateTime())->setTime(0,0);
+        $pass_starting_date = new \DateTime($passOrder['start_date']);
+
+        $month_days = $today->diff($pass_starting_date);
+        $days = $month_days->d;
+        $month_start->modify('- '.$days. ' day');
+
+        $temp = $month_start->format('Y-m-d');
+        $month_end = new \DateTime($temp);
+        $month_end = $month_end->modify('+ 1 month');
+
+
+        Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
+
+        // $booktrails = Booktrial::where('going_status_txt', '!=', 'cancel')
+        // ->where('customer_id', $customer_id)
+        // ->where('pass_order_id', $passOrder['_id'])
+        // ->where('schedule_date_time', '$gte', ($month_start->getTimestamp()))
+        // // ->where('schedule_date_time', 'lt', $month_end)
+        // ->get(['finder_id', 'schedule_date_time']);
+
+        // Log::info('book trails::::::::::::::::', [$booktrails, $passOrder['_id']]);
+
+
+        $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
+            $aggregate = [
+                [
+                    '$match' => [
+                        'going_status_txt' =>[
+                            '$ne' => 'cancel'
+                        ],
+                        'customer_id' => $customer_id,
+                        'pass_order_id' => $passOrder['_id'],
+                        'schedule_date_time' => [
+                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
+                            '$lt' => new \MongoDate(($month_end->getTimestamp()))
+                        ]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        'total_booking' => [
+                            '$sum' => 1
+                        ],
+                        'finder_id' => 1,
+                    ]
+                ],
+                [
+                    '$group' => [
+                        '_id' => '$finder_id',
+                        'count' => [
+                            '$sum' => 1
+                        ]
+                    ]
+                ]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+
+        if(empty($bookings['result'])){
+            return ['stauts'=> $status, 'msg'=> 'customer not done booking yet'];
+        }
+
+        $totalBookings = count($bookings['result']);
+        $findersList = [];
+        $findersIndexWithBookings = [];
+
+        //add max booking count of generic
+        foreach($bookings['result'] as $key=>$value){
+            if($value['count'] >= $passOrder['pass']['max_booking_count']){
+                $status = false;
+                break;
+            }
+            array_push($findersList, $value['_id']);
+            $findersIndexWithBookings[$value['_id']] = $value['count'];
+
+        }
+
+        if(!empty($status)){
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+
+                $matched_finders = array_intersect($findersList, $value['ids']);
+                $total_bookings_count = 0;
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders)){
+    
+                    $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
+                        return $findersIndexWithBookings[$matched_finder];
+                    }, $matched_finders)[0];
+    
+                    Log::info('total bookingLLLL::::', [$total_bookings_count]);
+    
+                    $status = $value['count'] > $total_bookings_count  ?  true : false;
+                }
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders)){
+    
+                    $currentbooking_status = array_map(function($matched_finder) use($findersIndexWithBookings, $value){
+                        return $findersIndexWithBookings[$matched_finder] < $value['count'];
+                    }, $matched_finders);
+                    
+                    $status = in_array(false, $currentbooking_status)  ?  false : true;
+                }
+    
+            }
+        }
+        
+        Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
+
+        return ['stauts'=> $status, 'msg'=> 'status-> true , customer can book, otherwise cant book customer at this vendor. total booking exhusted'];
+    }
+
 }
