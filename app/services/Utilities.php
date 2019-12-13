@@ -11097,7 +11097,7 @@ Class Utilities {
             $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
             $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
 
-            $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days',$order_data['start_date']));
+            $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days',$order_data['start_date']->sec));
         }
 
         $city_name = getmy_city($city);
