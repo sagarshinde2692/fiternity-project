@@ -176,6 +176,11 @@ class PassService {
 
             $passDetails['price'] = 'Rs. '.$pass['price'];
             $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
+                unset($passDetails['old_price']);
+            }
+
             if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
                 if(!empty($device) && in_array($device, ['android', 'ios'])) {
                     $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
