@@ -3934,17 +3934,9 @@ class FindersController extends \BaseController {
 		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 
 			if($this->device_type == 'android'){				
-				$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>
-				Early Bird Offer<br><br>
-				14-19 Dec<br><br>
-				- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20<br><br>
-				- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : NX100";
+				$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>Early Bird Offer<br><br>14-19 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : NX100";
 			}else{
-				$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\n
-				Early Bird Offer\n\n
-				14-19 Dec\n\n
-				- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20 \n\n
-				- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : NX100";
+				$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\nEarly Bird Offer\n\n14-19 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : NX100";
 			}
 		}
         
@@ -3958,15 +3950,9 @@ class FindersController extends \BaseController {
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 									if($this->device_type == 'android'){
-										$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>
-										Early Bird Offer<br><br>
-										14-19 Dec<br><br>
-										- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
+										$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>Early Bird Offer<br><br>14-19 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
 									}else{
-										$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\n
-										Early Bird Offer\n\n
-										14-19 Dec\n\n
-										- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
+										$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\nEarly Bird Offer\n\n14-19 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
 									}
 								
 									break;
