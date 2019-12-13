@@ -3950,9 +3950,9 @@ class FindersController extends \BaseController {
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 									if($this->device_type == 'android'){
-										$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>Early Bird Offer<br><br>14-19 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
+										$line = "FitMania: No Excuses 2020 | India's Largest Fitness Sale<br><br>Early Bird Offer<br><br>14-19 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NEM20";
 									}else{
-										$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\nEarly Bird Offer\n\n14-19 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships| Use Code: NEM20";
+										$line = "\nFitMania: No Excuses 2020 | India's Largest Fitness Sale\n\nEarly Bird Offer\n\n14-19 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NEM20";
 									}
 								
 									break;
