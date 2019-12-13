@@ -11093,7 +11093,7 @@ Class Utilities {
         $device_type = !empty($args['device_type']) ? $args['device_type'] : null;
         $order_data = !empty($args['order_data']) ? $args['order_data'] : null;
         
-        if(!empty($coupon_flags)){
+        if(!empty($coupon_flags['cashback_100_per'])){
             $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
             $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
 
