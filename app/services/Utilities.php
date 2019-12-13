@@ -11091,13 +11091,27 @@ Class Utilities {
         $pass = !empty($args['pass']) ? $args['pass'] : null;
         $coupon_flags = !empty($args['coupon_flags']) ? $args['coupon_flags'] : null;
         $device_type = !empty($args['device_type']) ? $args['device_type'] : null;
+        $order_data = !empty($args['order_data']) ? $args['order_data'] : null;
         
+        if(!empty($coupon_flags)){
+            $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
+            $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
+
+            $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days',$order_data['start_date']));
+        }
+
         $city_name = getmy_city($city);
         
         switch($city_name){
             case "mumbai":
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
+
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
@@ -11113,44 +11127,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Extra 15% Off".getLineBreaker()."Use Code: ONE15. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 15% Off On OnePass Membership, Use Code: ONE15. Limited Slots | Limited Period Offer";
+                            $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Extra 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 19% Off. Limited Slots | Limited Period Offer ";
-                        }
-
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Extra 22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 22% Off. Limited Slots | Limited Period Offer ";
+                        if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
+                            $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Extra 26% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 26% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer ";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Extra 27% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer";
-                            }
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer ";
-                $return_arr['red_remarks_header'] = "EXTRA 15% Off On OnePass Membership, Use Code: ONE15 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer";
-                $return_arr['footer_text'] = "EXTRA 15% Off On OnePass Membership";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11160,6 +11157,12 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
+
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
@@ -11174,44 +11177,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Extra 15% Off".getLineBreaker()."Use Code: ONE15. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 15% Off On OnePass Membership, Use Code: ONE15. Limited Slots | Limited Period Offer";
+                            $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Extra 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 19% Off. Limited Slots | Limited Period Offer ";
-                        }
-
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Extra 22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 22% Off. Limited Slots | Limited Period Offer ";
+                        if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
+                            $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Extra 27% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer ";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Extra 27% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer";
-                            }
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer ";
-                $return_arr['red_remarks_header'] = "EXTRA 15% Off On OnePass Membership, Use Code: ONE15 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer";
-                $return_arr['footer_text'] = "EXTRA 15% Off On OnePass Membership";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11224,6 +11210,11 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
@@ -11238,44 +11229,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Extra 15% Off".getLineBreaker()."Use Code: ONE15. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 15% Off On OnePass Membership, Use Code: ONE15. Limited Slots | Limited Period Offer";
+                            $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Extra 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 19% Off. Limited Slots | Limited Period Offer ";
-                        }
-
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Extra 21% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Extra 21% Off. Limited Slots | Limited Period Offer ";
+                        if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
+                            $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Extra 27% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer ";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Extra 28% Off. Limited Slots".getLineBreaker()."Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Extra 28% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | Limited Period Offer";
-                            }
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 30th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                            $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer ";
-                $return_arr['red_remarks_header'] = "EXTRA 15% Off On OnePass Membership, Use Code: ONE15 \n\nBuy Now To Save More! Start At Your Convenience \n\nLimited Period Offer";
-                $return_arr['footer_text'] = "EXTRA 15% Off On OnePass Membership";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             default: return $return_arr;
