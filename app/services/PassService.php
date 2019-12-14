@@ -2643,13 +2643,17 @@ class PassService {
     }
 
     public function checkForVendorRestrictionPassBooking($customer, $passOrder, $finder_id){
+
         $status = true;
+        $messages = Config('pass.booking_restriction');
+        $msg = '';
         if(empty($passOrder['pass']['vendor_restriction']) || empty( $finder_id)){
             return ['stauts'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
         }
+
         $finder_found = false;
         foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
-            $finder_found =  $finder_fount = in_array($finder_id, $value['ids']);
+            $finder_found = in_array($finder_id, $value['ids']);
             if(!empty($finder_found)){
                 break;
             }
@@ -2723,25 +2727,37 @@ class PassService {
 
 
         if(empty($bookings['result'])){
-            return ['stauts'=> $status, 'msg'=> 'customer not done booking yet'];
+            if(!empty($passOrder['pass']['max_booking_count'])){
+                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count']]);
+            }
+            return ['stauts'=> $status, 'msg' =>$msg];
         }
 
-        $totalBookings = count($bookings['result']);
         $findersList = [];
         $findersIndexWithBookings = [];
 
         //add max booking count of generic
+        
         foreach($bookings['result'] as $key=>$value){
-            if(!empty($passOrder['pass']['max_booking_count']) && $value['count'] >= $passOrder['pass']['max_booking_count']){
-                $status = false;
-                break;
-            }
             array_push($findersList, $value['_id']);
             $findersIndexWithBookings[$value['_id']] = $value['count'];
 
         }
 
+        if(!empty($passOrder['pass']['max_booking_count']) && !empty($findersIndexWithBookings[$finder_id])){
+
+            if($passOrder['pass']['max_booking_count'] <= $findersIndexWithBookings[$finder_id]){
+                $msg = strtr($messages['service_page']['failed'], ['total_available'=> $passOrder['pass']['max_booking_count']]);
+                $status = false;
+                break;
+            }
+            else{
+                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count']-$findersIndexWithBookings[$finder_id], 'total_available'=> $passOrder['pass']['max_booking_count']]);
+            }
+        }
+
         if(!empty($status)){
+            $msg = 'from vendor restriction based on each or all vendor coutmsssss';
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
                 $matched_finders = array_intersect($findersList, $value['ids']);
@@ -2776,7 +2792,7 @@ class PassService {
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
 
-        return ['status'=> $status, 'msg'=> 'status-> true , customer can book, otherwise cant book customer at this vendor. total booking exhusted'];
+        return ['status'=> $status, 'msg'=> $msg];
     }
 
 }
