@@ -2759,7 +2759,7 @@ class PassService {
             }
         }
 
-        if(!empty($status)){
+        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'] )){
             $msg = 'from vendor restriction based on each or all vendor coutmsssss';
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
