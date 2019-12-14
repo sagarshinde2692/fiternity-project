@@ -1235,7 +1235,7 @@ class ServiceController extends \BaseController {
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-					$premiun_session = $this->passService($customer_id, $allowSession['pass_order'], $service);
+					$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, $service['non_peak']['price']);
 
 					!empty($premiun_session['status']) ?  $service['non_peak']['price'] = Config::get('app.onepass_free_string'): null;
 					if(!empty($premiun_session['msg'])){
