@@ -5382,6 +5382,14 @@ class FindersController extends \BaseController {
             $allowSession = false;
             $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
             foreach($finderData['finder']['services'] as &$service){
+
+				$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1);
+				!empty($premiun_session['msg']) ? $service['premium_session_message']= $premiun_session['msg'] : null;
+
+				if(empty($premiun_session)){
+					continue;
+				}
+
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
                         $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
@@ -8654,6 +8662,14 @@ class FindersController extends \BaseController {
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+
+								$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $creditApplicable['pass_order'], $service, $ratecards['price']);
+								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
+								
+								if(empty($premiun_session)){
+									continue;
+								}
+
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}
@@ -8666,6 +8682,14 @@ class FindersController extends \BaseController {
 							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+
+								$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $creditApplicable['pass_order'], $service, $ratecards['price']);
+								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
+								
+								if(empty($premiun_session)){
+									continue;
+								}
+
 								$ratecards['price_text'] = 'Free for you';	
 							}
 						}

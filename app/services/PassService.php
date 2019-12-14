@@ -1004,7 +1004,8 @@ class PassService {
                     'order_id' => $passOrder['_id'], 
                     'pass_type'=>$passType, 
                     'pass_branding' => $pass_branding, 
-                    'max_amount' => $upper_amount, 
+                    'max_amount' => $upper_amount,
+                    'pass_order' => $passOrder,
                     'message'=> $booking_restrictions['msg']
                 ];
             }
@@ -2795,4 +2796,65 @@ class PassService {
         return ['status'=> $status, 'msg'=> $msg];
     }
 
+    public function isPremiumSessionAvailableV2($customer, $passOrder, $service, $ratecard_price=0){
+
+        $messages = Config::get('pass.booking_restriction.premium_session');
+
+        $resp = [
+            'status' => false,
+            'msg' => 'Not Available Premium sessions on your ONEPASS.'
+        ];
+
+        if(empty($service['servicecategory_id']) || $service['servicecategory_id']!= 123){
+            $resp['status'] = true;
+            $resp['msg'] = '';
+            return $resp;
+        }
+
+        if(empty($passOrder['premium_sessions'])){
+            return $resp;
+        }
+
+        $premium_amount = !empty($passOrder['pass']['premium_min_booking_price']) ? $passOrder['pass']['premium_min_booking_price'] : null;
+
+        $city_id = null;
+        !empty($service['city_id']) ? $city_id = $service['city_id']: null;
+
+        if(!empty($passOrder['pass']['premium_booking_price']) && !empty($city_id)){
+            foreach($passOrder['pass']['premium_booking_price'] as $key=>$value){
+                if(in_array($city_id, $value['city_ids'])){
+                    $premium_amount = $value['min'];
+                    break;
+                }
+            }
+        }
+
+        if(empty($premium_amount)){
+            return $resp;
+        }
+
+        if($premium_amount > $ratecard_price){
+            $resp['status'] = true;
+            $resp['msg'] = '';
+            return $resp;
+        }
+
+        $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
+        ->where('pass_order_id', $passOrder['_id'])
+        ->where('servicecategory_id', 123)
+        ->where('amount_customer', '$gte', $premium_amount)
+        ->where('going_status_txt', '!=', 'cancel')
+        ->count();
+
+        $resp['status'] = $premium_session_count < $passOrder['pass']['premium_sessions'];
+
+        if(!empty($resp['status'])){
+            $resp['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+        }
+        else{ 
+            $resp['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);       
+        }
+
+        return $resp;
+    }
 }

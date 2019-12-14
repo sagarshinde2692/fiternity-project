@@ -943,14 +943,26 @@ class ServiceController extends \BaseController {
                         Log::info("nrsh price",[$rsh['price_only']]);
 						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
-							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
+							$premiun_session_rsh = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, $rsh['price_only']);
+
+							if(($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)) && !empty($premiun_session_rsh['status'])){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
+							$premiun_session_nrsh = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, $nrsh['price_only']);
+
+							if(($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)) && !empty($premiun_session_nrsh['status'])){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
-							
+
+							if(!empty($premiun_session_rsh['msg'])){
+								$rsh['premium_session_message'] = $premiun_session_rsh['msg'];
+							}
+
+							if(!empty($premiun_session_nrsh['msg'])){
+								$nrsh['premium_session_message'] = $premiun_session_nrsh['msg'];
+							}
+
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                             
                             $str = '';
@@ -1223,7 +1235,12 @@ class ServiceController extends \BaseController {
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+					$premiun_session = $this->passService($customer_id, $allowSession['pass_order'], $service);
+
+					!empty($premiun_session['status']) ?  $service['non_peak']['price'] = Config::get('app.onepass_free_string'): null;
+					if(!empty($premiun_session['msg'])){
+						$service['non_peak']['premium_session_message'] = $premiun_session['msg'];
+					}
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $str = "";
 				
@@ -1431,7 +1448,9 @@ class ServiceController extends \BaseController {
 					}
                     
                     if(!empty($allowSession['allow_session']) && (!empty($sc['price_int'])  && (!empty($type) && $type!='trialschedules') && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
-						$sc['cost'] = Config::get('app.onepass_free_string');
+						$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $sc, $sc['cost']);
+						!empty($premiun_session)? $sc['cost'] = Config::get('app.onepass_free_string') : null;
+						!empty($premiun_session['msg']) ? $sc['premium_session_message'] = $premiun_session['msg'] : null;
 					}else{
 						$sc['cost'] .= $str;
 					}
@@ -2133,8 +2152,9 @@ class ServiceController extends \BaseController {
 		
 		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
 			
-			$service_details['price'] = Config::get('app.onepass_free_string');
-			
+			$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service_details,$service_details['amount']);
+			!empty($premiun_session['status']) ? $service_details['price'] = Config::get('app.onepass_free_string') : null;
+			!empty($premiun_session['msg']) ? $service_details['premium_session_message'] = $premiun_session['msg'] : null;
 		}
 
 		$des = 'You can cancel this session 1 hour prior to your session time.';
