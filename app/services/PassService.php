@@ -2753,13 +2753,17 @@ class PassService {
     
                 if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders)){
     
-                    $currentbooking_status = array_map(function($matched_finder) use($findersIndexWithBookings, $value){
-                        return $findersIndexWithBookings[$matched_finder] < $value['count'];
-                    }, $matched_finders);
-                    
-                    $status = in_array(false, $currentbooking_status)  ?  false : true;
+                    foreach($matched_finders as $m_f_key=>$m_f_value){
+                        if($findersIndexWithBookings[$m_f_value] >= $value['count']){
+                            $status = false;
+                            break;
+                        }
+                    }
                 }
-    
+                
+                if(empty($status)){
+                    break;
+                }
             }
         }
         
