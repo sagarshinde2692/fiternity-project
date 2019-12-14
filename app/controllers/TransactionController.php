@@ -3752,7 +3752,7 @@ class TransactionController extends \BaseController {
             ];
             !empty($passSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $passSession['pass_order'], $premiun_service_detail, $data['amount']) : $premiun_session =null;
             
-            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available']) && !empty($premiun_session)) {
+            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available']) && !empty($premiun_session['status'])) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
