@@ -2753,7 +2753,6 @@ class PassService {
             if($passOrder['pass']['max_booking_count'] <= $findersIndexWithBookings[$finder_id]){
                 $msg = strtr($messages['service_page']['failed'], ['total_available'=> $passOrder['pass']['max_booking_count']]);
                 $status = false;
-                break;
             }
             else{
                 $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count']-$findersIndexWithBookings[$finder_id], 'total_available'=> $passOrder['pass']['max_booking_count']]);
