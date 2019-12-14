@@ -2776,7 +2776,7 @@ class PassService {
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
 
-        return ['stauts'=> $status, 'msg'=> 'status-> true , customer can book, otherwise cant book customer at this vendor. total booking exhusted'];
+        return ['status'=> $status, 'msg'=> 'status-> true , customer can book, otherwise cant book customer at this vendor. total booking exhusted'];
     }
 
 }
