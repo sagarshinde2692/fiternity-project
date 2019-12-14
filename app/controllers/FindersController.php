@@ -5383,7 +5383,7 @@ class FindersController extends \BaseController {
             $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
             foreach($finderData['finder']['services'] as &$service){
 
-				!empty($allowSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1) : null;
+				!empty($allowSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1) : $premiun_session = null;
 				!empty($premiun_session['msg']) ? $service['premium_session_message']= $premiun_session['msg'] : null;
 
 				if(empty($premiun_session)){
