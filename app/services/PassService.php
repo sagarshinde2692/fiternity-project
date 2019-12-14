@@ -997,7 +997,7 @@ class PassService {
                 empty($finderId) ? $finderId = null : '';
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
                 Log::info('booking restrincton', [$booking_restrictions]);
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => $booking_restrictions['status'], 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'message'=> $booking_restrictions['msg']];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
