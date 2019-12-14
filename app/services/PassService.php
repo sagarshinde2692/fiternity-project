@@ -995,9 +995,18 @@ class PassService {
             else {
                 // below 1001
                 empty($finderId) ? $finderId = null : '';
+                $start = microtime(true);
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
-                Log::info('booking restrincton', [$booking_restrictions]);
-            return [ 'allow_session' => $booking_restrictions['status'], 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'message'=> $booking_restrictions['msg']];
+                $end = microtime(true);
+                Log::info('booking restrincton, time elapsed during callll:::::::', [$booking_restrictions, $start, $end, $end-$start]);
+            return [ 
+                'allow_session' => $booking_restrictions['status'], 
+                'order_id' => $passOrder['_id'], 
+                'pass_type'=>$passType, 
+                'pass_branding' => $pass_branding, 
+                'max_amount' => $upper_amount, 
+                'message'=> $booking_restrictions['msg']
+            ];
 
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
