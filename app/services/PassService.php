@@ -2649,7 +2649,7 @@ class PassService {
         $messages = Config::get('pass.booking_restriction');
         $msg = '';
         if(empty($passOrder['pass']['vendor_restriction']) || empty( $finder_id)){
-            return ['stauts'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
+            return ['status'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
         }
 
         $finder_found = false;
@@ -2661,7 +2661,7 @@ class PassService {
         }
 
         if(empty($finder_found)){
-            return ['stauts'=> $status, 'msg'=> 'finder not listed in restricted vendor list'];
+            return ['status'=> $status, 'msg'=> 'finder not listed in restricted vendor list'];
         }
         
         $customer_id = $customer['_id'];
@@ -2731,7 +2731,7 @@ class PassService {
             if(!empty($passOrder['pass']['max_booking_count'])){
                 $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count']]);
             }
-            return ['stauts'=> $status, 'msg' =>$msg];
+            return ['status'=> $status, 'msg' =>$msg];
         }
 
         $findersList = [];
