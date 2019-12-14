@@ -2646,7 +2646,7 @@ class PassService {
     public function checkForVendorRestrictionPassBooking($customer, $passOrder, $finder_id){
 
         $status = true;
-        $messages = Config('pass.booking_restriction');
+        $messages = Config::get('pass.booking_restriction');
         $msg = '';
         if(empty($passOrder['pass']['vendor_restriction']) || empty( $finder_id)){
             return ['stauts'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
