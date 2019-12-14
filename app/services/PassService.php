@@ -2642,7 +2642,7 @@ class PassService {
         }
         $finder_found = false;
         foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
-            $finder_found =  $finder_fount = in_array($finder_id, $value['_ids']);
+            $finder_found =  $finder_fount = in_array($finder_id, $value['ids']);
             if(!empty($finder_found)){
                 break;
             }
