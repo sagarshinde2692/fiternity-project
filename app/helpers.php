@@ -4821,4 +4821,11 @@ if (!function_exists(('newFitsquadCompatabilityVersion'))){
         return true;
     }
 }
+
+if (!function_exists(('isApiKeyPresent'))){
+    function isApiKeyPresent(){        
+        return !empty($_GET['apikey']) && $_GET['apikey'] == "askjbLKNknsdnksd9";
+
+    }
+}
 ?>

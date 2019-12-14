@@ -119,7 +119,7 @@ return array(
 	'pass_payment_options' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[
@@ -147,7 +147,7 @@ return array(
 	'pass_payment_options_wallets_test' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[

@@ -10106,7 +10106,7 @@ class TransactionController extends \BaseController {
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
             if($free_trial_ratecard){
-                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], !empty($data['customer_phone']) ? $data['customer_phone'] : null, true)){
                     $first_session_free = true;
                 }
             }

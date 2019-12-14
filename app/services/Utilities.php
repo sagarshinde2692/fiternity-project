@@ -6399,7 +6399,7 @@ Class Utilities {
         }
 
         try{
-            if(!empty($voucher_category->fitcash)){
+            if(!empty($voucher_category->fitcash) || !empty($voucher_category->flags['cashback_per_on_order'])){
                 $voucher_category_fitcash = array(
                     "id"=>$customer->_id,
                     "voucher_catageory"=>$voucher_category
@@ -8956,15 +8956,66 @@ Class Utilities {
     }
 
     public function addFitcashforVoucherCatageory($data){
+        Log::info("addFitcashforVoucherCatageory");
         $validity = strtotime('+1 year');
+        $fitcash = 0;
         if(!empty($data['voucher_catageory']['validity_in_days'])){
             $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
         }
+
+        if(!empty($data['voucher_catageory']['fitcash'])){
+            $fitcash = $data['voucher_catageory']['fitcash'];
+        }
+        
+
+        if(!empty($data['voucher_catageory']['flags']['cashback_per_on_order'])){
+            Log::info(" !empty addFitcashforVoucherCatageory");
+            $cashback_per = $data['voucher_catageory']['flags']['cashback_per_on_order'];
+
+            $fitcash_amount = 0;
+            $validity = time()+(86400*31);
+
+            $customer = Customer::active()->where('_id', (int)$data['id'])->first(['loyalty']);
+            if(!empty($customer)){
+                
+                $order_id = $customer['loyalty']['order_id'];
+                
+                if(!empty($order_id)){
+                    $order = Order::active()->where('_id', (int)$order_id)->first(['finder_id', 'amount_customer', 'convinience_fee', 'end_date']);
+
+                    if(!empty($order)){
+                        $convinience_fee = !empty($order['convinience_fee']) ? $order['convinience_fee'] : 0;
+                        
+                        $fitcash_amount = $order['amount_customer'] - $convinience_fee;
+
+                        $validity = strtotime($order['end_date']) + (86400*31);
+
+                        // Log::info("fitcash_amount", [$fitcash_amount]);
+                    }
+                } 
+            }
+
+            $fitcash_after_per = $fitcash_amount * ($cashback_per / 100);
+            // Log::info("fitcash_after_per", [$fitcash_after_per]); 
+        
+            $gst_amount = $fitcash_after_per * 0.18;
+            // Log::info("gst_amount", [$gst_amount]);
+
+            $fitcash_after_gst_deduction = $fitcash_after_per - $gst_amount;
+            // Log::info("fitcash_after_gst_deduction", [$fitcash_after_gst_deduction]);
+
+            $fitcash = round($fitcash_after_gst_deduction);
+            
+        }
+
+        Log::info("validity", [$validity]);
+        Log::info("fitcash", [$fitcash]);
+
         $request = array(
             "customer_id"=> $data['id'],
-            "amount"=> $data['voucher_catageory']['fitcash'],
+            "amount"=> $fitcash,
             "amount_fitcash" => 0,
-            "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
+            "amount_fitcash_plus" => $fitcash,
             "type"=>'FITCASHPLUS',
             "validity"=>$validity,
             'description'=>"Added FitCash for Fitsquad milestone ".$data['voucher_catageory']['milestone']." Expires On : ".date('d-m-Y', $validity),
@@ -8973,7 +9024,8 @@ Class Utilities {
             'details'=> array(
                 'for'=>'Fitsquad',
                 'voucher_name'=>$data['voucher_catageory']['name'],
-                'voucher_catageory_id'=> $data['voucher_catageory']['_id']
+                'voucher_catageory_id'=> $data['voucher_catageory']['_id'],
+                'voucher_catageory_flags'=> !empty($data['voucher_catageory']['flags']) ? $data['voucher_catageory']['flags'] : null 
             )
         );
         $this->walletTransactionNew($request);
@@ -11052,13 +11104,27 @@ Class Utilities {
         $pass = !empty($args['pass']) ? $args['pass'] : null;
         $coupon_flags = !empty($args['coupon_flags']) ? $args['coupon_flags'] : null;
         $device_type = !empty($args['device_type']) ? $args['device_type'] : null;
+        $order_data = !empty($args['order_data']) ? $args['order_data'] : null;
         
+        if(!empty($coupon_flags['cashback_100_per'])){
+            $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
+            $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
+
+            $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days', strtotime($order_data['start_date'])));
+        }
+
         $city_name = getmy_city($city);
         
         switch($city_name){
             case "mumbai":
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
+
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
@@ -11140,6 +11206,12 @@ Class Utilities {
             case "bangalore":
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
+
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
@@ -11225,6 +11297,11 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){

@@ -5524,7 +5524,7 @@ class FindersController extends \BaseController {
 							$campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
 							$ratecard['remarks'] = !empty($campBranding['pps_remark']) ? $campBranding['pps_remark'] : "";
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
-                            //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+                            //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
                             // }
 						}
 
@@ -8782,7 +8782,7 @@ class FindersController extends \BaseController {
 			$campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
 			$rateCard['remarks'] = !empty($campBranding['pps_remark']) ? $campBranding['pps_remark'] : "";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
-			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
 			// }
 			$rateCard['remarks_imp'] = true;
 

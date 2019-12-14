@@ -9244,7 +9244,7 @@ class CustomerController extends \BaseController {
             }
 
 			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
-			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']));
+			$email_communication_check = (empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']))) || !empty($key);
 			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
 				$email = $email_communication_check ? $this->voucherEmailReward($resp, $customer) : null;
