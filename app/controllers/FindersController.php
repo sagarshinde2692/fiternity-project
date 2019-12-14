@@ -5383,11 +5383,11 @@ class FindersController extends \BaseController {
             $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
             foreach($finderData['finder']['services'] as &$service){
 
-				$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1);
+				!empty($allowSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1) : null;
 				!empty($premiun_session['msg']) ? $service['premium_session_message']= $premiun_session['msg'] : null;
 
 				if(empty($premiun_session)){
-					continue;
+					continue 1;
 				}
 
                 foreach($service['ratecard'] as &$ratecard){
@@ -8667,7 +8667,7 @@ class FindersController extends \BaseController {
 								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
 								
 								if(empty($premiun_session)){
-									continue;
+									continue 1;
 								}
 
 								$ratecards['price_text'] = 'Free for you';	
@@ -8687,7 +8687,7 @@ class FindersController extends \BaseController {
 								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
 								
 								if(empty($premiun_session)){
-									continue;
+									continue 1;
 								}
 
 								$ratecards['price_text'] = 'Free for you';	
