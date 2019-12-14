@@ -11129,37 +11129,37 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_15days_mumbai']) ? $campBrandingRatecard['red_15days_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15days_mumbai']) ? $campBrandingPurchase['red_15days_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15days_mumbai']) ? $campBrandingSuccess['red_15days_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_mumbai']) ? $campBrandingRatecard['red_15_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_mumbai']) ? $campBrandingPurchase['red_15_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_mumbai']) ? $campBrandingSuccess['red_15_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_1month_mumbai']) ? $campBrandingRatecard['red_1month_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_1month_mumbai']) ? $campBrandingPurchase['red_1month_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_1month_mumbai']) ? $campBrandingSuccess['red_1month_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_mumbai']) ? $campBrandingRatecard['red_30_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_mumbai']) ? $campBrandingPurchase['red_30_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_mumbai']) ? $campBrandingSuccess['red_30_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_3month_mumbai']) ? $campBrandingRatecard['red_3month_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_3month_mumbai']) ? $campBrandingPurchase['red_3month_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_3month_mumbai']) ? $campBrandingSuccess['red_3month_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_mumbai']) ? $campBrandingRatecard['red_90_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_mumbai']) ? $campBrandingPurchase['red_90_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_mumbai']) ? $campBrandingSuccess['red_90_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_6month_mumbai']) ? $campBrandingRatecard['red_6month_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_6month_mumbai']) ? $campBrandingPurchase['red_6month_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_6month_mumbai']) ? $campBrandingSuccess['red_6month_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_mumbai']) ? $campBrandingRatecard['red_180_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_mumbai']) ? $campBrandingPurchase['red_180_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_mumbai']) ? $campBrandingSuccess['red_180_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_12month_mumbai']) ? $campBrandingRatecard['red_12month_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_12month_mumbai']) ? $campBrandingPurchase['red_12month_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_12month_mumbai']) ? $campBrandingSuccess['red_12month_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_mumbai']) ? $campBrandingRatecard['red_360_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_mumbai']) ? $campBrandingPurchase['red_360_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_mumbai']) ? $campBrandingSuccess['red_360_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
@@ -11167,36 +11167,47 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_15sessions_mumbai']) ? $campBrandingRatecard['black_15sessions_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15sessions_mumbai']) ? $campBrandingPurchase['black_15sessions_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15sessions_mumbai']) ? $campBrandingSuccess['black_15sessions_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_mumbai']) ? $campBrandingRatecard['black_15_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_mumbai']) ? $campBrandingPurchase['black_15_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_mumbai']) ? $campBrandingSuccess['black_15_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_30sessions_mumbai']) ? $campBrandingRatecard['black_30sessions_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30sessions_mumbai']) ? $campBrandingPurchase['black_30sessions_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30sessions_mumbai']) ? $campBrandingSuccess['black_30sessions_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_mumbai']) ? $campBrandingRatecard['black_30_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_mumbai']) ? $campBrandingPurchase['black_30_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_mumbai']) ? $campBrandingSuccess['black_30_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 60){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_60sessions_mumbai']) ? $campBrandingRatecard['black_60sessions_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60sessions_mumbai']) ? $campBrandingPurchase['black_60sessions_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60sessions_mumbai']) ? $campBrandingSuccess['black_60sessions_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_mumbai']) ? $campBrandingRatecard['black_60_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_mumbai']) ? $campBrandingPurchase['black_60_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_mumbai']) ? $campBrandingSuccess['black_60_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 100){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_100sessions_mumbai']) ? $campBrandingRatecard['black_100sessions_mumbai'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100sessions_mumbai']) ? $campBrandingPurchase['black_100sessions_mumbai'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100sessions_mumbai']) ? $campBrandingSuccess['black_100sessions_mumbai'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_mumbai']) ? $campBrandingRatecard['black_100_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_mumbai']) ? $campBrandingPurchase['black_100_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_mumbai']) ? $campBrandingSuccess['black_100_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = !empty($campBrandingRatecard['black_footer_mumbai']) ? $campBrandingRatecard['black_footer_mumbai'] : "";
-                $return_arr['red_remarks_header'] = !empty($campBrandingRatecard['red_footer_mumbai']) ? $campBrandingRatecard['red_footer_mumbai'] : "";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_mumbai_line1']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_mumbai_line2']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_mumbai_line3']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_mumbai_line4']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_mumbai_line1']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_mumbai_line2']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_mumbai_line3']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_mumbai_line4']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
                 return $return_arr;
                 break;
@@ -11216,37 +11227,37 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_15days_delhi']) ? $campBrandingRatecard['red_15days_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15days_delhi']) ? $campBrandingPurchase['red_15days_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15days_delhi']) ? $campBrandingSuccess['red_15days_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_delhi']) ? $campBrandingRatecard['red_15_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_delhi']) ? $campBrandingPurchase['red_15_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_delhi']) ? $campBrandingSuccess['red_15_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_1month_delhi']) ? $campBrandingRatecard['red_1month_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_1month_delhi']) ? $campBrandingPurchase['red_1month_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_1month_delhi']) ? $campBrandingSuccess['red_1month_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_delhi']) ? $campBrandingRatecard['red_30_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_delhi']) ? $campBrandingPurchase['red_30_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_delhi']) ? $campBrandingSuccess['red_30_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_3month_delhi']) ? $campBrandingRatecard['red_3month_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_3month_delhi']) ? $campBrandingPurchase['red_3month_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_3month_delhi']) ? $campBrandingSuccess['red_3month_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_delhi']) ? $campBrandingRatecard['red_90_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_delhi']) ? $campBrandingPurchase['red_90_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_delhi']) ? $campBrandingSuccess['red_90_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_6month_delhi']) ? $campBrandingRatecard['red_6month_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_6month_delhi']) ? $campBrandingPurchase['red_6month_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_6month_delhi']) ? $campBrandingSuccess['red_6month_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_delhi']) ? $campBrandingRatecard['red_180_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_delhi']) ? $campBrandingPurchase['red_180_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_delhi']) ? $campBrandingSuccess['red_180_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_12month_delhi']) ? $campBrandingRatecard['red_12month_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_12month_delhi']) ? $campBrandingPurchase['red_12month_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_12month_delhi']) ? $campBrandingSuccess['red_12month_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_delhi']) ? $campBrandingRatecard['red_360_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_delhi']) ? $campBrandingPurchase['red_360_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_delhi']) ? $campBrandingSuccess['red_360_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
@@ -11254,36 +11265,47 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_15sessions_delhi']) ? $campBrandingRatecard['black_15sessions_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15sessions_delhi']) ? $campBrandingPurchase['black_15sessions_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15sessions_delhi']) ? $campBrandingSuccess['black_15sessions_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_delhi']) ? $campBrandingRatecard['black_15_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_delhi']) ? $campBrandingPurchase['black_15_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_delhi']) ? $campBrandingSuccess['black_15_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_30sessions_delhi']) ? $campBrandingRatecard['black_30sessions_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30sessions_delhi']) ? $campBrandingPurchase['black_30sessions_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30sessions_delhi']) ? $campBrandingSuccess['black_30sessions_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_delhi']) ? $campBrandingRatecard['black_30_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_delhi']) ? $campBrandingPurchase['black_30_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_delhi']) ? $campBrandingSuccess['black_30_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 60){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_60sessions_delhi']) ? $campBrandingRatecard['black_60sessions_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60sessions_delhi']) ? $campBrandingPurchase['black_60sessions_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60sessions_delhi']) ? $campBrandingSuccess['black_60sessions_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_delhi']) ? $campBrandingRatecard['black_60_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_delhi']) ? $campBrandingPurchase['black_60_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_delhi']) ? $campBrandingSuccess['black_60_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 100){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_100sessions_delhi']) ? $campBrandingRatecard['black_100sessions_delhi'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100sessions_delhi']) ? $campBrandingPurchase['black_100sessions_delhi'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100sessions_delhi']) ? $campBrandingSuccess['black_100sessions_delhi'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_delhi']) ? $campBrandingRatecard['black_100_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_delhi']) ? $campBrandingPurchase['black_100_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_delhi']) ? $campBrandingSuccess['black_100_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = !empty($campBrandingRatecard['black_footer_delhi']) ? $campBrandingRatecard['black_footer_delhi'] : "";
-                $return_arr['red_remarks_header'] = !empty($campBrandingRatecard['red_footer_delhi']) ? $campBrandingRatecard['red_footer_delhi'] : "";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_delhi_line1']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_delhi_line2']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_delhi_line3']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_delhi_line4']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_delhi_line1']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_delhi_line2']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_delhi_line3']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_delhi_line4']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
                 return $return_arr;
                 break;
@@ -11305,37 +11327,37 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_15days_other']) ? $campBrandingRatecard['red_15days_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15days_other']) ? $campBrandingPurchase['red_15days_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15days_other']) ? $campBrandingSuccess['red_15days_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_other']) ? $campBrandingRatecard['red_15_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_other']) ? $campBrandingPurchase['red_15_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_other']) ? $campBrandingSuccess['red_15_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_1month_other']) ? $campBrandingRatecard['red_1month_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_1month_other']) ? $campBrandingPurchase['red_1month_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_1month_other']) ? $campBrandingSuccess['red_1month_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_other']) ? $campBrandingRatecard['red_30_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_other']) ? $campBrandingPurchase['red_30_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_other']) ? $campBrandingSuccess['red_30_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_3month_other']) ? $campBrandingRatecard['red_3month_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_3month_other']) ? $campBrandingPurchase['red_3month_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_3month_other']) ? $campBrandingSuccess['red_3month_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_other']) ? $campBrandingRatecard['red_90_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_other']) ? $campBrandingPurchase['red_90_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_other']) ? $campBrandingSuccess['red_90_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 180){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_6month_other']) ? $campBrandingRatecard['red_6month_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_6month_other']) ? $campBrandingPurchase['red_6month_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_6month_other']) ? $campBrandingSuccess['red_6month_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_other']) ? $campBrandingRatecard['red_180_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_other']) ? $campBrandingPurchase['red_180_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_other']) ? $campBrandingSuccess['red_180_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 360){
-                            $return_arr['text'] = !empty($campBrandingRatecard['red_12month_other']) ? $campBrandingRatecard['red_12month_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_12month_other']) ? $campBrandingPurchase['red_12month_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_12month_other']) ? $campBrandingSuccess['red_12month_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_other']) ? $campBrandingRatecard['red_360_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_other']) ? $campBrandingPurchase['red_360_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_other']) ? $campBrandingSuccess['red_360_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
@@ -11343,36 +11365,47 @@ Class Utilities {
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_15sessions_other']) ? $campBrandingRatecard['black_15sessions_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15sessions_other']) ? $campBrandingPurchase['black_15sessions_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15sessions_other']) ? $campBrandingSuccess['black_15sessions_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_other']) ? $campBrandingRatecard['black_15_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_other']) ? $campBrandingPurchase['black_15_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_other']) ? $campBrandingSuccess['black_15_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_30sessions_other']) ? $campBrandingRatecard['black_30sessions_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30sessions_other']) ? $campBrandingPurchase['black_30sessions_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30sessions_other']) ? $campBrandingSuccess['black_30sessions_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_other']) ? $campBrandingRatecard['black_30_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_other']) ? $campBrandingPurchase['black_30_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_other']) ? $campBrandingSuccess['black_30_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 60){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_60sessions_other']) ? $campBrandingRatecard['black_60sessions_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60sessions_other']) ? $campBrandingPurchase['black_60sessions_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60sessions_other']) ? $campBrandingSuccess['black_60sessions_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_other']) ? $campBrandingRatecard['black_60_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_other']) ? $campBrandingPurchase['black_60_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_other']) ? $campBrandingSuccess['black_60_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 100){
-                            $return_arr['text'] = !empty($campBrandingRatecard['black_100sessions_other']) ? $campBrandingRatecard['black_100sessions_other'] : "";
-                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100sessions_other']) ? $campBrandingPurchase['black_100sessions_other'] : "";
-                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100sessions_other']) ? $campBrandingSuccess['black_100sessions_other'] : "";
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_other']) ? $campBrandingRatecard['black_100_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_other']) ? $campBrandingPurchase['black_100_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_other']) ? $campBrandingSuccess['black_100_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = !empty($campBrandingRatecard['black_footer_other']) ? $campBrandingRatecard['black_footer_other'] : "";
-                $return_arr['red_remarks_header'] = !empty($campBrandingRatecard['red_footer_other']) ? $campBrandingRatecard['red_footer_other'] : "";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_other_line1']) ? "\n\n".$campBrandingRatecard['red_footer_other_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_other_line2']) ? "\n\n".$campBrandingRatecard['red_footer_other_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_other_line3']) ? "\n\n".$campBrandingRatecard['red_footer_other_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_other_line4']) ? "\n\n".$campBrandingRatecard['red_footer_other_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_other_line1']) ? "\n\n".$campBrandingRatecard['black_footer_other_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_other_line2']) ? "\n\n".$campBrandingRatecard['black_footer_other_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_other_line3']) ? "\n\n".$campBrandingRatecard['black_footer_other_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_other_line4']) ? "\n\n".$campBrandingRatecard['black_footer_other_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
                 return $return_arr;
                 break;

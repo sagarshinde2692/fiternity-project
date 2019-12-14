@@ -8522,7 +8522,7 @@ class FindersController extends \BaseController {
 					$camp_arg_data = array('finder' => $finder, 'price' => $price, 'source' => 'app', 'sub_source' => 'shareyourdetails');
 					$concat_str = $this->getheaderConcatData($camp_arg_data);
 
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])." \n".$concat_str);
+					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."".$concat_str);
 					
                 }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
@@ -8904,7 +8904,7 @@ class FindersController extends \BaseController {
 
 	public function getheaderConcatData($data = null){
 		Log::info("getheaderConcatData");
-		$concat_line = "";
+		$concat_line = $line1 = $line2 = $line3 = $line4 = "";
 
 		$campBranding = $this->utilities->getCampaignBranding($data);
 
@@ -8915,15 +8915,29 @@ class FindersController extends \BaseController {
 
 				if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
 					if($price >= 8000){
-						$concat_line = !empty($campBranding['multifit8000_membership_text']) ? $campBranding['multifit8000_membership_text'] : "";
+						$line1 = !empty($campBrandingRatecard['multifit8000_membership_text_line1']) ? "\n\n".$campBrandingRatecard['multifit8000_membership_text_line1'] : "";
+						$line2 = !empty($campBrandingRatecard['multifit8000_membership_text_line2']) ? "\n\n".$campBrandingRatecard['multifit8000_membership_text_line2'] : "";
+						$line3 = !empty($campBrandingRatecard['multifit8000_membership_text_line3']) ? "\n\n".$campBrandingRatecard['multifit8000_membership_text_line3'] : "";
+						$line4 = !empty($campBrandingRatecard['multifit8000_membership_text_line4']) ? "\n\n".$campBrandingRatecard['multifit8000_membership_text_line4'] : "";
 					}else{
-						$concat_line = !empty($campBranding['multifit_membership_text']) ? $campBranding['multifit_membership_text'] : "";
+						$line1 = !empty($campBrandingRatecard['multifit_membership_text_line1']) ? "\n\n".$campBrandingRatecard['multifit_membership_text_line1'] : "";
+						$line2 = !empty($campBrandingRatecard['multifit_membership_text_line2']) ? "\n\n".$campBrandingRatecard['multifit_membership_text_line2'] : "";
+						$line3 = !empty($campBrandingRatecard['multifit_membership_text_line3']) ? "\n\n".$campBrandingRatecard['multifit_membership_text_line3'] : "";
+						$line4 = !empty($campBrandingRatecard['multifit_membership_text_line4']) ? "\n\n".$campBrandingRatecard['multifit_membership_text_line4'] : "";
 					}
 				}else if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [135])) {
-					$concat_line = !empty($campBranding['gold_membership_text']) ? $campBranding['gold_membership_text'] : "";
+					$line1 = !empty($campBrandingRatecard['gold_membership_text_line1']) ? "\n\n".$campBrandingRatecard['gold_membership_text_line1'] : "";
+					$line2 = !empty($campBrandingRatecard['gold_membership_text_line2']) ? "\n\n".$campBrandingRatecard['gold_membership_text_line2'] : "";
+					$line3 = !empty($campBrandingRatecard['gold_membership_text_line3']) ? "\n\n".$campBrandingRatecard['gold_membership_text_line3'] : "";
+					$line4 = !empty($campBrandingRatecard['gold_membership_text_line4']) ? "\n\n".$campBrandingRatecard['gold_membership_text_line4'] : "";
 				}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-					$concat_line = !empty($campBranding['membership_text']) ? $campBranding['membership_text'] : "";
+					$line1 = !empty($campBrandingRatecard['membership_text_line1']) ? "\n\n".$campBrandingRatecard['membership_text_line1'] : "";
+					$line2 = !empty($campBrandingRatecard['membership_text_line2']) ? "\n\n".$campBrandingRatecard['membership_text_line2'] : "";
+					$line3 = !empty($campBrandingRatecard['membership_text_line3']) ? "\n\n".$campBrandingRatecard['membership_text_line3'] : "";
+					$line4 = !empty($campBrandingRatecard['membership_text_line4']) ? "\n\n".$campBrandingRatecard['membership_text_line4'] : "";
 				}
+
+				$concat_line = $line1."".$line2."".$line3."".$line4;
 			}
 		}
 
