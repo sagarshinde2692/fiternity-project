@@ -2725,7 +2725,7 @@ class PassService {
 
         //add max booking count of generic
         foreach($bookings['result'] as $key=>$value){
-            if($value['count'] >= $passOrder['pass']['max_booking_count']){
+            if(!empty($passOrder['pass']['max_booking_count']) && $value['count'] >= $passOrder['pass']['max_booking_count']){
                 $status = false;
                 break;
             }
