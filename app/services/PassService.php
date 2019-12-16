@@ -2817,7 +2817,7 @@ class PassService {
             'msg' => 'Not Available Premium sessions on your ONEPASS.'
         ];
 
-        if(empty($passOrder['premium_sessions'])){
+        if(empty($passOrder['pass']['premium_sessions'])){
             return $resp;
         }
 
