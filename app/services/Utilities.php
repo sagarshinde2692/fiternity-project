@@ -11402,7 +11402,7 @@ Class Utilities {
         $response_data = array_merge($response_data, $campaign_data);
         
         if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
-            $response_data['url'] .= $response_data['campaign_id'];
+            $response_data['cancel_url'] .= $response_data['campaign_id'];
             unset($response_data['campaign_id']);
             unset($response_data['_id']);
             $result['popup_data'] = $response_data;

@@ -2,6 +2,6 @@
 
 return [
     "popup_data" => [
-        "url" => Config::get('app.url').'/customer/campaignseenstatus?campaign_id='
+        "cancel_url" => Config::get('app.url').'/customer/campaignseenstatus?campaign_id='
     ]
 ]; 
