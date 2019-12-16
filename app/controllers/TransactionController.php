@@ -6583,6 +6583,10 @@ class TransactionController extends \BaseController {
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
 
+                if(!empty($onepassHoldCustomer) && !empty($allowSession['premiun_session_message'])){
+                    $payment_details['premiun_session_message'] = $allowSession['premiun_session_message'];
+                }
+
                 if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                     $allowSession = $allowSession['allow_session'];
                 }
@@ -7632,12 +7636,15 @@ class TransactionController extends \BaseController {
 
             //  commented on 9th Aug - Akhil
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
+                $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
                 if(!empty($decoded->customer->_id)) {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
 
-
+                    if(!empty($onepassHoldCustomer) && !empty($passSession['premiun_session_message'])){
+                        $result['payment_details']['premiun_session_message'] = $passSession['premiun_session_message'];
+                    }
                     if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',

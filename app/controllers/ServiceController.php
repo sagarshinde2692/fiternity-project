@@ -768,7 +768,6 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
-			$restriction_message = !empty($allowSession['restriction_message']) ? $allowSession['restriction_message'] : null;
 			$premiun_session_message = !empty($allowSession['premiun_session_message']) ? $allowSession['premiun_session_message'] : null;
 		}
 
@@ -848,9 +847,6 @@ class ServiceController extends \BaseController {
 				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)]
 			);
 
-			if(!empty($restriction_message)){
-				$service['restriction_message'] = $restriction_message;
-			}
 
 			if(!empty($premiun_session_message)){
 				$service['premiun_session_message'] = $premiun_session_message;
@@ -2143,7 +2139,6 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
-			!empty($allowSession['restriction_message']) ? $service_details['restriction_message'] = $allowSession['restriction_message'] : null;
 			!empty($allowSession['premiun_session_message']) ? $service_details['premiun_session_message'] =$allowSession['premiun_session_message'] : null;
 			
 		}
