@@ -2807,11 +2807,11 @@ class PassService {
             'msg' => 'Not Available Premium sessions on your ONEPASS.'
         ];
 
-        if(empty($service['servicecategory_id']) || $service['servicecategory_id']!= 123){
-            $resp['status'] = true;
-            $resp['msg'] = '';
-            return $resp;
-        }
+        // if(empty($service['servicecategory_id']) || $service['servicecategory_id']!= 123){
+        //     $resp['status'] = true;
+        //     $resp['msg'] = '';
+        //     return $resp;
+        // }
 
         if(empty($passOrder['premium_sessions'])){
             return $resp;
