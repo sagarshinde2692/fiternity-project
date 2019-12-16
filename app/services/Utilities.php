@@ -49,6 +49,7 @@ use FitnessForceAPILog;
 use Capture;
 
 use Booktrial;
+use CampaignNotification;
 
 Class Utilities {
 
@@ -11367,5 +11368,24 @@ Class Utilities {
         }
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
+    }
+
+    public function campaignNotification($customer, $city_id='1'){
+
+        if(empty($customer['campaing_notification_seen'])){
+            $customer['campaing_notification_seen'] = [];
+        }
+
+        $response_data = Config::get('home.popup_data');
+
+        $campaing_data = CampaignNotification::active()
+        ->where('city_id', $city_id)
+        ->whereNotIn('campaing_id', $customer['campaing_notification_seen'])
+        ->where('start_date', strtotime('now'))
+        ->where('end_date', strtotime('now'))
+        ->get();
+
+        $response_data['data'] = $campaing_data;
+        return $response_data;
     }
 }
