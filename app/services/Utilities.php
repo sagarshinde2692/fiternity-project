@@ -11398,8 +11398,9 @@ Class Utilities {
         else{
             $campaign_data = [];
         }
-        
+
         $response_data = array_merge($response_data, $campaign_data);
+        
         if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
             $response_data['url'] .= $response_data['campaign_id'];
             unset($response_data['campaign_id']);
