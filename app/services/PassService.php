@@ -1003,7 +1003,7 @@ class PassService {
                 $start_1 = microtime(true);
                 $status = $booking_restrictions['status'];
                 if(!empty($status)){
-                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount);
+                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
                 }
                 $end_1 = microtime(true);
@@ -2808,7 +2808,7 @@ class PassService {
         return ['status'=> $status, 'msg'=> $msg];
     }
 
-    public function isPremiumSessionAvailableV2($customer, $passOrder, $ratecard_price=0){
+    public function isPremiumSessionAvailableV2($customer, $passOrder, $ratecard_price=0, $finder){
 
         $messages = Config::get('pass.booking_restriction.premium_session');
 
@@ -2824,7 +2824,7 @@ class PassService {
         $premium_amount = !empty($passOrder['pass']['premium_min_booking_price']) ? $passOrder['pass']['premium_min_booking_price'] : null;
 
         $city_id = null;
-        !empty($service['city_id']) ? $city_id = $service['city_id']: null;
+        !empty($finder['city_id']) ? $city_id = $finder['city_id']: null;
 
         if(!empty($passOrder['pass']['premium_booking_price']) && !empty($city_id)){
             foreach($passOrder['pass']['premium_booking_price'] as $key=>$value){
