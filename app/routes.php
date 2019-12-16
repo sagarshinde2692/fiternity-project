@@ -307,6 +307,8 @@ Route::group(array('before' => 'validatetoken'), function() {
     Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
     /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
 
+	Route::post('customer/campaignseenstatus', array('as' => 'customer.campaignseenstatus','uses' => 'CustomerController@campaignSeenStatus'));
+
 });
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));

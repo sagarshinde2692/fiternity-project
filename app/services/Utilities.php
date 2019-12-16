@@ -11390,11 +11390,14 @@ Class Utilities {
         ->whereNotIn('campaing_id', $customer['campaing_notification_seen'])
         ->where('start_date', '<', new MongoDate(strtotime('now')))
         ->where('end_date', '>=', new MongoDate(strtotime('now')))
-        ->get(['url', 'campaign_id', 'text']);
+        ->first(['image', 'campaign_id', 'text'])->toArray();
 
         Log::info('campaing data', [$campaing_data, $city_id, new MongoDate(strtotime('now')), new MongoDate(time())]);
-        $response_data['data'] = $campaing_data;
-        if(!empty($response_data['data'] )){
+        $response_data = array_merge($response_data, $campaing_data);
+        if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
+            $response_data['url'] .= $response_data['campaign_id'];
+            unset($response_data['campaign_id']);
+            unset($response_data['_id']);
             $result['popup_data'] = $response_data;
         }
     }
