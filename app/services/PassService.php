@@ -2826,6 +2826,7 @@ class PassService {
         $city_id = null;
         !empty($finder['city_id']) ? $city_id = $finder['city_id']: null;
 
+        Log::info('city id :::::::::::::::::::::::::', [$city_id]);
         if(!empty($passOrder['pass']['premium_booking_price']) && !empty($city_id)){
             foreach($passOrder['pass']['premium_booking_price'] as $key=>$value){
                 if(in_array($city_id, $value['city_ids'])){
