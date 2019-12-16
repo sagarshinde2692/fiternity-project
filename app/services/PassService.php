@@ -2848,8 +2848,7 @@ class PassService {
 
         $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
         ->where('pass_order_id', $passOrder['_id'])
-        // ->where('servicecategory_id', 123)
-        ->where('amount_customer', '$gte', $premium_amount)
+        ->where('amount_customer', '>=', $premium_amount)
         ->where('going_status_txt', '!=', 'cancel')
         ->count();
 
