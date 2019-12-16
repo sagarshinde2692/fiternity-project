@@ -1228,10 +1228,14 @@ return [
 
     "booking_restriction" => [
         'service_page' => [
+            'background_color' => '#0B445D',
             'success' => 'You can book left_session/total_available free sessions here in duration_text using your trial OnePass.',
             'failed' => 'You have used up total_available free sessions available here using your trial OnePass.'
         ],
         'premium_session' =>[
+            'background_color' => '#0B445D',
+            'success_icon' => 'https://b.fitn.in/onepass/premium_success_icon.png',
+            'failed_icon' => 'https://b.fitn.in/onepass/premium_session_failed.png',
             'success' => 'This is a premium booking. You can book only no_of_premium_session premium session using the trial OnePass.',
             'failed' => 'This is a premium booking. You have booked your no_of_premium_session premium session using the  trial OnePass.'
         ]

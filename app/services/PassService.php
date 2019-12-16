@@ -1002,16 +1002,21 @@ class PassService {
 
                 $start_1 = microtime(true);
                 $status = $booking_restrictions['status'];
-                $premiun_session_message = null;
+                if(!empty($booking_restrictions['data'])){
+                    $premiun_session_message = $booking_restrictions['data'];
+                }
 
                 if(!empty($status)){
                     $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
                     $end_1 = microtime(true);
                     Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
-                    $premiun_session_message = $premiumSessionCheck['msg'];
                 }
 
+                if(!mpty($premiumSessionCheck['data'])){
+                    $premiun_session_message = $premiumSessionCheck['data'];
+                }
+                
                 return [ 
                     'allow_session' => $status, 
                     'order_id' => $passOrder['_id'], 
@@ -2663,7 +2668,10 @@ class PassService {
         $messages = Config::get('pass.booking_restriction');
         $msg = '';
         if(empty($passOrder['pass']['vendor_restriction']) && empty($passOrder['pass']['max_booking_count'])){
-            return ['status'=> $status, 'msg'=> 'No Restriction on this pass, or vendor id is missing'];
+            return [
+                'status'=> $status, 
+                'data'=> []
+            ];
         }
 
         $finder_found = false;
@@ -2677,7 +2685,10 @@ class PassService {
         }
 
         if(empty($finder_found) && empty($passOrder['pass']['max_booking_count'])){
-            return ['status'=> $status, 'msg'=> 'finder not listed in restricted vendor list'];
+            return [
+                'status'=> $status, 
+                'data'=> []
+            ];
         }
         
         $customer_id = $customer['_id'];
@@ -2696,16 +2707,6 @@ class PassService {
 
 
         Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
-
-        // $booktrails = Booktrial::where('going_status_txt', '!=', 'cancel')
-        // ->where('customer_id', $customer_id)
-        // ->where('pass_order_id', $passOrder['_id'])
-        // ->where('schedule_date_time', '$gte', ($month_start->getTimestamp()))
-        // // ->where('schedule_date_time', 'lt', $month_end)
-        // ->get(['finder_id', 'schedule_date_time']);
-
-        // Log::info('book trails::::::::::::::::', [$booktrails, $passOrder['_id']]);
-
 
         $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
             $aggregate = [
@@ -2748,7 +2749,13 @@ class PassService {
             if(!empty($passOrder['pass']['max_booking_count'])){
                 $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count'], 'duration_text' => $passOrder['pass']['duration_text']]);
             }
-            return ['status'=> $status, 'msg' =>$msg];
+            return [
+                'status'=> $status, 
+                'data' => [
+                    'msg' => $msg,
+                    'background_color' => $messages['background_color']
+                ]
+            ];
         }
 
         $findersList = [];
@@ -2809,7 +2816,13 @@ class PassService {
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
 
-        return ['status'=> $status, 'msg'=> $msg];
+        return [
+            'status'=> $status,
+            'data' => [
+                'msg' => $msg,
+                'background_color' => $messages['background_color']
+            ]
+        ];
     }
 
     public function isPremiumSessionAvailableV2($customer, $passOrder, $ratecard_price=0, $finder){
@@ -2818,7 +2831,7 @@ class PassService {
 
         $resp = [
             'status' => false,
-            'msg' => 'Not Available Premium sessions on your ONEPASS.'
+            'data' => []
         ];
 
         if(empty($passOrder['pass']['premium_sessions'])){
@@ -2846,7 +2859,7 @@ class PassService {
         Log::info('city id :::::::::::::::::::::::::', [$city_id, $premium_amount, $ratecard_price]);
         if($premium_amount > $ratecard_price){
             $resp['status'] = true;
-            $resp['msg'] = '';
+            $resp['data'] = [];
             return $resp;
         }
 
@@ -2860,11 +2873,15 @@ class PassService {
 
         Log::info('premium session count :::::::::::::::::::::::::', [$premium_session_count, $resp['status'], $passOrder['pass']['premium_sessions']]);
         if(!empty($resp['status'])){
-            $resp['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+            $resp['data']['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+            $resp['data']['icon'] = $messages['success_icon'];
         }
         else{ 
-            $resp['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);       
+            $resp['data']['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+            $resp['data']['icon'] = $messages['failed_icon'];   
         }
+
+        $resp['data']['background_color'] = $messages['color'];
 
         return $resp;
     }
