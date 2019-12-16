@@ -845,7 +845,7 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
 				'free_trial_available'=>!empty($item['freeTrialRatecards']),
-				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)],
+				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)]
 			);
 
 			if(!empty($restriction_message)){
