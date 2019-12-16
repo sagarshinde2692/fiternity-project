@@ -2855,6 +2855,7 @@ class PassService {
 
         $resp['status'] = $premium_session_count < $passOrder['pass']['premium_sessions'];
 
+        Log::info('premium session count :::::::::::::::::::::::::', [$premium_session_count, $resp['status'], $passOrder['pass']['premium_sessions']]);
         if(!empty($resp['status'])){
             $resp['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
         }

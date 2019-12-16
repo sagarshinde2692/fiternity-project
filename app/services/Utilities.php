@@ -11390,7 +11390,7 @@ Class Utilities {
         ->whereNotIn('campaign_id', $customer['campaing_notification_seen'])
         ->where('start_date', '<', new MongoDate(strtotime('now')))
         ->where('end_date', '>=', new MongoDate(strtotime('now')))
-        ->first(['image', 'campaign_id', 'text']);
+        ->first(['image', 'campaign_id', 'text', 'deep_link']);
 
         if(!empty($campaign_data)){
             $campaign_data = $campaign_data->toArray();
