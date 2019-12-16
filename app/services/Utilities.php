@@ -11107,7 +11107,7 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
-                    if(!empty($coupon_flags)){
+                    if(!empty($coupon_flags) && !empty($days_30_after_start_date)){
                         $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
 
                         $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
