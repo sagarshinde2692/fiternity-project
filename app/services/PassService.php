@@ -994,13 +994,24 @@ class PassService {
             }
             else {
                 // below 1001
+                $status = true;
                 empty($finderId) ? $finderId = null : '';
                 $start = microtime(true);
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
                 $end = microtime(true);
                 Log::info('booking restrincton, time elapsed during callll:::::::', [$booking_restrictions, $start, $end, $end-$start]);
+
+                $start_1 = microtime(true);
+                $status = $booking_restrictions['status'];
+                if(!empty($status)){
+                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount);
+                    $status = $premiumSessionCheck['status'];
+                }
+                $end_1 = microtime(true);
+                Log::info('booking premium session check, time elapsed during callll::::::', [$booking_restrictions, $start_1, $end_1, $end_1-$start_1]);
+
                 return [ 
-                    'allow_session' => $booking_restrictions['status'], 
+                    'allow_session' => $status, 
                     'order_id' => $passOrder['_id'], 
                     'pass_type'=>$passType, 
                     'pass_branding' => $pass_branding, 
@@ -2798,7 +2809,7 @@ class PassService {
         return ['status'=> $status, 'msg'=> $msg];
     }
 
-    public function isPremiumSessionAvailableV2($customer, $passOrder, $service, $ratecard_price=0){
+    public function isPremiumSessionAvailableV2($customer, $passOrder, $ratecard_price=0){
 
         $messages = Config::get('pass.booking_restriction.premium_session');
 
@@ -2806,12 +2817,6 @@ class PassService {
             'status' => false,
             'msg' => 'Not Available Premium sessions on your ONEPASS.'
         ];
-
-        // if(empty($service['servicecategory_id']) || $service['servicecategory_id']!= 123){
-        //     $resp['status'] = true;
-        //     $resp['msg'] = '';
-        //     return $resp;
-        // }
 
         if(empty($passOrder['premium_sessions'])){
             return $resp;

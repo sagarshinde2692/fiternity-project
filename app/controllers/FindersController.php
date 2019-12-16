@@ -5383,13 +5383,7 @@ class FindersController extends \BaseController {
             $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
             foreach($finderData['finder']['services'] as &$service){
 
-				!empty($allowSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $service, 1) : $premiun_session = null;
-				!empty($premiun_session['msg']) ? $service['premium_session_message']= $premiun_session['msg'] : null;
-
-				if(empty($premiun_session)){
-					continue 1;
-				}
-
+				
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
                         $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
@@ -8663,12 +8657,6 @@ class FindersController extends \BaseController {
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 
-								$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $creditApplicable['pass_order'], $service, $ratecards['price']);
-								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
-								
-								if(empty($premiun_session)){
-									continue 1;
-								}
 
 								$ratecards['price_text'] = 'Free for you';	
 							}
@@ -8683,12 +8671,6 @@ class FindersController extends \BaseController {
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 
-								$premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $creditApplicable['pass_order'], $service, $ratecards['price']);
-								!empty($premiun_session['msg']) ? $service['premium_session_message'] = $premiun_session['msg'] : null;
-								
-								if(empty($premiun_session)){
-									continue 1;
-								}
 
 								$ratecards['price_text'] = 'Free for you';	
 							}

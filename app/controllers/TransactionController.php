@@ -3746,13 +3746,8 @@ class TransactionController extends \BaseController {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
 
-            $premiun_service_detail = [
-                'servicecategory_id' => $data['servicecategory_id'], 
-                'city_id'            => $data['city_id']
-            ];
-            !empty($passSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $passSession['pass_order'], $premiun_service_detail, $data['amount']) : $premiun_session =null;
             
-            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available']) && !empty($premiun_session['status'])) {
+            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
@@ -6588,13 +6583,7 @@ class TransactionController extends \BaseController {
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
 
-                $premiun_service_detail = [
-                    'servicecategory_id' => $data['servicecategory_id'], 
-                    'city_id'            => $data['city_id']
-                ];
-                !empty($allowSession['status']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($customer_id, $$allowSession['pass_order'], $premiun_service_detail, $data['amount']) : $premiun_session = null;
-
-                if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available']) && !empty($premiun_session['status'])) {
+                if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                     $allowSession = $allowSession['allow_session'];
                 }
                 else {
@@ -7648,13 +7637,8 @@ class TransactionController extends \BaseController {
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
 
-                    $premiun_service_detail = [
-                        'servicecategory_id' => $data['servicecategory_id'], 
-                        'city_id'            => $data['city_id']
-                    ];
-                    !empty($passSession['allow_session']) ? $premiun_session = $this->passService->isPremiumSessionAvailableV2($decoded->customer->_id, $passSession['pass_order'], $premiun_service_detail, $data['amount']) : $premiun_session = null;
 
-                    if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available']) && !empty($premiun_session['status'])) {
+                    if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
