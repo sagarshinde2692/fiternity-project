@@ -11370,7 +11370,7 @@ Class Utilities {
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
 
-    public function campaignNotification($customer, $city=null){
+    public function campaignNotification($customer, $city=null, &$result){
 
         if(empty($customer['campaing_notification_seen'])){
             $customer['campaing_notification_seen'] = [];
@@ -11394,6 +11394,8 @@ Class Utilities {
 
         Log::info('campaing data', [$campaing_data, $city_id, new MongoDate(strtotime('now')), new MongoDate(time())]);
         $response_data['data'] = $campaing_data;
-        return $response_data;
+        if(!empty($response_data['data'] )){
+            $result['popup_data'] = $response_data;
+        }
     }
 }
