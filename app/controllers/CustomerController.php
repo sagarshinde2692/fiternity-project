@@ -4383,7 +4383,7 @@ class CustomerController extends \BaseController {
 		}
         $result['load_trending_vendors'] = false;
 
-		if(!empty($customer)){
+		if(!empty($customer) && checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.33])){
 			$this->utilities->campaignNotification($customer, $city_id, $result);
 		}
 
