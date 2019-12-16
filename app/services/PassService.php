@@ -994,7 +994,6 @@ class PassService {
             }
             else {
                 // below 1001
-                $status = true;
                 empty($finderId) ? $finderId = null : '';
                 $start = microtime(true);
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
@@ -1008,7 +1007,7 @@ class PassService {
                     $status = $premiumSessionCheck['status'];
                 }
                 $end_1 = microtime(true);
-                Log::info('booking premium session check, time elapsed during callll::::::', [$booking_restrictions, $start_1, $end_1, $end_1-$start_1]);
+                Log::info('booking premium session check, time elapsed during callll::::::', [$booking_restrictions, $start_1, $end_1, $end_1-$start_1, $status]);
 
                 return [ 
                     'allow_session' => $status, 
