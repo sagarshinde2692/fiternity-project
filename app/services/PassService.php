@@ -1024,7 +1024,6 @@ class PassService {
                     'pass_branding' => $pass_branding, 
                     'max_amount' => $upper_amount,
                     'pass_order' => $passOrder,
-                    'restriction_message'=> $booking_restrictions['msg'],
                     'premiun_session_message' => $premiun_session_message 
                 ];
             }
