@@ -11385,15 +11385,21 @@ Class Utilities {
 
         $response_data = Config::get('home.popup_data');
 
-        $campaing_data = CampaignNotification::active()
+        $campaign_data = CampaignNotification::active()
         ->where('city_id', $city_id)
-        ->whereNotIn('campaing_id', $customer['campaing_notification_seen'])
+        ->whereNotIn('campaign_id', $customer['campaing_notification_seen'])
         ->where('start_date', '<', new MongoDate(strtotime('now')))
         ->where('end_date', '>=', new MongoDate(strtotime('now')))
-        ->first(['image', 'campaign_id', 'text'])->toArray();
+        ->first(['image', 'campaign_id', 'text']);
 
-        Log::info('campaing data', [$campaing_data, $city_id, new MongoDate(strtotime('now')), new MongoDate(time())]);
-        $response_data = array_merge($response_data, $campaing_data);
+        if(!empty($campaign_data)){
+            $campaign_data = $campaign_data->toArray();
+        }
+        else{
+            $campaign_data = [];
+        }
+        
+        $response_data = array_merge($response_data, $campaign_data);
         if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
             $response_data['url'] .= $response_data['campaign_id'];
             unset($response_data['campaign_id']);
