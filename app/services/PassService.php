@@ -994,6 +994,7 @@ class PassService {
             }
             else {
                 // below 1001
+                $pass_premium_session = false;
                 empty($finderId) ? $finderId = null : '';
                 $start = microtime(true);
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
@@ -1011,6 +1012,9 @@ class PassService {
                     $status = $premiumSessionCheck['status'];
                     $end_1 = microtime(true);
                     Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
+                    if(!empty($premiumSessionCheck['pass_premium_session'])){
+                        $pass_premium_session = true;
+                    }
                 }
 
                 if(!empty($premiumSessionCheck['data'])){
@@ -1024,7 +1028,8 @@ class PassService {
                     'pass_branding' => $pass_branding, 
                     'max_amount' => $upper_amount,
                     'pass_order' => $passOrder,
-                    'premiun_session_message' => $premiun_session_message 
+                    'premiun_session_message' => $premiun_session_message,
+                    'pass_premium_session' => $pass_premium_session
                 ];
             }
         }
@@ -2690,58 +2695,7 @@ class PassService {
             ];
         }
         
-        $customer_id = $customer['_id'];
-
-        $today = (new \DateTime())->setTime(0,0);
-        $month_start = (new \DateTime())->setTime(0,0);
-        $pass_starting_date = new \DateTime($passOrder['start_date']);
-
-        $month_days = $today->diff($pass_starting_date);
-        $days = $month_days->d;
-        $month_start->modify('- '.$days. ' day');
-
-        $temp = $month_start->format('Y-m-d');
-        $month_end = new \DateTime($temp);
-        $month_end = $month_end->modify('+ 1 month');
-
-
-        Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
-
-        $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
-            $aggregate = [
-                [
-                    '$match' => [
-                        'going_status_txt' =>[
-                            '$ne' => 'cancel'
-                        ],
-                        'customer_id' => $customer_id,
-                        'pass_order_id' => $passOrder['_id'],
-                        'schedule_date_time' => [
-                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
-                            '$lt' => new \MongoDate(($month_end->getTimestamp()))
-                        ]
-                    ]
-                ],
-                [
-                    '$project' => [
-                        'total_booking' => [
-                            '$sum' => 1
-                        ],
-                        'finder_id' => 1,
-                    ]
-                ],
-                [
-                    '$group' => [
-                        '_id' => '$finder_id',
-                        'count' => [
-                            '$sum' => 1
-                        ]
-                    ]
-                ]
-            ];
-            return $collection->aggregate($aggregate);
-        });
-
+        $bookings = bookingsSumOnVendor($customer, $passOrder);
 
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
         if(empty($bookings['result'])){
@@ -2862,18 +2816,13 @@ class PassService {
             return $resp;
         }
 
-        $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
-        ->where('pass_order_id', $passOrder['_id'])
-        ->where('amount_customer', '>=', $premium_amount)
-        ->where('going_status_txt', '!=', 'cancel')
-        ->count();
+        $resp['status'] = premiumSessionCount($customer, $passOrder, $premium_amount);
 
-        $resp['status'] = $premium_session_count < $passOrder['pass']['premium_sessions'];
-
-        Log::info('premium session count :::::::::::::::::::::::::', [$premium_session_count, $resp['status'], $passOrder['pass']['premium_sessions']]);
+        Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions']]);
         if(!empty($resp['status'])){
             $resp['data']['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
             $resp['data']['icon'] = $messages['success_icon'];
+            $resp['pass_premium_session'] = true;
         }
         else{ 
             $resp['data']['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);

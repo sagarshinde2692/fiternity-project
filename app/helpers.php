@@ -4561,6 +4561,10 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             unset($customer_data['pass_corporate']);
+            unset($customer_data['premium_session']);
+            unset($customer_data['premium_min_booking_price']);
+            unset($customer_data['premium_booking_price']);
+            unset($customer_data['exhausted_vendors']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4768,10 +4772,19 @@ if (!function_exists(('setPassToToken'))){
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
+                $premium_booking_status = premiumSessionCount($customer, $passOrder, 0);
+                if(empty($premium_booking_status)){
+                    $data['premium_session'] = false;
+                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price'] : null;
+                    !empty($passOrder['pass']['premium_booking_price']) ? $data['premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
+                }
             }
             if(!empty($passOrder['pass']['corporate'])){
                 $data['pass_corporate'] = $passOrder['pass']['corporate'];
             }
+
+            $exhausted_vendors = bookingExhaustedOnVendors($customer, $passOrder);
+            !empty($exhausted_vendors) ? $data['exhausted_vendors'] = $exhausted_vendors: null;
         }
     }
 }
@@ -4826,6 +4839,145 @@ if (!function_exists(('isApiKeyPresent'))){
     function isApiKeyPresent(){        
         return !empty($_GET['apikey']) && $_GET['apikey'] == "askjbLKNknsdnksd9";
 
+    }
+}
+
+if (!function_exists(('premiumSessionCount'))){
+    function premiumSessionCount($customer, $passOrder, $premium_amount){
+        $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
+        ->where('pass_order_id', $passOrder['_id'])
+        // ->where('amount_customer', '>=', $premium_amount)
+        ->where('pass_premium_session', true)
+        ->where('going_status_txt', '!=', 'cancel')
+        ->count();
+
+        $status = $premium_session_count < $passOrder['pass']['premium_sessions'];
+
+        return $status;
+    }
+}
+
+if (!function_exists(('bookingsSumOnVendor'))){
+    function bookingsSumOnVendor($customer, $passOrder){
+        $customer_id = $customer['_id'];
+
+        $today = (new \DateTime())->setTime(0,0);
+        $month_start = (new \DateTime())->setTime(0,0);
+        $pass_starting_date = new \DateTime($passOrder['start_date']);
+
+        $month_days = $today->diff($pass_starting_date);
+        $days = $month_days->d;
+        $month_start->modify('- '.$days. ' day');
+
+        $temp = $month_start->format('Y-m-d');
+        $month_end = new \DateTime($temp);
+        $month_end = $month_end->modify('+ 1 month');
+
+        $pass_end_date = new \DateTime($passOrder['end_date']);
+        if($pass_end_date < $month_end){
+            $month_end = $pass_end_date;
+        }
+
+        Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
+        $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
+            $aggregate = [
+                [
+                    '$match' => [
+                        'going_status_txt' =>[
+                            '$ne' => 'cancel'
+                        ],
+                        'customer_id' => $customer_id,
+                        'pass_order_id' => $passOrder['_id'],
+                        'schedule_date_time' => [
+                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
+                            '$lt' => new \MongoDate(($month_end->getTimestamp()))
+                        ]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        'total_booking' => [
+                            '$sum' => 1
+                        ],
+                        'finder_id' => 1,
+                    ]
+                ],
+                [
+                    '$group' => [
+                        '_id' => '$finder_id',
+                        'count' => [
+                            '$sum' => 1
+                        ]
+                    ]
+                ]
+            ];
+            return $collection->aggregate($aggregate);
+        });
+
+        return $bookings;
+    }
+}
+
+if (!function_exists(('bookingExhaustedOnVendors'))){
+    function bookingExhaustedOnVendors($customer, $passOrder){
+        $bookings = bookingsSumOnVendor($customer, $passOrder);
+
+        if(empty($bookings['result'])){
+            return;
+        }
+        $bookings = $bookings['result'];
+        $exhausted_vendors = [];
+        if(!empty($passOrder['max_booking_count'])){
+            $max_booking_count = $passOrder['max_booking_count'];
+
+            foreach($bookings as $key=>$value){
+                if($value['count'] >= $max_booking_count){
+                    array_push($exhausted_vendors, $value['_id']);
+                }
+            }
+        }
+
+        $findersList = [];
+        $findersIndexWithBookings = [];
+
+        //add max booking count of generic
+        
+        foreach($bookings as $key=>$value){
+            array_push($findersList, $value['_id']);
+            $findersIndexWithBookings[$value['_id']] = $value['count'];
+
+        }
+
+        if(!empty($passOrder['pass']['vendor_restriction'] )){
+
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+
+                $matched_finders = array_intersect($findersList, $value['ids']);
+                $total_bookings_count = 0;
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders)){
+    
+                    $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
+                        return $findersIndexWithBookings[$matched_finder];
+                    }, $matched_finders)[0];
+    
+                    Log::info('total bookingLLLL::::', [$total_bookings_count]);
+    
+                    $value['count'] > $total_bookings_count  ?  true : $exhausted_vendors = array_merge($exhausted_vendors, $value['ids']);
+                }
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders)){
+    
+                    foreach($matched_finders as $m_f_key=>$m_f_value){
+                        if($findersIndexWithBookings[$m_f_value] >= $value['count']){
+                            array_push($exhausted_vendors, $m_f_value);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $exhausted_vendors;
     }
 }
 ?>
