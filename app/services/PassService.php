@@ -2881,7 +2881,7 @@ class PassService {
             $resp['data']['icon'] = $messages['failed_icon'];   
         }
 
-        $resp['data']['background_color'] = $messages['color'];
+        $resp['data']['background_color'] = $messages['background_color'];
 
         return $resp;
     }
