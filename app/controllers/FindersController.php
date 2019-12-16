@@ -5401,7 +5401,10 @@ class FindersController extends \BaseController {
                         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                             if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
                                 $_allowSession = $allowSession['allow_session'];
-                            }
+							}
+
+							!empty($allowSession['restriction_message']) ? $service['restriction_message'] =$allowSession['restriction_message'] : null;
+							!empty($allowSession['premiun_session_message']) ? $service['premiun_session_message'] =$allowSession['premiun_session_message'] : null;
                         }
                         if($_allowSession){
                             unset($ratecard['button_color']);
@@ -8647,6 +8650,7 @@ class FindersController extends \BaseController {
 
 	public function addCreditPoints(&$value, $customer_id){
 		
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		if(!empty($customer_id)){
 			foreach($value as &$service){
 				if(!empty($service['serviceratecard'])){
@@ -8659,6 +8663,11 @@ class FindersController extends \BaseController {
 
 
 								$ratecards['price_text'] = 'Free for you';	
+							}
+
+							if(!empty($onepassHoldCustomer)){
+								!empty($creditApplicable['restriction_message']) ? $service['restriction_message'] = $creditApplicable['restriction_message'] : null;
+								!empty($creditApplicable['premiun_session_message']) ? $service['premiun_session_message'] =$creditApplicable['premiun_session_message'] : null;
 							}
 						}
 					}
@@ -8673,6 +8682,11 @@ class FindersController extends \BaseController {
 
 
 								$ratecards['price_text'] = 'Free for you';	
+							}
+							
+							if(!empty($onepassHoldCustomer)){
+								!empty($creditApplicable['restriction_message']) ? $service['restriction_message'] = $creditApplicable['restriction_message'] : null;
+								!empty($creditApplicable['premiun_session_message']) ? $service['premiun_session_message'] =$creditApplicable['premiun_session_message'] : null;
 							}
 						}
 					}

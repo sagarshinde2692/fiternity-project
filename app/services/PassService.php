@@ -1002,11 +1002,14 @@ class PassService {
 
                 $start_1 = microtime(true);
                 $status = $booking_restrictions['status'];
+                $premiun_session_message = null;
+
                 if(!empty($status)){
                     $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
                     $end_1 = microtime(true);
                     Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
+                    $premiun_session_message = $premiumSessionCheck['msg'];
                 }
 
                 return [ 
@@ -1016,7 +1019,8 @@ class PassService {
                     'pass_branding' => $pass_branding, 
                     'max_amount' => $upper_amount,
                     'pass_order' => $passOrder,
-                    'message'=> $booking_restrictions['msg']
+                    'restriction_message'=> $booking_restrictions['msg'],
+                    'premiun_session_message' => $premiun_session_message 
                 ];
             }
         }

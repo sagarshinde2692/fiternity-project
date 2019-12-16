@@ -768,6 +768,8 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
+			$restriction_message = !empty($allowSession['restriction_message']) ? $allowSession['restriction_message'] : null;
+			$premiun_session_message = !empty($allowSession['premiun_session_message']) ? $allowSession['premiun_session_message'] : null;
 		}
 
         foreach ($items as $k => $item) {
@@ -843,9 +845,17 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
 				'free_trial_available'=>!empty($item['freeTrialRatecards']),
-				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)]
+				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)],
 			);
 
+			if(!empty($restriction_message)){
+				$service['restriction_message'] = $restriction_message;
+			}
+
+			if(!empty($premiun_session_message)){
+				$service['premiun_session_message'] = $premiun_session_message;
+			}
+			
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
 				$service['cost'] = 'Free';
@@ -2133,6 +2143,9 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
+			!empty($allowSession['restriction_message']) ? $service_details['restriction_message'] = $allowSession['restriction_message'] : null;
+			!empty($allowSession['premiun_session_message']) ? $service_details['premiun_session_message'] =$allowSession['premiun_session_message'] : null;
+			
 		}
 		
 		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
