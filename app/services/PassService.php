@@ -2753,7 +2753,7 @@ class PassService {
                 'status'=> $status, 
                 'data' => [
                     'msg' => $msg,
-                    'background_color' => $messages['background_color']
+                    'background_color' => $messages['service_page']['background_color']
                 ]
             ];
         }
@@ -2820,7 +2820,7 @@ class PassService {
             'status'=> $status,
             'data' => [
                 'msg' => $msg,
-                'background_color' => $messages['background_color']
+                'background_color' => $messages['service_page']['background_color']
             ]
         ];
     }
