@@ -10993,18 +10993,18 @@ Class Utilities {
         $fitsquad_claim_expired = ['status' => false, "message"=>''];
         $fitsquad_checkin_expired = ['status' => false, "message"=>''];
         
-        if(!empty($customer['loyalty']['start_date']->sec)){
-            $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
-            $current_date = date('Y-m-d');
+        // if(!empty($customer['loyalty']['start_date']->sec)){
+        //     $fitsquad_expiery_date = date('Y-m-d', strtotime('+1 year', $customer['loyalty']['start_date']->sec));
+        //     $current_date = date('Y-m-d');
 
-            if(strtotime('+15 days', strtotime($fitsquad_expiery_date)) < strtotime($current_date)){
-                $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
-            }
+        //     if(strtotime('+15 days', strtotime($fitsquad_expiery_date)) < strtotime($current_date)){
+        //         $fitsquad_claim_expired = [ 'status' => true, "message"=> "Your Fitsquad program has been expired."];
+        //     }
 
-            if($fitsquad_expiery_date < $current_date){
-                $fitsquad_checkin_expired = [ 'status' => true, "message" => "Your Fitsquad program has been expired."];
-            }
-        }
+        //     if($fitsquad_expiery_date < $current_date){
+        //         $fitsquad_checkin_expired = [ 'status' => true, "message" => "Your Fitsquad program has been expired."];
+        //     }
+        // }
 
         return ['claim_expired'=> $fitsquad_claim_expired, 'checkin_expired'=> $fitsquad_checkin_expired];
     }
