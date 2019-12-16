@@ -998,7 +998,7 @@ class PassService {
                 $start = microtime(true);
                 $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId);
                 $end = microtime(true);
-                Log::info('booking restrincton, time elapsed during callll:::::::', [$booking_restrictions, $start, $end, $end-$start]);
+                Log::info('booking restrincton, time elapsed during callll:::::::', [$booking_restrictions, $start, $end, $end-$start, $amount]);
 
                 $start_1 = microtime(true);
                 $status = $booking_restrictions['status'];
