@@ -1007,7 +1007,7 @@ class PassService {
                     $status = $premiumSessionCheck['status'];
                 }
                 $end_1 = microtime(true);
-                Log::info('booking premium session check, time elapsed during callll::::::', [$booking_restrictions, $start_1, $end_1, $end_1-$start_1, $status]);
+                Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
 
                 return [ 
                     'allow_session' => $status, 
