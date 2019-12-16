@@ -47,7 +47,7 @@ return [
                     'button_text' => 'buy'
                 ],
                 'offerings_lite' => [
-                    "image" => "",
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
                     'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
                     "onepass_lite" => true,
@@ -85,6 +85,7 @@ return [
 
                 ],
                 'offerings_lite' => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
                     'header' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     "onepass_lite" => true,
@@ -140,7 +141,7 @@ return [
                     'button_text' => 'buy'
                 ],
                 "offerings_lite" => [
-                    "image" => "http://b.fitn.in/passes/onepass-app.png",
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
                     'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
@@ -195,7 +196,7 @@ return [
 
                 ],
                 "offerings_lite" => [
-                    "image" => "http://b.fitn.in/passes/onepass-app.png",
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
                     'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
                     'button_text' => 'Checkout Gyms/Studios',
