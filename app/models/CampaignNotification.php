@@ -10,6 +10,6 @@
 
 class CampaignNotification extends \Basemodel {
 
-	protected $collection = "campaignnotification";
+	protected $collection = "campaignnotifications";
 
 }

@@ -11370,10 +11370,17 @@ Class Utilities {
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
 
-    public function campaignNotification($customer, $city_id='1'){
+    public function campaignNotification($customer, $city=null){
 
         if(empty($customer['campaing_notification_seen'])){
             $customer['campaing_notification_seen'] = [];
+        }
+
+        if(empty($city['_id'])){
+            $city_id= null;
+        }
+        else {
+            $city_id = $city['_id'];
         }
 
         $response_data = Config::get('home.popup_data');
@@ -11381,10 +11388,11 @@ Class Utilities {
         $campaing_data = CampaignNotification::active()
         ->where('city_id', $city_id)
         ->whereNotIn('campaing_id', $customer['campaing_notification_seen'])
-        ->where('start_date', strtotime('now'))
-        ->where('end_date', strtotime('now'))
-        ->get();
+        ->where('start_date', '<', new MongoDate(strtotime('now')))
+        ->where('end_date', '>=', new MongoDate(strtotime('now')))
+        ->get(['url', 'campaign_id', 'text']);
 
+        Log::info('campaing data', [$campaing_data, $city_id, new MongoDate(strtotime('now')), new MongoDate(time())]);
         $response_data['data'] = $campaing_data;
         return $response_data;
     }

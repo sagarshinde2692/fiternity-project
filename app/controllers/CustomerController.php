@@ -4383,6 +4383,10 @@ class CustomerController extends \BaseController {
 		}
         $result['load_trending_vendors'] = false;
 
+		if(!empty($customer)){
+			$result['popup_data'] = $this->utilities->campaignNotification($customer, $city_id);
+		}
+		
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
 			unset($result['upcoming']);
