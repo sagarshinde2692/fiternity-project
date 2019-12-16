@@ -1005,9 +1005,9 @@ class PassService {
                 if(!empty($status)){
                     $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
+                    $end_1 = microtime(true);
+                    Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
                 }
-                $end_1 = microtime(true);
-                Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
 
                 return [ 
                     'allow_session' => $status, 
