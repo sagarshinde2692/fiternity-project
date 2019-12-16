@@ -1013,10 +1013,10 @@ class PassService {
                     Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
                 }
 
-                if(!mpty($premiumSessionCheck['data'])){
+                if(!empty($premiumSessionCheck['data'])){
                     $premiun_session_message = $premiumSessionCheck['data'];
                 }
-                
+
                 return [ 
                     'allow_session' => $status, 
                     'order_id' => $passOrder['_id'], 
