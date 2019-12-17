@@ -4974,8 +4974,16 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
                 $matched_finders = array_intersect($findersList, $value['ids']);
                 $total_bookings_count = 0;
     
-                $start_date = !empty($value['start_date']) ? new \DateTime($value['start_date']) : null;
-                $end_date = !empty($value['start_date']) ? new \DateTime($value['end_date']) : null;
+                $start_date = null;
+                $end_date = null;
+                if(!empty($value['start_date'])){
+                    $start_date = new \DateTime($value['start_date']);
+                }
+
+                if(!empty($value['end_date'])) {
+                    $end_date = new \DateTime($value['end_date']);
+                }
+                
                 $date_check = !empty($start_date) ? $today > $start_date : false;
                 $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
 
