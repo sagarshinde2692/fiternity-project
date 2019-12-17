@@ -1229,7 +1229,7 @@ return [
     "booking_restriction" => [
         'service_page' => [
             'background_color' => '#0B445D',
-            'success' => 'You can book only book total_available sessions here via trial OnePass.',
+            'success' => 'You can only book total_available sessions here via trial OnePass.',
             'failed' => 'You have exhausted your Session limit trial here.'
         ],
         'premium_session' =>[

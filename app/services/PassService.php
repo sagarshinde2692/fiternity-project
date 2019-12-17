@@ -2828,14 +2828,14 @@ class PassService {
 
         $resp['status'] = premiumSessionCount($customer, $passOrder);
 
-        Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions']]);
+        Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions_restriction']]);
         if(!empty($resp['status'])){
-            $resp['data']['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+            $resp['data']['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions_restriction']]);
             $resp['data']['icon'] = $messages['success_icon'];
             $resp['pass_premium_session'] = true;
         }
         else{ 
-            $resp['data']['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions']]);
+            $resp['data']['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions_restriction']]);
             $resp['data']['icon'] = $messages['failed_icon'];   
         }
 
