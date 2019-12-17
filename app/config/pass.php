@@ -1230,7 +1230,7 @@ return [
         'service_page' => [
             'background_color' => '#0B445D',
             'success' => 'You can only book left_session sessions here via trial OnePass.',
-            'failed' => 'You have exhausted your Session limit trial here.'
+            'failed' => 'You have exhausted your Session limit here.'
         ],
         'premium_session' =>[
             'background_color' => '#0B445D',
