@@ -4785,6 +4785,7 @@ if (!function_exists(('setPassToToken'))){
             }
 
             $exhausted_vendors = bookingExhaustedOnVendors($customer, $passOrder);
+            Log::info('exhausted_vendors vendors vfdjkdfvblhdfjkvbdfblvhdfvdf', [$exhausted_vendors]);
             !empty($exhausted_vendors) ? $data['exhausted_vendors'] = $exhausted_vendors: null;
         }
     }
