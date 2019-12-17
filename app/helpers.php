@@ -4936,13 +4936,14 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
     function bookingExhaustedOnVendors($customer, $passOrder){
         $bookings = bookingsSumOnVendor($customer, $passOrder);
 
+        Log::info('booings in tokensacsdcsdvdsvdfs', [$bookings]);
         if(empty($bookings['result'])){
             return;
         }
         $bookings = $bookings['result'];
         $exhausted_vendors = [];
-        if(!empty($passOrder['max_booking_count'])){
-            $max_booking_count = $passOrder['max_booking_count'];
+        if(!empty($passOrder['pass']['max_booking_count'])){
+            $max_booking_count = $passOrder['pass']['max_booking_count'];
 
             foreach($bookings as $key=>$value){
                 if($value['count'] >= $max_booking_count){
