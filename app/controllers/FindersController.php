@@ -1053,7 +1053,7 @@ class FindersController extends \BaseController {
 
 				$nearby_same_category_request = [
                     "offset" => 0,
-                    "limit" => 2,
+                    "limit" => 5,
                     "radius" => "3km",
                     "category"=>newcategorymapping($finderdata["category"]["name"]),
                     "lat"=>$finderdata["lat"],
@@ -1084,7 +1084,7 @@ class FindersController extends \BaseController {
 
 				$nearby_other_category_request = [
                     "offset" => 0,
-                    "limit" => 2,
+                    "limit" => 5,
                     "radius" => "3km",
                     "category"=>"",
                     "lat"=>$finderdata["lat"],
