@@ -1003,6 +1003,7 @@ class PassService {
 
                 $start_1 = microtime(true);
                 $status = $booking_restrictions['status'];
+                $premiun_session_message = null;
                 if(!empty($booking_restrictions['data'])){
                     $premiun_session_message = $booking_restrictions['data'];
                 }
