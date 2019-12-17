@@ -2736,12 +2736,20 @@ class PassService {
 
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'] )){
             $msg = 'from vendor restriction based on each or all vendor coutmsssss';
+
+            $today = new \DateTime();
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
                 $matched_finders = array_intersect($findersList, $value['ids']);
                 $total_bookings_count = 0;
     
-                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders)){
+                $start_date = !empty($value['start_date']) ? new \DateTime($value['start_date']) : null;
+                $end_date = !empty($value['start_date']) ? new \DateTime($value['end_date']) : null;
+                $date_check = !empty($start_date) ? $today > $start_date : false;
+                $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
+
+                Log::info('date check status:::::::::::::::::', [$start_date, $end_date, $today, $date_check]);
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && !empty($date_check)){
     
                     $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
                         return $findersIndexWithBookings[$matched_finder];
@@ -2752,7 +2760,7 @@ class PassService {
                     $status = $value['count'] > $total_bookings_count  ?  true : false;
                 }
     
-                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders)){
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && !empty($date_check)){
     
                     foreach($matched_finders as $m_f_key=>$m_f_value){
                         if($findersIndexWithBookings[$m_f_value] >= $value['count']){
