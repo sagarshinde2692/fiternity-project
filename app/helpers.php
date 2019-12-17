@@ -4544,7 +4544,18 @@ if (!function_exists('setNewToken')) {
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
+                $premium_booking_status = premiumSessionCount($customer_data, $pass, 0);
+                if(empty($premium_booking_status)){
+                    Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
+                    $data['pass_premium_session'] = false;
+                    !empty($pass['pass']['premium_min_booking_price']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price'] : null;
+                    !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
+                }
             }
+            $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
+            Log::info('exhausted_vendors vendors vfdjkdfvblhdfjkvbdfblvhdfvdf', [$exhausted_vendors]);
+            !empty($exhausted_vendors) ? $data['exhausted_vendors'] = $exhausted_vendors: null;
+
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
         }else if(empty($pass)){
