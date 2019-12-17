@@ -4987,8 +4987,8 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
                     $end_date = strtotime($temp);
                 }
 
-                $date_check = !empty($start_date) ? $today > $start_date : false;
-                $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
+                $date_check = !empty($start_date) ? $today > $start_date : true;
+                // $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
 
                 Log::info('date check status:::::::::::::::::', [$start_date, $end_date, $today, $date_check]);
                 if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && !empty($date_check)){

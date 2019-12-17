@@ -2738,16 +2738,27 @@ class PassService {
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'] )){
             $msg = 'from vendor restriction based on each or all vendor coutmsssss';
 
-            $today = new \DateTime();
+            $today = strtotime('now');
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
                 $matched_finders = array_intersect($findersList, $value['ids']);
                 $total_bookings_count = 0;
-    
-                $start_date = !empty($value['start_date']) ? new \DateTime($value['start_date']) : null;
-                $end_date = !empty($value['start_date']) ? new \DateTime($value['end_date']) : null;
-                $date_check = !empty($start_date) ? $today > $start_date : false;
-                $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
+                $start_date = null;
+                $end_date = null;
+                
+                Log::info('cdsjkhcvsdbhvdfhjbvdfjbhvdfhjbvfhdbjvdf', [$value]);
+                if(!empty($value['start_date'])){
+                    $temp = $value['start_date']->sec;
+                    $start_date = strtotime($temp);
+                }
+
+                if(!empty($value['end_date'])) {
+                    $temp = $value['end_date']->sec;
+                    $end_date = strtotime($temp);
+                }
+
+                $date_check = !empty($start_date) ? $today > $start_date : true;
+                // $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
 
                 Log::info('date check status:::::::::::::::::', [$start_date, $end_date, $today, $date_check]);
                 if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && !empty($date_check)){
