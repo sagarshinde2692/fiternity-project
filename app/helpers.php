@@ -4976,14 +4976,19 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
     
                 $start_date = null;
                 $end_date = null;
+                Log::info('cdsjkhcvsdbhvdfhjbvdfjbhvdfhjbvfhdbjvdf', [$value]);
                 if(!empty($value['start_date'])){
-                    $start_date = new \DateTime($value['start_date']);
+                    $temp = $value['start_date']->sec;
+                    $temp = strtotime($temp);
+                    $start_date = new \DateTime($temp);
                 }
 
                 if(!empty($value['end_date'])) {
-                    $end_date = new \DateTime($value['end_date']);
+                    $temp = $value['end_date']->sec;
+                    $temp = strtotime($temp);
+                    $end_date = new \DateTime($temp);
                 }
-                
+
                 $date_check = !empty($start_date) ? $today > $start_date : false;
                 $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
 
