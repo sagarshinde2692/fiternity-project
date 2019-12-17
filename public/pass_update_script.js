@@ -30,6 +30,7 @@ var x = db.passes.updateMany(
     }, 
     {
         $set: {
+            "max_booking_count": 31,
             "vendor_restriction" : 
             [ 
                 {
