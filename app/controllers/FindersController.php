@@ -1115,7 +1115,7 @@ class FindersController extends \BaseController {
 				];
 				
 				if(!$this->utilities->isIntegratedVendor($finderdata)){
-					$nearby_same_category['limit'] = $nearby_other_category['limit'] = 4;
+					$nearby_same_category['limit'] = $nearby_other_category['limit'] = 5;
 					unset($nearby_same_category['only_featured']);
 					unset($nearby_other_category['only_featured']);
 				}else{
@@ -1412,11 +1412,11 @@ class FindersController extends \BaseController {
 
 						$vendor_stripe_line = "";
 						if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
-							$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15 <br>Last Few Hours Left!";
+							$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15. Last Few Hours Left!";
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Code: NEM20 <br> 14-19 Dec";
+							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Code: NEM20. 14-19 Dec";
 						}
 						
 						if(!empty($vendor_stripe_line)){
