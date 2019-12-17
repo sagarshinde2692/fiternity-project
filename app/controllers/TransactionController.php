@@ -7392,6 +7392,15 @@ class TransactionController extends \BaseController {
         if(!empty($headerSource) && $headerSource=='multifit'){
             $data['multifit'] = true;
         }
+        else if(!empty($headerSource) && $headerSource==Config::get('app.sbig_acronym') && (!empty($data['pass_id']) || !empty($data['order_id'])) && !empty($data['email'])){
+            $data['sbig'] = true;
+            $data['customer_source'] = "sbig";
+            if(empty($data['pass_id'])) {
+                $_passOrder = Order::find(intval($data['order_id']));
+                $data['pass_id'] = $_passOrder['pass.pass_id'];
+            }
+            $data['coupon'] = $this->utilities->getSBIGCouponCode($headerSource, $data['email'], $data['pass_id']);
+        }
         Log::info("checkoutSummary");
 
         Log::info($data);
@@ -8115,8 +8124,7 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
                 }
-
-                if(!empty($order["coupon_discount_amount"])){
+                else if(!empty($order["coupon_discount_amount"])){
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
