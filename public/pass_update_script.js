@@ -8,7 +8,7 @@ var y = db.passes.updateMany({
         $set: {
             'premium_min_booking_price_restriction': 350,
             "max_booking_count" : 2,
-            "premium_sessions": 1,
+            "premium_sessions_restriction": 1,
             "premium_booking_price" : [ 
                 {
                     "city_ids" : [ 

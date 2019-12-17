@@ -2796,11 +2796,11 @@ class PassService {
             'data' => []
         ];
 
-        if(empty($passOrder['pass']['premium_sessions'])){
+        if(empty($passOrder['pass']['premium_sessions_restriction'])){
             return $resp;
         }
 
-        $premium_amount = !empty($passOrder['pass']['premium_min_booking_price']) ? $passOrder['pass']['premium_min_booking_price'] : null;
+        $premium_amount = !empty($passOrder['pass']['premium_min_booking_price_restriction']) ? $passOrder['pass']['premium_min_booking_price_restriction'] : null;
 
         $city_id = null;
         !empty($finder['city_id']) ? $city_id = $finder['city_id']: null;
@@ -2825,7 +2825,7 @@ class PassService {
             return $resp;
         }
 
-        $resp['status'] = premiumSessionCount($customer, $passOrder, $premium_amount);
+        $resp['status'] = premiumSessionCount($customer, $passOrder);
 
         Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions']]);
         if(!empty($resp['status'])){

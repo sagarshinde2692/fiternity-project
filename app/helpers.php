@@ -4783,7 +4783,7 @@ if (!function_exists(('setPassToToken'))){
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
-                $premium_booking_status = premiumSessionCount($customer, $passOrder, 0);
+                $premium_booking_status = premiumSessionCount($customer, $passOrder);
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $data['pass_premium_session_exhausted'] = true;
@@ -4856,7 +4856,7 @@ if (!function_exists(('isApiKeyPresent'))){
 }
 
 if (!function_exists(('premiumSessionCount'))){
-    function premiumSessionCount($customer, $passOrder, $premium_amount){
+    function premiumSessionCount($customer, $passOrder){
         $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
         ->where('pass_order_id', $passOrder['_id'])
         // ->where('amount_customer', '>=', $premium_amount)
