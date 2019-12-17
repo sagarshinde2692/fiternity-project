@@ -4561,9 +4561,9 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             unset($customer_data['pass_corporate']);
-            unset($customer_data['premium_session']);
-            unset($customer_data['premium_min_booking_price']);
-            unset($customer_data['premium_booking_price']);
+            unset($customer_data['pass_premium_session']);
+            unset($customer_data['pass_premium_min_booking_price']);
+            unset($customer_data['pass_premium_booking_price']);
             unset($customer_data['exhausted_vendors']);
             $update_header = true;
         }
@@ -4774,9 +4774,10 @@ if (!function_exists(('setPassToToken'))){
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
                 $premium_booking_status = premiumSessionCount($customer, $passOrder, 0);
                 if(empty($premium_booking_status)){
-                    $data['premium_session'] = false;
-                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price'] : null;
-                    !empty($passOrder['pass']['premium_booking_price']) ? $data['premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
+                    Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
+                    $data['pass_premium_session'] = false;
+                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price'] : null;
+                    !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
                 }
             }
             if(!empty($passOrder['pass']['corporate'])){
