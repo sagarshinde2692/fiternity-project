@@ -4553,8 +4553,7 @@ if (!function_exists('setNewToken')) {
                 }
             }
             $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
-            Log::info('exhausted_vendors vendors vfdjkdfvblhdfjkvbdfblvhdfvdf', [$exhausted_vendors]);
-            $pass_data['exhausted_vendors'] = !empty($exhausted_vendors) ? $exhausted_vendors: [];
+            $pass_data['exhausted_vendors'] = $exhausted_vendors;
 
             $customer_data = array_merge($customer_data, $pass_data);
             $update_header = true;
@@ -4796,8 +4795,7 @@ if (!function_exists(('setPassToToken'))){
             }
 
             $exhausted_vendors = bookingExhaustedOnVendors($customer, $passOrder);
-            Log::info('exhausted_vendors vendors vfdjkdfvblhdfjkvbdfblvhdfvdf', [$exhausted_vendors]);
-            $data['exhausted_vendors'] = !empty($exhausted_vendors) ?  $exhausted_vendors: [];
+            $data['exhausted_vendors'] =  $exhausted_vendors;
         }
     }
 }
