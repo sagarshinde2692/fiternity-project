@@ -4548,7 +4548,7 @@ if (!function_exists('setNewToken')) {
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $pass_data['pass_premium_session_exhausted'] = true;
-                    !empty($pass['pass']['premium_min_booking_price']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price_restriction'] : null;
+                    !empty($pass['pass']['premium_min_booking_price_restriction']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
             }
@@ -4787,7 +4787,7 @@ if (!function_exists(('setPassToToken'))){
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $data['pass_premium_session_exhausted'] = true;
-                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price_restriction'] : null;
+                    !empty($passOrder['pass']['premium_min_booking_price_restriction']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
                 }
             }
