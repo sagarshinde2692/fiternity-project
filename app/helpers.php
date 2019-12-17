@@ -4856,11 +4856,11 @@ if (!function_exists(('isApiKeyPresent'))){
 }
 
 if (!function_exists(('premiumSessionCount'))){
-    if(empty($passOrder['pass']['premium_sessions_restriction'])){
-        return true;
-    }
-
     function premiumSessionCount($customer, $passOrder){
+        
+        if(empty($passOrder['pass']['premium_sessions_restriction'])){
+            return true;
+        }
         $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
         ->where('pass_order_id', $passOrder['_id'])
         // ->where('amount_customer', '>=', $premium_amount)
