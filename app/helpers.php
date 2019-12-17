@@ -4547,7 +4547,7 @@ if (!function_exists('setNewToken')) {
                 $premium_booking_status = premiumSessionCount($customer_data, $pass, 0);
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
-                    $data['pass_premium_session'] = false;
+                    $pass_data['pass_premium_session'] = false;
                     !empty($pass['pass']['premium_min_booking_price']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price'] : null;
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
