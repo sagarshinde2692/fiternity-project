@@ -2735,6 +2735,7 @@ class PassService {
             }
         }
 
+        Log::info('cdsjkhcvsdbhvdfhjbvdfjbhvdfhjbvfhdbjvdf dssdhsdhjsdchjsdgcgshd', [$status]);
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'] )){
             $msg = 'from vendor restriction based on each or all vendor coutmsssss';
 
