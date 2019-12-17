@@ -4968,7 +4968,7 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
         }
 
         if(!empty($passOrder['pass']['vendor_restriction'] )){
-            $today = new \DateTime();
+            $today = strtotime('now');
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
                 $matched_finders = array_intersect($findersList, $value['ids']);
@@ -4979,14 +4979,12 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
                 Log::info('cdsjkhcvsdbhvdfhjbvdfjbhvdfhjbvfhdbjvdf', [$value]);
                 if(!empty($value['start_date'])){
                     $temp = $value['start_date']->sec;
-                    $temp = strtotime($temp);
-                    $start_date = new \DateTime($temp);
+                    $start_date = strtotime($temp);
                 }
 
                 if(!empty($value['end_date'])) {
                     $temp = $value['end_date']->sec;
-                    $temp = strtotime($temp);
-                    $end_date = new \DateTime($temp);
+                    $end_date = strtotime($temp);
                 }
 
                 $date_check = !empty($start_date) ? $today > $start_date : false;
