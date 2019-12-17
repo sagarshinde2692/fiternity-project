@@ -4548,7 +4548,7 @@ if (!function_exists('setNewToken')) {
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $pass_data['pass_premium_session_exhausted'] = true;
-                    !empty($pass['pass']['premium_min_booking_price']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price'] : null;
+                    !empty($pass['pass']['premium_min_booking_price']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
             }
@@ -4572,8 +4572,8 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['pass_sessions_monthly_used']);
             unset($customer_data['pass_order_id']);
             unset($customer_data['pass_corporate']);
-            unset($customer_data['pass_premium_session']);
-            unset($customer_data['pass_premium_min_booking_price']);
+            unset($customer_data['pass_premium_session_restriction']);
+            unset($customer_data['premium_min_booking_price_restriction']);
             unset($customer_data['pass_premium_booking_price']);
             unset($customer_data['exhausted_vendors']);
             $update_header = true;
@@ -4787,7 +4787,7 @@ if (!function_exists(('setPassToToken'))){
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $data['pass_premium_session_exhausted'] = true;
-                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price'] : null;
+                    !empty($passOrder['pass']['premium_min_booking_price']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
                 }
             }
