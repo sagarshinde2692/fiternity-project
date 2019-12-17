@@ -1761,10 +1761,11 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
-        
-        if(!empty($data['pass_booking']) && $data['pass_booking']){
+        !empty($resp['data']['payment_details']['paymentgateway']['premiun_session_message']) ? $resp['data']['premiun_session_message'] = $resp['data']['payment_details']['paymentgateway']['premiun_session_message']: null;
 
-            !empty($resp['data']['payment_details']['paymentgateway']['premiun_session_message']) ? $resp['data']['premiun_session_message'] = $resp['data']['payment_details']['paymentgateway']['premiun_session_message']: null; 
+        unset($resp['data']["payment_details"]['paymentgateway']['premiun_session_message']);
+
+        if(!empty($data['pass_booking']) && $data['pass_booking']){
 
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
