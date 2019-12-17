@@ -6255,7 +6255,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: GET20 | Limited Period Offer ",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NEM20 | 14-19 Dec ",'position'=>$position++];
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
@@ -6274,7 +6274,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: CASH100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: NX100','position'=>$position++];
 
             // $first_session_free = $this->firstSessionFree($data);
             // if(!empty($first_session_free) && $first_session_free){
@@ -10147,7 +10147,7 @@ class TransactionController extends \BaseController {
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
             if($free_trial_ratecard){
-                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], !empty($data['customer_phone']) ? $data['customer_phone'] : null, true)){
                     $first_session_free = true;
                 }
             }
