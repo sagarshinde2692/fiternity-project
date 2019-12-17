@@ -6583,6 +6583,7 @@ class TransactionController extends \BaseController {
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
 
+                Log::info('premium session vjndfvjkfdvdfjv', [$allowSession]);
                 if(!empty($allowSession['premiun_session_message'])){
                     $payment_details['premiun_session_message'] = $allowSession['premiun_session_message'];
                 }

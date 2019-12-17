@@ -4853,6 +4853,7 @@ if (!function_exists(('premiumSessionCount'))){
 
         $status = $premium_session_count < $passOrder['pass']['premium_sessions'];
 
+        Log::info('premium session count:::::::', [$status]);
         return $status;
     }
 }

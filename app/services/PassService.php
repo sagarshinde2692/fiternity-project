@@ -2697,6 +2697,7 @@ class PassService {
         
         $bookings = bookingsSumOnVendor($customer, $passOrder);
 
+        $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count']]);
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
         if(empty($bookings['result'])){
             if(!empty($passOrder['pass']['max_booking_count'])){
