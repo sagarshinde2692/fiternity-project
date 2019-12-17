@@ -2793,7 +2793,7 @@ class PassService {
         $messages = Config::get('pass.booking_restriction.premium_session');
 
         $resp = [
-            'status' => false,
+            'status' => true,
             'data' => []
         ];
 
