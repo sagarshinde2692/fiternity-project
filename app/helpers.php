@@ -4864,7 +4864,7 @@ if (!function_exists(('premiumSessionCount'))){
         ->where('going_status_txt', '!=', 'cancel')
         ->count();
 
-        $status = $premium_session_count < $passOrder['pass']['premium_sessions'];
+        $status = $premium_session_count < $passOrder['pass']['premium_booking_price'];
 
         Log::info('premium session count:::::::', [$status]);
         return $status;
