@@ -2734,7 +2734,7 @@ class PassService {
             }
         }
 
-        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'] )){
+        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction']) && !empty($findersIndexWithBookings[$finder_id])){
             $msg = '';//'from vendor restriction based on each or all vendor coutmsssss';
 
             $today = strtotime('now');
