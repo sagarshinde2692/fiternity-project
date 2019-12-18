@@ -2734,7 +2734,7 @@ class PassService {
             }
         }
 
-        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction']) && !empty($findersIndexWithBookings[$finder_id])){
+        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
             $msg = '';//'from vendor restriction based on each or all vendor coutmsssss';
 
             $today = strtotime('now');
@@ -2758,7 +2758,7 @@ class PassService {
                 $date_check = !empty($start_date) ? $today > $start_date : true;
                 // $date_check = !empty($date_check) && !empty($end_date) ? $today <= $end_date : false;
 
-                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && !empty($date_check)){
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && in_array($finder_id, $matched_finders) && !empty($date_check)){
     
                     $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
                         return $findersIndexWithBookings[$matched_finder];
@@ -2772,7 +2772,7 @@ class PassService {
                 if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && !empty($date_check)){
     
                     foreach($matched_finders as $m_f_key=>$m_f_value){
-                        if($findersIndexWithBookings[$m_f_value] >= $value['count']){
+                        if($m_f_value==$finder_id && ($findersIndexWithBookings[$m_f_value] >= $value['count'])){
                             $status = false;
                             break;
                         }
