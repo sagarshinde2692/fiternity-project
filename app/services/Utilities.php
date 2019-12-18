@@ -11211,7 +11211,7 @@ Class Utilities {
 
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
-                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_mumbai']) ? $campBrandingHome['onepass_text_mumbai'] : "";
                 $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
                 $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
@@ -11311,7 +11311,7 @@ Class Utilities {
 
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
-                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_delhi']) ? $campBrandingHome['onepass_text_delhi'] : "";
                 $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
                 $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
@@ -11413,7 +11413,7 @@ Class Utilities {
 
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
-                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_other']) ? $campBrandingHome['onepass_text_other'] : "";
                 $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
                 $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
