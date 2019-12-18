@@ -2035,21 +2035,21 @@ class PassService {
             $passTerms = $passTerms['red'];
 
             if(!empty($brandingData['tnc_red'])){
-                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_red']);
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
             }
         }
         else if(!empty($input['type']) && $input['type']=='subscribe'){
             $passTerms = $passTerms['black'];
             
             if(!empty($brandingData['tnc_black'])){
-                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_black']);
+                $passTerms[0] = $brandingData['tnc_black'].$passTerms[0];
             }
         }
         else{
             $passTerms = $passTerms['default'];
 
             if(!empty($brandingData['tnc_red'])){
-                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_red']);
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
             }
         }
 
