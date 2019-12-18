@@ -2769,10 +2769,10 @@ class PassService {
                     $status = $value['count'] > $total_bookings_count  ?  true : false;
                 }
     
-                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && !empty($date_check)){
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && in_array($finder_id, $matched_finders) && !empty($date_check)){
     
                     foreach($matched_finders as $m_f_key=>$m_f_value){
-                        if($m_f_value==$finder_id && ($findersIndexWithBookings[$m_f_value] >= $value['count'])){
+                        if($findersIndexWithBookings[$m_f_value] >= $value['count']){
                             $status = false;
                             break;
                         }
