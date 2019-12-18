@@ -11100,6 +11100,9 @@ Class Utilities {
         $camp_arg_data_success = array('source' => 'web', 'sub_source' => 'successpage');
         $campBrandingSuccess = $this->getCampaignBranding($camp_arg_data_success);
 
+        $camp_arg_data_tnc = array('source' => 'app', 'sub_source' => 'tnc');
+        $campBrandingTnc = $this->getCampaignBranding($camp_arg_data_tnc);
+
         $city = !empty($args['city']) ? $args['city'] : null;
         $pass = !empty($args['pass']) ? $args['pass'] : null;
         $coupon_flags = !empty($args['coupon_flags']) ? $args['coupon_flags'] : null;
@@ -11209,6 +11212,8 @@ Class Utilities {
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11307,6 +11312,8 @@ Class Utilities {
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11407,6 +11414,8 @@ Class Utilities {
                 $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
                 $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
                 $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text']) ? $campBrandingHome['onepass_text'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             default: return $return_arr;

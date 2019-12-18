@@ -2027,15 +2027,32 @@ class PassService {
     public function passTermsAndCondition(){
         $input = Input::all();
         $passTerms = \Config::get('pass.terms');
+        $utilities = new Utilities();
+        $agrs = array('city' => 'mumbai');
+        $brandingData = $utilities->getPassBranding($agrs);
+
         if(!empty($input['type']) && $input['type']=='unlimited'){
             $passTerms = $passTerms['red'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_red']);
+            }
         }
         else if(!empty($input['type']) && $input['type']=='subscribe'){
             $passTerms = $passTerms['black'];
+            
+            if(!empty($brandingData['tnc_black'])){
+                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_black']);
+            }
         }
         else{
             $passTerms = $passTerms['default'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms = strtr($passTerms[0],"offer_tnc",$brandingData['tnc_red']);
+            }
         }
+
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 
