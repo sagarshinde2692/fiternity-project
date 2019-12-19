@@ -4551,12 +4551,6 @@ if (!function_exists('setNewToken')) {
                     !empty($pass['pass']['premium_min_booking_price_restriction']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
-                else{
-                    Log::info('vjksdvbhsdvhjdsvhbjdvjhbvdhjbfvhbdjvhbdfjvhjbfdvdfvbhdfvjhdvhbdf');
-                    unset($pass_data['pass_premium_session_exhausted']);
-                    unset($pass_data['pass_premium_min_booking_price']);
-                    unset($pass_data['pass_premium_booking_price']);
-                }
             }
             $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
             $pass_data['exhausted_vendors'] = $exhausted_vendors;
@@ -4581,6 +4575,9 @@ if (!function_exists('setNewToken')) {
             unset($customer_data['premium_min_booking_price_restriction']);
             unset($customer_data['pass_premium_booking_price']);
             unset($customer_data['exhausted_vendors']);
+            unset($customer_data['pass_premium_session_exhausted']);
+            unset($customer_data['pass_premium_min_booking_price']);
+            unset($customer_data['pass_premium_booking_price']);
             $update_header = true;
         }
         if(!empty($update_header) || $rel_banner_shown){
@@ -4794,12 +4791,6 @@ if (!function_exists(('setPassToToken'))){
                     $data['pass_premium_session_exhausted'] = true;
                     !empty($passOrder['pass']['premium_min_booking_price_restriction']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
-                }
-                else{
-                    Log::info('vjksdvbhsdvhjdsvhbjdvjhbvdhjbfvhbdjvhbdfjvhjbfdvdfvbhdfvjhdvhbdf');
-                    unset($data['pass_premium_session_exhausted']);
-                    unset($data['pass_premium_min_booking_price']);
-                    unset($data['pass_premium_booking_price']);
                 }
             }
             if(!empty($passOrder['pass']['corporate'])){
