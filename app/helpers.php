@@ -4551,6 +4551,9 @@ if (!function_exists('setNewToken')) {
                     !empty($pass['pass']['premium_min_booking_price_restriction']) ? $pass_data['pass_premium_min_booking_price'] = $pass['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
+                else{
+                    unset($pass_data['pass_premium_session_exhausted']);
+                }
             }
             $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
             $pass_data['exhausted_vendors'] = $exhausted_vendors;
@@ -4788,6 +4791,9 @@ if (!function_exists(('setPassToToken'))){
                     $data['pass_premium_session_exhausted'] = true;
                     !empty($passOrder['pass']['premium_min_booking_price_restriction']) ? $data['pass_premium_min_booking_price'] = $passOrder['pass']['premium_min_booking_price_restriction'] : null;
                     !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
+                }
+                else{
+                    unset($data['pass_premium_session_exhausted']);
                 }
             }
             if(!empty($passOrder['pass']['corporate'])){
