@@ -200,7 +200,7 @@ class PassService {
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
 
-            $brandingData1['red_remarks_header'] = strtr($brandingData1['red_remarks_header'], ["\n\n" => '\n".json_decode(\'"\'."\u2713".\'"\')."']);
+            $brandingData1['red_remarks_header'] = strtr($brandingData1['red_remarks_header'], ["\n\n" => "\n".json_decode('"'."\u2713".'"').""]);
             !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= $brandingData1['red_remarks_header'] : null;
         }
 

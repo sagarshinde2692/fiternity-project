@@ -11120,8 +11120,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = json_decode('"'."\u2713".'"')." Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
-                $return_arr['red_remarks_header'] = json_decode('"'."\u2713".'"')." Up to 60% Off On OnePass Membership, Use Code: STEAL \n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
+                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
+                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
                 $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
                 return $return_arr;
                 break;
@@ -11203,8 +11203,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = json_decode('"'."\u2713".'"')." Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500\n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
-                $return_arr['red_remarks_header'] = json_decode('"'."\u2713".'"')." Up to 60% Off On OnePass Membership, Use Code: STEAL \n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
+                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500\n\nBuy Now To Save More! Start At Your Convenience\n\n6-10 Dec";
+                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
                 $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
                 return $return_arr;
                 break;
@@ -11289,8 +11289,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = json_decode('"'."\u2713".'"')." Never Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
-                $return_arr['red_remarks_header'] = json_decode('"'."\u2713".'"')." Up to 60% Off On OnePass Membership, Use Code: STEAL \n".json_decode('"'."\u2713".'"')." Buy Now To Save More! Start At Your Convenience \n".json_decode('"'."\u2713".'"')." 6-10 Dec";
+                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
+                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
                 $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
                 return $return_arr;
                 break;
