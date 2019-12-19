@@ -186,7 +186,6 @@ return [
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
                     'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
                     'text_lite' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity.",
-                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [

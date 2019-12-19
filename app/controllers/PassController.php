@@ -197,6 +197,7 @@ class PassController extends \BaseController {
         // }
         $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
         $selected_region =  !empty($input['selected_region'])? $input['selected_region'] : null;
+        $isRenew = !empty($input['is_renew']) ? true: false;
 
         $coordinate = [
             'lat' => !empty($input['lat']) ? $input['lat']: "",
@@ -230,7 +231,7 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if(empty($isRenew) && $passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
             $vendor_search = $coordinate;
