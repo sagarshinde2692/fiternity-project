@@ -4541,6 +4541,10 @@ if (!function_exists('setNewToken')) {
             if(!empty($pass['pass']['corporate'])){
                 $pass_data['pass_corporate'] = $pass['pass']['corporate'];
             }
+
+            unset($customer_data['pass_premium_session_exhausted']);
+            unset($customer_data['pass_premium_min_booking_price']);
+            unset($customer_data['pass_premium_booking_price']);
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
@@ -4782,6 +4786,10 @@ if (!function_exists(('setPassToToken'))){
             $data['pass_city_id'] = !empty($passOrder['pass_city_id']) ? $passOrder['pass_city_id'] : null;
             $data['pass_city_name'] = !empty($passOrder['pass_city_name']) ? $passOrder['pass_city_name'] : null;
             $data['pass_order_id']=(!!$passOrder['_id'])?$passOrder['_id']: null;
+
+            unset($data['pass_premium_session_exhausted']);
+            unset($data['pass_premium_min_booking_price']);
+            unset($data['pass_premium_booking_price']);
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
