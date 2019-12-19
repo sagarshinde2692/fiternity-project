@@ -4552,7 +4552,10 @@ if (!function_exists('setNewToken')) {
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
                 else{
+                    Log::info('vjksdvbhsdvhjdsvhbjdvjhbvdhjbfvhbdjvhbdfjvhjbfdvdfvbhdfvjhdvhbdf');
                     unset($pass_data['pass_premium_session_exhausted']);
+                    unset($pass_data['pass_premium_min_booking_price']);
+                    unset($pass_data['pass_premium_booking_price']);
                 }
             }
             $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
@@ -4793,7 +4796,10 @@ if (!function_exists(('setPassToToken'))){
                     !empty($passOrder['pass']['premium_booking_price']) ? $data['pass_premium_booking_price'] = $passOrder['pass']['premium_booking_price'] : null;  
                 }
                 else{
+                    Log::info('vjksdvbhsdvhjdsvhbjdvjhbvdhjbfvhbdjvhbdfjvhjbfdvdfvbhdfvjhdvhbdf');
                     unset($data['pass_premium_session_exhausted']);
+                    unset($data['pass_premium_min_booking_price']);
+                    unset($data['pass_premium_booking_price']);
                 }
             }
             if(!empty($passOrder['pass']['corporate'])){
