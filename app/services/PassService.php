@@ -199,16 +199,12 @@ class PassService {
         $brandingData1 = $utilities->getPassBranding($agrs1);
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
-
-            $brandingData1['red_remarks_header'] = strtr($brandingData1['red_remarks_header'], ["\n\n" => "\n".json_decode('"'."\u2713".'"').""]);
-            !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= $brandingData1['red_remarks_header'] : null;
+            $response['passes'][0]['about_pass']['campaign_text'] = $brandingData1['red_remarks_header'];
         }
 
         if(!empty($brandingData1['black_remarks_header'])){
-            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
-            
-            $brandingData1['black_remarks_header'] = strtr($brandingData1['black_remarks_header'], ["\n\n" => "\n".json_decode('"'."\u2713".'"').""]);
-            !empty($response['passes'][1]['about_pass']['text']) ? $response['passes'][1]['about_pass']['text'] .= $brandingData1['black_remarks_header'] : null;
+            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];         
+            $response['passes'][1]['about_pass']['campaign_text'] = $brandingData1['black_remarks_header'];
         }
 
         if(!empty($response['passes'][0]['about_pass']) && !empty($response['passes'][0]['offerings'][1]['offering_text'])){
@@ -2731,6 +2727,7 @@ class PassService {
 
         $coupons = Coupon::active()
         ->where('show_on_front', true)
+        ->where('ratecard_type', 'pass')
         ->where('pass_type', $pass_type)
         ->where('start_date', '<=', new \DateTime())
         ->where('end_date', '>', new \DateTime())
