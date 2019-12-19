@@ -10133,7 +10133,7 @@ class TransactionController extends \BaseController {
     public function getPuchaseRemarkData($arg_data = null){
         Log::info("getheaderConcatData");
 		$purchasesummary_remark = "";
-
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 		$campBranding = $this->utilities->getCampaignBranding($arg_data);
 
 		if(!empty($campBranding)){
