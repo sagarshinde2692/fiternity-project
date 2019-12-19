@@ -6656,7 +6656,7 @@ class TransactionController extends \BaseController {
 
             $payment_options['upi'] = [
                 'title' => 'UPI',
-                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+                'notes' => "Open your UPI app on your phone to approve the payment request from Fitternity"
             ];
 
             $payment_options['wallet'] = [
@@ -6693,11 +6693,11 @@ class TransactionController extends \BaseController {
             ];
         }
 
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
-            array_push($payment_options['payment_options_order'], 'googlepay');
+        if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+            $payment_options['payment_options_order'] = ["wallet", "googlepay", "cards", "netbanking", "emi", "upi"];
             $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
-                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+                'notes' => "Open your Google Pay app on your phone to approve the payment request from Fitternity"
             ];
         }
         
@@ -9110,12 +9110,12 @@ class TransactionController extends \BaseController {
         if($this->vendor_token)
             array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
     
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
-            $payment_options['googlepay']  = [
-                'title' => 'GooglePay',
-                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
-            ];
-        }
+        // if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+        //     $payment_options['googlepay']  = [
+        //         'title' => 'GooglePay',
+        //         'notes' => "Open your Google Pay app on your phone to approve the payment request from Fitternity"
+        //     ];
+        // }
 
     	return $payment_modes;
     }

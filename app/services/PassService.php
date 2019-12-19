@@ -660,7 +660,7 @@ class PassService {
 
         $payment_options['upi'] = [
             'title' => 'UPI',
-            'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+            'notes' => "Open your UPI app on your phone to approve the payment request from Fitternity"
         ];
 
         $payment_options['wallet'] = [
@@ -670,10 +670,11 @@ class PassService {
             'options'=>(!empty($order['customer_email']) && in_array($order['customer_email'], ['akhilkulkarni@fitternity.com', 'ss@relianceada.com']))?Config::get('app.pass_payment_options_wallets_test'):Config::get('app.pass_payment_options')
         ];
         
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.32])){
+        if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+            $payment_options['payment_options_order'] = ["cards", "googlepay", "wallet", "netbanking", "emi", "upi"];
             $payment_options['googlepay']  = [
                 'title' => 'GooglePay',
-                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+                'notes' => "Open your Google Pay app on your phone to approve the payment request from Fitternity"
             ];
         }
 
