@@ -2626,6 +2626,18 @@ class PassService {
             if(!empty($response['app_passes'][0]['offerings'][1]['onepass_lite']) && !empty($response['app_passes'][0]['offerings'][1]['border_text'])){
                 unset($response['app_passes'][0]['offerings'][1]['border_text']);
             }
+
+            if(!empty($response['app_passes'][0]['offerings'][0]['text_lite'])){
+                $response['app_passes'][0]['offerings'][0]['text'] = $response['app_passes'][0]['offerings'][0]['text_lite'];
+            }
+
+            if(!empty($response['app_passes'][0]['offerings'][1]['text_lite'])){
+                $response['app_passes'][0]['offerings'][1]['text'] = $response['app_passes'][0]['offerings'][1]['text_lite'];
+            }
+
+            if(!empty($response['app_passes'][1]['offerings'][0]['text_lite'])){
+                $response['app_passes'][1]['offerings'][0]['text'] = $response['app_passes'][1]['offerings'][0]['text_lite'];
+            }
         }
         else if(!empty($include_onepass_lite_web)){
             $this->formatOfferingOnePassLite('passes', 0, $response);
@@ -2638,6 +2650,18 @@ class PassService {
             unset($response['app_passes'][1]['tnc']);
         }
         unset($response['faq_v_2']);
+
+        if(!empty($response['app_passes'][0]['offerings'][0]['text_lite'])){
+            unset($response['app_passes'][0]['offerings'][0]['text_lite']);
+        }
+
+        if(!empty($response['app_passes'][0]['offerings'][1]['text_lite'])){
+            unset($response['app_passes'][0]['offerings'][1]['text_lite']);
+        }
+
+        if(!empty($response['app_passes'][1]['offerings'][0]['text_lite'])){
+            unset($response['app_passes'][1]['offerings'][0]['text_lite']);
+        }
     }
 
     public function formatOfferingOnePassLite($key, $index, &$response){
