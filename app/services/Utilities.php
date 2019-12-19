@@ -8960,6 +8960,7 @@ Class Utilities {
         Log::info("addFitcashforVoucherCatageory");
         $validity = strtotime('+1 year');
         $fitcash = 0;
+        $finder_id = null;
         if(!empty($data['voucher_catageory']['validity_in_days'])){
             $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
         }
@@ -8991,6 +8992,7 @@ Class Utilities {
 
                         $validity = strtotime($order['end_date']) + (86400*31);
 
+                        $finder_id = $order['finder_id'];
                         // Log::info("fitcash_amount", [$fitcash_amount]);
                     }
                 } 
@@ -9029,6 +9031,12 @@ Class Utilities {
                 'voucher_catageory_flags'=> !empty($data['voucher_catageory']['flags']) ? $data['voucher_catageory']['flags'] : null 
             )
         );
+
+        if(!empty($data['voucher_catageory']['flags']['cashback_per_on_order'])){
+            $request['finder_id'] = !empty($finder_id) ? $finder_id : null;
+            $request['valid_finder_id'] = !empty($finder_id) ? $finder_id : null;
+        }
+
         $this->walletTransactionNew($request);
     }
 
