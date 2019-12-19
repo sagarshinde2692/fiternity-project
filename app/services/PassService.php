@@ -198,15 +198,16 @@ class PassService {
         $agrs1 = array('city' => $city);
         $brandingData1 = $utilities->getPassBranding($agrs1);
         if(!empty($brandingData1['red_remarks_header'])){
-            $brandingData1['red_remarks_header'] = strtr($brandingData1['red_remarks_header'], ["\n\n" => '\n".json_decode(\'"\'."\u2713".\'"\')."']);
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
 
+            $brandingData1['red_remarks_header'] = strtr($brandingData1['red_remarks_header'], ["\n\n" => '\n".json_decode(\'"\'."\u2713".\'"\')."']);
             !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= $brandingData1['red_remarks_header'] : null;
         }
 
         if(!empty($brandingData1['black_remarks_header'])){
             $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
             
+            $brandingData1['black_remarks_header'] = strtr($brandingData1['black_remarks_header'], ["\n\n" => '\n".json_decode(\'"\'."\u2713".\'"\')."']);
             !empty($response['passes'][1]['about_pass']['text']) ? $response['passes'][1]['about_pass']['text'] .= $brandingData1['black_remarks_header'] : null;
         }
 
