@@ -204,13 +204,13 @@ class PassService {
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
 
-            !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= "\n".json_decode('"'."\u2713".'"').$brandingData1['red_remarks_header'] : null;
+            !empty($response['passes'][0]['about_pass']['text']) ? $response['passes'][0]['about_pass']['text'] .= json_decode('"'."\u2713".'"').$brandingData1['red_remarks_header'] : null;
         }
 
         if(!empty($brandingData1['black_remarks_header'])){
             $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
             
-            !empty($response['passes'][1]['about_pass']['text']) ? $response['passes'][1]['about_pass']['text'] .= "\n".json_decode('"'."\u2713".'"').$brandingData1['black_remarks_header'] : null;
+            !empty($response['passes'][1]['about_pass']['text']) ? $response['passes'][1]['about_pass']['text'] .= json_decode('"'."\u2713".'"').$brandingData1['black_remarks_header'] : null;
         }
 
         if(!empty($response['passes'][0]['about_pass']) && !empty($response['passes'][0]['offerings'][1]['offering_text'])){
