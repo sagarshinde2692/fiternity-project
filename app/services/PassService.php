@@ -2620,6 +2620,7 @@ class PassService {
             unset($response['app_passes'][0]['remarks']['text']);
             unset($response['app_passes'][0]['remarks']['title']);
             unset($response['app_passes'][0]['remarks']['url']);
+            unset($response['app_passes'][0]['offerings'][1]['border_text']);
             unset($response['app_passes'][1]['remarks']['text']);
             unset($response['app_passes'][1]['remarks']['title']);
             unset($response['app_passes'][1]['remarks']['url']);
@@ -2641,8 +2642,8 @@ class PassService {
 
         if(!empty($response[$key][$index]['offerings_lite']['ratecards'])){
             $response[$key][$index]['offerings'] = [
-                $response[$key][$index]['offerings_lite'],
-                $response[$key][$index]['offerings']
+                $response[$key][$index]['offerings'],
+                $response[$key][$index]['offerings_lite']
             ];
         }else {
             $response[$key][$index]['offerings'] = [

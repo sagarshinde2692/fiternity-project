@@ -182,7 +182,6 @@ return [
                     'button_text' => 'Checkout Gyms/Studios',
                 ],
                 'offerings' => [
-                    "border_text" => "RECOMMENDED",
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
                     'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
                     'button_text' => 'Checkout Gyms/Studios',
@@ -194,14 +193,6 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
-                ],
-                "offerings_lite" => [
-                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
-                    "border_text" => "LITE",
-                    'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
-                    'button_text' => 'Checkout Gyms/Studios',
-                    "onepass_lite" => true,
-                    'ratecards' => []
                 ],
                 "tnc" => [
                     "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
