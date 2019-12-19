@@ -2726,8 +2726,6 @@ class PassService {
         $today_date = date("d-m-Y hh:mm:ss");
 
         $coupons = Coupon::active()
-        ->where('show_on_front', true)
-        ->where('ratecard_type', 'pass')
         ->where('pass_type', $pass_type)
         ->where('start_date', '<=', new \DateTime())
         ->where('end_date', '>', new \DateTime())
