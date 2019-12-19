@@ -1022,7 +1022,7 @@ return [
             'header' => 'Terms and Conditions',
             'title' => '',
             'url' => $apiUrl.'/passtermscondition',
-            "url_lite" => $website_url.'/onepass/tnc/red?city_name?mobile_app=true'
+            "url_lite" => $website_url.'/onepass/tnc/red/city_name?mobile_app=true'
         ],
 
         'footer' => [
