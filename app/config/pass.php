@@ -153,7 +153,8 @@ return [
                     "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
                     "header" => "Terms and Conditions",
                     "title" =>  "",
-                    "url" => $apiUrl.'/passtermscondition?type=unlimited'
+                    "url_old" => $apiUrl.'/passtermscondition?type=unlimited',
+                    "url" => $apiUrl.'/onepass/tnc/red?mobile_app=true?'
                 ],
             ],
             [
@@ -199,7 +200,8 @@ return [
                     "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
                     "header" => "Terms and Conditions",
                     "title" =>  "",
-                    "url" => $apiUrl.'/passtermscondition?type=subscribe'
+                    "url_old" => $apiUrl.'/passtermscondition?type=subscribe',
+                    "url" => $apiUrl.'/onepass/tnc/black?mobile_app=true?'
                 ],
             ]
         ],
