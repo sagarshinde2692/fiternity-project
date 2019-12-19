@@ -154,8 +154,7 @@ return [
                     "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
                     "header" => "Terms and Conditions",
                     "title" =>  "",
-                    "url_old" => $apiUrl.'/passtermscondition?type=unlimited',
-                    "url" => $website_url.'/onepass/tnc/red?mobile_app=true&'
+                    "url" => $website_url.'/onepass/tnc/red/city_name?mobile_app=true'
                 ],
             ],
             [
@@ -201,8 +200,7 @@ return [
                     "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
                     "header" => "Terms and Conditions",
                     "title" =>  "",
-                    "url_old" => $apiUrl.'/passtermscondition?type=subscribe',
-                    "url" => $website_url.'/onepass/tnc/black?mobile_app=true&'
+                    "url" => $website_url.'/onepass/tnc/black/city_name?mobile_app=true'
                 ],
             ]
         ],
@@ -1023,7 +1021,8 @@ return [
             'icon' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
             'header' => 'Terms and Conditions',
             'title' => '',
-            'url' => $apiUrl.'/passtermscondition'
+            'url' => $apiUrl.'/passtermscondition',
+            "url_lite" => $website_url.'/onepass/tnc/red?city_name?mobile_app=true'
         ],
 
         'footer' => [

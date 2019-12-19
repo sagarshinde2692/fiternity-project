@@ -112,7 +112,7 @@ class PassService {
                 $passList = $passList->where('cities', $city);
             }
 
-            if(!checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
+            if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
                 $passList->where('lite', null);
             }
             $passList = $passList->orderBy('duration')->get();
@@ -233,7 +233,7 @@ class PassService {
             $response['passes'][1]['coupons'] = $black_pass_coupons;
         }
 
-        if((!empty(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)) && !empty($pass_type)){
+        if((!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)) && !empty($pass_type)){
             if($pass_type == 'black'){
                 $response['passes'][0] = $response['passes'][1];
             }
@@ -2605,7 +2605,7 @@ class PassService {
 
     public function formatPassListingWithOnePassLite(&$response, $include_onepass_lite_web, $city){
 
-        if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])){
+        if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
             $this->formatOfferingOnePassLite('app_passes', 0, $response);
             $this->formatOfferingOnePassLite('app_passes', 1, $response);
             
@@ -2632,10 +2632,10 @@ class PassService {
             if(!empty($response['app_passes'][1]['offerings'][0]['text_lite'])){
                 $response['app_passes'][1]['offerings'][0]['text'] = $response['app_passes'][1]['offerings'][0]['text_lite'];
             }
-            if(!empty($city)){
-                $response['app_passes'][0]['tnc']['url'] .= 'city='.$city;
-                $response['app_passes'][1]['tnc']['url'] .= 'city='.$city;
-            }
+
+            empty($city) ? $city= 'mumbai': null;
+            $response['app_passes'][0]['tnc']['url'] = strtr($response['app_passes'][0]['tnc']['url'], ['city_name' => $city]);
+            $response['app_passes'][1]['tnc']['url'] = strtr($response['app_passes'][1]['tnc']['url'], ['city_name' => $city]);
         }
         else if(!empty($include_onepass_lite_web)){
             $this->formatOfferingOnePassLite('passes', 0, $response);
@@ -2680,7 +2680,7 @@ class PassService {
     public function formatPassOffering(&$response, $pass, $passDetails, $device, $index){
 
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
-            if(checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=> "5.33"])){
+            if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
                 if(!empty($pass['lite'])){
                     $response['app_passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
                 }
