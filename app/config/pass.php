@@ -155,7 +155,7 @@ return [
                     "header" => "Terms and Conditions",
                     "title" =>  "",
                     "url_old" => $apiUrl.'/passtermscondition?type=unlimited',
-                    "url" => $website_url.'/onepass/tnc/red?mobile_app=true?'
+                    "url" => $website_url.'/onepass/tnc/red?mobile_app=true&'
                 ],
             ],
             [
@@ -202,7 +202,7 @@ return [
                     "header" => "Terms and Conditions",
                     "title" =>  "",
                     "url_old" => $apiUrl.'/passtermscondition?type=subscribe',
-                    "url" => $website_url.'/onepass/tnc/black?mobile_app=true?'
+                    "url" => $website_url.'/onepass/tnc/black?mobile_app=true&'
                 ],
             ]
         ],
