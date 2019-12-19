@@ -2526,6 +2526,7 @@ class ServiceController extends \BaseController {
 				$trials		=	Booktrial::where('customer_email', '=', $customer_email)
 					->whereIn('booktrial_type', array('auto'))
 					->where('type', 'workout-session')
+					->where('third_party_details', 'exists', false)
 					->with(array('service'=>function($query){ $query->where('status','1')->where('trial', '!=', 'disable')->with(array('ratecards'=>function($query){ $query->where('type', 'workout session')->select('service_id', 'price','special_price');}))->select('_id', 'slug');}))
 					->with(array('finder'=>function($query){$query->where('status', '1')->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where('trial', '!=', 'disable')->select('_id', 'slug');}))
 					// ->where('going_status_txt','!=','cancel')
