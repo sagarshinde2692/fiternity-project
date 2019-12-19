@@ -164,11 +164,6 @@ class PassService {
 
             $agrs = array('pass' => $pass, 'city' => $city);
             $brandingData = $utilities->getPassBranding($agrs);
-            // if(empty($brandingData['text'])){
-            //     unset($passDetails['text']);
-            // }else{
-            //     $passDetails['text'] = $brandingData['text'];
-            // }
             unset($passDetails['text']);
 
             if(!empty($source) && in_array($source, ['sodexo', 'thelabellife'])) {
