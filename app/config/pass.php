@@ -1,5 +1,6 @@
 <?php
 $apiUrl = \Config::get('app.url');
+$website_url = \Config::get('app.website');
 $success_page_template = Config::get('successPage');
 // $red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
 // $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
@@ -154,7 +155,7 @@ return [
                     "header" => "Terms and Conditions",
                     "title" =>  "",
                     "url_old" => $apiUrl.'/passtermscondition?type=unlimited',
-                    "url" => $apiUrl.'/onepass/tnc/red?mobile_app=true?'
+                    "url" => $website_url.'/onepass/tnc/red?mobile_app=true?'
                 ],
             ],
             [
@@ -201,7 +202,7 @@ return [
                     "header" => "Terms and Conditions",
                     "title" =>  "",
                     "url_old" => $apiUrl.'/passtermscondition?type=subscribe',
-                    "url" => $apiUrl.'/onepass/tnc/black?mobile_app=true?'
+                    "url" => $website_url.'/onepass/tnc/black?mobile_app=true?'
                 ],
             ]
         ],

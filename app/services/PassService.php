@@ -2634,9 +2634,6 @@ class PassService {
             }
             if(!empty($city)){
                 $response['app_passes'][0]['tnc']['url'] .= 'city='.$city;
-            }
-            
-            if(!empty($city)){
                 $response['app_passes'][1]['tnc']['url'] .= 'city='.$city;
             }
         }
