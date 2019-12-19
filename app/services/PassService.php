@@ -2671,7 +2671,7 @@ class PassService {
         $status = true;
         $messages = Config::get('pass.booking_restriction');
         $msg = '';
-        if(empty($passOrder['pass']['vendor_restriction']) && empty($passOrder['pass']['max_booking_count'])){
+        if(empty($passOrder['pass']['vendor_restriction']) && (empty($passOrder['pass']['max_booking_count']) || $passOrder['pass']['max_booking_count']==31)){
             return [
                 'status'=> $status, 
                 'data'=> []
