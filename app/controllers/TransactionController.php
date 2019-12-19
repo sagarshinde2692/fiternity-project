@@ -6255,7 +6255,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NEM20 | 14-19 Dec ",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NEM20 | Offer Ends Today ",'position'=>$position++];
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
