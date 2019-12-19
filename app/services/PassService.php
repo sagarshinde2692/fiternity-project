@@ -2620,10 +2620,12 @@ class PassService {
             unset($response['app_passes'][0]['remarks']['text']);
             unset($response['app_passes'][0]['remarks']['title']);
             unset($response['app_passes'][0]['remarks']['url']);
-            unset($response['app_passes'][0]['offerings'][1]['border_text']);
             unset($response['app_passes'][1]['remarks']['text']);
             unset($response['app_passes'][1]['remarks']['title']);
             unset($response['app_passes'][1]['remarks']['url']);
+            if(!empty($response['app_passes'][0]['offerings'][1]['onepass_lite']) && !empty($response['app_passes'][0]['offerings'][1]['border_text'])){
+                unset($response['app_passes'][0]['offerings'][1]['border_text']);
+            }
         }
         else if(!empty($include_onepass_lite_web)){
             $this->formatOfferingOnePassLite('passes', 0, $response);
@@ -2683,7 +2685,7 @@ class PassService {
         
         $resp=[
 
-            "header"=>"Available Coupons",
+            "header"=>"Offers For You",
             "text" => "View Offers",
             "options"=>[]
         ];
