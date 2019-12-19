@@ -11137,7 +11137,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                     }
@@ -11145,17 +11145,17 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
-                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
                 $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
@@ -11187,7 +11187,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                     }
@@ -11195,17 +11195,17 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
-                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
                 $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
@@ -11239,7 +11239,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                     }
@@ -11247,17 +11247,17 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: NE55. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | 14-19 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 30% Off + 25% Cashback On OnePass Membership, Use Code: NE55. Limited Slots | Offer Ends Today";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
-                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\n14-19 Dec";
+                $return_arr['black_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
+                $return_arr['red_remarks_header'] = "FLAT 55% Off On OnePass Membership, Use Code: NE55 \n\nBuy Now To Save More! Start At Your Convenience \n\nOffer Ends Today";
                 $return_arr['footer_text'] = "FitMania Early Bird Offer: FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;

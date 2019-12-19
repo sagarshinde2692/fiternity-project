@@ -163,7 +163,7 @@ return [
             "<ul>
                 <li><b>FitMania: No Excuses 2020<br>
                 India’s Largest Fitness Sale Is Back<br>
-                14-19 Dec</b>
+                Offer Ends Today</b>
                 </li>
 
                 <li>Early Bird Offer: <br>
@@ -207,7 +207,7 @@ return [
                 6) Instant Cashback received expires within 60 days
                 </li>
 
-                <li>Note: All promotional offers from Fitternity will expire on 19th December 2019</li>
+                <li>Note: All promotional offers from Fitternity will expire on 20th December 2019</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -243,7 +243,7 @@ return [
             "<ul>
                 <li><b>FitMania: No Excuses 2020<br>
                 India’s Largest Fitness Sale Is Back<br>
-                14-19 Dec</b>
+                Offer Ends Today</b>
                 </li>
 
                 <li>Early Bird Offer: <br>
@@ -287,7 +287,7 @@ return [
                 6) Instant Cashback received expires within 60 days
                 </li>
 
-                <li>Note: All promotional offers from Fitternity will expire on 19th December 2019</li>
+                <li>Note: All promotional offers from Fitternity will expire on 20th December 2019</li>
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -322,7 +322,7 @@ return [
             "<ul>
                 <li><b>FitMania: No Excuses 2020<br>
                 India’s Largest Fitness Sale Is Back<br>
-                14-19 Dec</b>
+                Offer Ends Today</b>
                 </li>
 
                 <li>Early Bird Offer: <br>
@@ -366,7 +366,7 @@ return [
                 6) Instant Cashback received expires within 60 days
                 </li>
 
-                <li>Note: All promotional offers from Fitternity will expire on 19th December 2019</li>
+                <li>Note: All promotional offers from Fitternity will expire on 20th December 2019</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
