@@ -3777,6 +3777,10 @@ class TransactionController extends \BaseController {
                 if(!empty($passSession['pass_branding'])){
                     $data['pass_branding'] = $passSession['pass_branding'];
                 }
+
+                if(!empty($passSession['onepass_lite'])){
+                    $data['pass_booking_lite'] = true;
+                }
                 $amount = 0;
             }
         }
@@ -10174,7 +10178,8 @@ class TransactionController extends \BaseController {
             $data['pass_type'] = $data['pass_branding'];
         }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
-        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
+        $desc_subheader_pass = !empty($data['pass_booking_lite']) ? "Onepass Lite": "Onepass ".ucfirst($data['pass_type']);
+        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using ".$desc_subheader_pass;
 
         $des = 'You can cancel this session 1 hour prior to your session time.';
 		if($data['finder_category_id'] == 5){

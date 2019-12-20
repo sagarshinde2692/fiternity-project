@@ -2638,8 +2638,8 @@ class PassService {
             $response['app_passes'][1]['tnc']['url'] = strtr($response['app_passes'][1]['tnc']['url'], ['city_name' => $city]);
         }
         else if(!empty($include_onepass_lite_web)){
-            $this->formatOfferingOnePassLite('passes', 0, $response);
-            $this->formatOfferingOnePassLite('passes', 1, $response);
+            $this->formatOfferingOnePassLite('passes', 0, $response, true);
+            $this->formatOfferingOnePassLite('passes', 1, $response, true);
         }
         else {
             unset($response['app_passes'][0]['about_pass']);
@@ -2662,13 +2662,21 @@ class PassService {
         }
     }
 
-    public function formatOfferingOnePassLite($key, $index, &$response){
+    public function formatOfferingOnePassLite($key, $index, &$response, $web=null){
 
         if(!empty($response[$key][$index]['offerings_lite']['ratecards'])){
-            $response[$key][$index]['offerings'] = [
-                $response[$key][$index]['offerings'],
-                $response[$key][$index]['offerings_lite']
-            ];
+            if(empty($web)){
+                $response[$key][$index]['offerings'] = [
+                    $response[$key][$index]['offerings'],
+                    $response[$key][$index]['offerings_lite']
+                ];
+            }
+            else{
+                $response[$key][$index]['offerings'] = [
+                    $response[$key][$index]['offerings_lite'],
+                    $response[$key][$index]['offerings']
+                ];
+            }
         }else {
             $response[$key][$index]['offerings'] = [
                 $response[$key][$index]['offerings']
