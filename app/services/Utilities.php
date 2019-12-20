@@ -11154,8 +11154,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
                 $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
                 return $return_arr;
                 break;
@@ -11204,8 +11204,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
                 $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
                 return $return_arr;
                 break;
@@ -11256,8 +11256,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
+                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
                 $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
                 return $return_arr;
                 break;
