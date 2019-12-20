@@ -2702,6 +2702,7 @@ class PassService {
         }
         else {
             if(!empty($pass['lite'])){
+                $response['onepass_lite_available'] = true;
                 $response['passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
             }
             else {

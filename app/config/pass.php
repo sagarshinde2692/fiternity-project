@@ -13,6 +13,7 @@ return [
     'onepass_lite_price_upper_limit' => 301,
     'list' => [
         'title'=>'ONEPASS',
+        'onepass_lite_available' => false,
         'passes' => [
             [
                 'header' => 'UNLIMITED USAGE',
