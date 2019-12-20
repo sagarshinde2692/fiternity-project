@@ -9808,8 +9808,16 @@ class CustomerController extends \BaseController {
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['voucher']) ? $customer_milestones[$milestone['milestone']-1]['voucher'] : [];
-				$manual_claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['claim_voucher']) ? $customer_milestones[$milestone['milestone']-1]['claim_voucher'] : [];
+				$manual_claimed_vouchers_arr =  !empty($customer_milestones[$milestone['milestone']-1]['claim_voucher']) ? $customer_milestones[$milestone['milestone']-1]['claim_voucher'] : [];
+				if(!empty($manual_claimed_vouchers_arr)){
+					foreach($manual_claimed_vouchers_arr as $manual_claimed_voucher){
+						if(empty($manual_claimed_voucher['manually_claimed'])){
+							array_push($manual_claimed_vouchers, $manual_claimed_voucher);
+						}	
+					}
+				}
 				
+
 				$claimed_vouchers = array_merge($claimed_vouchers, $manual_claimed_vouchers);
 
                 $claimed_voucher_categories = [];
