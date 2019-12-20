@@ -330,7 +330,7 @@ return array(
 		//'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 		'Aws\Laravel\AwsServiceProvider',
-		'SimpleSoftwareIO\QrCode\QrCodeServiceProvider'
+		// 'SimpleSoftwareIO\QrCode\SimpleSoftwareIO'
 	),
 
 	/*
