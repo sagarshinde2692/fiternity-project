@@ -133,7 +133,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -191,7 +191,7 @@ return [
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
