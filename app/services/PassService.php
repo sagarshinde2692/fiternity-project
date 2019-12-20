@@ -2735,7 +2735,8 @@ class PassService {
         }
 
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
-            $max_booking_count = 0;
+            $max_booking_count = 31;
+            $msg = '';
             $today = strtotime('now');
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
 
@@ -2789,7 +2790,7 @@ class PassService {
                 $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
                 $status = false;
             }
-            else{
+            else if($max_booking_count != 31){
                 $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-$findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
             }
         }
