@@ -32,7 +32,7 @@ return [
                 ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
-                    'header' => 'UNLIMITED USAGE PASS',
+                    'header' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 15 days to 1 year.",
                     'text' => '(Limited Access)',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
