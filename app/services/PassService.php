@@ -2788,7 +2788,6 @@ class PassService {
 
             if(empty($status)){
                 $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
-                $status = false;
             }
             else if($max_booking_count != 31){
                 $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-$findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
