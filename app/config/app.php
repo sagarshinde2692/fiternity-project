@@ -33,7 +33,7 @@ return array(
 	// ],
 
 	//stage
-	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'new_search_url' =>'http://c1.fitternity.com/',
 	'url' => 'http://apistage.fitn.in',
 	'admin_url' => 'http://adminstage.fitn.in',
 	'website' => 'http://apistage.fitn.in:1133',
