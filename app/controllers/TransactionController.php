@@ -8213,7 +8213,7 @@ class TransactionController extends \BaseController {
                     'field' => 'Total Amount Payable',
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
-                $result['finder_name'] = "ONEPASS";
+                $result['finder_name'] = $pass['lite'] ? "ONEPASS RED" : "ONEPASS";
                 $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
             }
 
