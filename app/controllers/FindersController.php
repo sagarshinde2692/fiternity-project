@@ -5380,7 +5380,6 @@ class FindersController extends \BaseController {
             // }
             //Log::info('finder',[$finderData['finder']]);
             $allowSession = false;
-            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
             foreach($finderData['finder']['services'] as &$service){
 
 				
@@ -5399,6 +5398,7 @@ class FindersController extends \BaseController {
                         
                         $_allowSession = false;
                         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
+							$allowSession = $this->passService->allowSession($price, $customer_id, null, $finderData['finder']['_id']);
                             if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
                                 $_allowSession = $allowSession['allow_session'];
 							}
