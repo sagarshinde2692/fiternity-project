@@ -1009,7 +1009,7 @@ class PassService {
                 }
 
                 if(!empty($status)){
-                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer, $passOrder, $amount, $finder);
+                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer['_id'], $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
                     $end_1 = microtime(true);
                     Log::info('booking premium session check, time elapsed during callll::::::', [$premiumSessionCheck, $start_1, $end_1, $end_1-$start_1, $status]);
@@ -2796,7 +2796,7 @@ class PassService {
         ];
     }
 
-    public function isPremiumSessionAvailableV2($customer, $passOrder, $ratecard_price=0, $finder){
+    public function isPremiumSessionAvailableV2($customer_id, $passOrder, $ratecard_price=0, $finder){
 
         $messages = Config::get('pass.booking_restriction.premium_session');
 
@@ -2834,7 +2834,7 @@ class PassService {
             return $resp;
         }
 
-        $resp['status'] = premiumSessionCount($customer, $passOrder);
+        $resp['status'] = premiumSessionCount($customer_id, $passOrder);
 
         Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions_restriction']]);
         if(!empty($resp['status'])){

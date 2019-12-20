@@ -4548,7 +4548,7 @@ if (!function_exists('setNewToken')) {
             if($pass_data['pass_type'] =='hybrid'){
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
-                $premium_booking_status = premiumSessionCount($customer_data, $pass);
+                $premium_booking_status = premiumSessionCount($customer_data['_id'], $pass);
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $pass_data['pass_premium_session_exhausted'] = true;
@@ -4793,7 +4793,7 @@ if (!function_exists(('setPassToToken'))){
             if($data['pass_type'] =='hybrid'){
                 $data['pass_sessions_monthly_total'] = $passOrder['pass']['monthly_total_sessions'];
                 $data['pass_sessions_monthly_used'] = (!empty($passOrder['monthly_total_sessions_used']))?$passOrder['monthly_total_sessions_used']:0;
-                $premium_booking_status = premiumSessionCount($customer, $passOrder);
+                $premium_booking_status = premiumSessionCount($customer['_id'], $passOrder);
                 if(empty($premium_booking_status)){
                     Log::info('inside setting  pass premium session jkvdfvkddfhbfdhbjkfsd', [$premium_booking_status]);
                     $data['pass_premium_session_exhausted'] = true;
@@ -4865,12 +4865,12 @@ if (!function_exists(('isApiKeyPresent'))){
 }
 
 if (!function_exists(('premiumSessionCount'))){
-    function premiumSessionCount($customer, $passOrder){
+    function premiumSessionCount($customer_id, $passOrder){
         
         if(empty($passOrder['pass']['premium_sessions_restriction'])){
             return true;
         }
-        $premium_session_count = Booktrial::where('customer_id', $customer['_id'])
+        $premium_session_count = Booktrial::where('customer_id', $customer_id)
         ->where('pass_order_id', $passOrder['_id'])
         // ->where('amount_customer', '>=', $premium_amount)
         ->where('pass_premium_session', true)
