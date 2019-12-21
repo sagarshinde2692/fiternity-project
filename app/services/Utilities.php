@@ -6399,7 +6399,7 @@ Class Utilities {
         }
 
         try{
-            if(!empty($voucher_category->fitcash)){
+            if(!empty($voucher_category->fitcash) || !empty($voucher_category->flags['cashback_per_on_order'])){
                 $voucher_category_fitcash = array(
                     "id"=>$customer->_id,
                     "voucher_catageory"=>$voucher_category
@@ -8956,15 +8956,66 @@ Class Utilities {
     }
 
     public function addFitcashforVoucherCatageory($data){
+        Log::info("addFitcashforVoucherCatageory");
         $validity = strtotime('+1 year');
+        $fitcash = 0;
         if(!empty($data['voucher_catageory']['validity_in_days'])){
             $validity = strtotime('+'.$data['voucher_catageory']['validity_in_days'].' days');
         }
+
+        if(!empty($data['voucher_catageory']['fitcash'])){
+            $fitcash = $data['voucher_catageory']['fitcash'];
+        }
+        
+
+        if(!empty($data['voucher_catageory']['flags']['cashback_per_on_order'])){
+            Log::info(" !empty addFitcashforVoucherCatageory");
+            $cashback_per = $data['voucher_catageory']['flags']['cashback_per_on_order'];
+
+            $fitcash_amount = 0;
+            $validity = time()+(86400*31);
+
+            $customer = Customer::active()->where('_id', (int)$data['id'])->first(['loyalty']);
+            if(!empty($customer)){
+                
+                $order_id = $customer['loyalty']['order_id'];
+                
+                if(!empty($order_id)){
+                    $order = Order::active()->where('_id', (int)$order_id)->first(['finder_id', 'amount_customer', 'convinience_fee', 'end_date']);
+
+                    if(!empty($order)){
+                        $convinience_fee = !empty($order['convinience_fee']) ? $order['convinience_fee'] : 0;
+                        
+                        $fitcash_amount = $order['amount_customer'] - $convinience_fee;
+
+                        $validity = strtotime($order['end_date']) + (86400*31);
+
+                        // Log::info("fitcash_amount", [$fitcash_amount]);
+                    }
+                } 
+            }
+
+            $fitcash_after_per = $fitcash_amount * ($cashback_per / 100);
+            // Log::info("fitcash_after_per", [$fitcash_after_per]); 
+        
+            $gst_amount = $fitcash_after_per * 0.18;
+            // Log::info("gst_amount", [$gst_amount]);
+
+            $fitcash_after_gst_deduction = $fitcash_after_per - $gst_amount;
+            // Log::info("fitcash_after_gst_deduction", [$fitcash_after_gst_deduction]);
+
+            $fitcash = round($fitcash_after_gst_deduction);
+            
+        }
+
+        Log::info("validity", [$validity]);
+        Log::info("fitcash", [$fitcash]);
+
         $request = array(
             "customer_id"=> $data['id'],
-            "amount"=> $data['voucher_catageory']['fitcash'],
+            "amount"=> $fitcash,
             "amount_fitcash" => 0,
-            "amount_fitcash_plus" => $data['voucher_catageory']['fitcash'],
+            "amount_fitcash_plus" => $fitcash,
             "type"=>'FITCASHPLUS',
             "validity"=>$validity,
             'description'=>"Added FitCash for Fitsquad milestone ".$data['voucher_catageory']['milestone']." Expires On : ".date('d-m-Y', $validity),
@@ -8973,7 +9024,8 @@ Class Utilities {
             'details'=> array(
                 'for'=>'Fitsquad',
                 'voucher_name'=>$data['voucher_catageory']['name'],
-                'voucher_catageory_id'=> $data['voucher_catageory']['_id']
+                'voucher_catageory_id'=> $data['voucher_catageory']['_id'],
+                'voucher_catageory_flags'=> !empty($data['voucher_catageory']['flags']) ? $data['voucher_catageory']['flags'] : null 
             )
         );
         $this->walletTransactionNew($request);
@@ -10232,17 +10284,16 @@ Class Utilities {
 		$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
-		//Log::info('order summary ::::::', [$orderSummary]);
-		foreach($slotsdata as &$slot){
+        //Log::info('order summary ::::::', [$orderSummary]);
+        $camp_arg_data = array('source' => 'app', 'sub_source' => 'shareyourdetails');
+        $campBranding = $this->getCampaignBranding($camp_arg_data);
+        $concat_line = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+        
+        foreach($slotsdata as &$slot){
                 
-                $slot['order_summary']['header'] = $orderSummary['header']."";
+                $slot['order_summary']['header'] = $orderSummary['header']." \n".$concat_line;
 
-                if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                    $slot['order_summary']['header'] = $orderSummary['header'];
-                
-
-                }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
-
+                if((!empty($finder['flags']['mfp']) && $finder['flags']['mfp']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled']) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
 		}
@@ -10252,15 +10303,17 @@ Class Utilities {
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
         $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
-		
+        
+        $camp_arg_data = array('source' => 'app', 'sub_source' => 'shareyourdetails');
+        $campBranding = $this->getCampaignBranding($camp_arg_data);
+        $concat_line = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']."";
+                    $sd['order_summary']['header'] = $orderSummary['header']." \n".$concat_line;
 
-                    if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                        $sd['order_summary']['header'] = $orderSummary['header'];
-                    }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
+                    if((!empty($finder['flags']['mfp']) && $finder['flags']['mfp']) || (in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($finder['flags']['monsoon_flash_discount_disabled']) || (!empty($finder['brand_id']) && $finder['brand_id'] == 88)){
                         $sd['order_summary']['header'] = $orderSummary['header'];
                     }
                 }
@@ -11035,11 +11088,34 @@ Class Utilities {
     public function getPassBranding($args = null){
         $return_arr = array();
 
+        $camp_arg_data_homepage = array('source' => 'app', 'sub_source' => 'homepage');
+        $campBrandingHome = $this->getCampaignBranding($camp_arg_data_homepage);
+
+        $camp_arg_data_ratecard = array('source' => 'web', 'sub_source' => 'passpage');
+        $campBrandingRatecard = $this->getCampaignBranding($camp_arg_data_ratecard);
+
+        $camp_arg_data_purchase = array('source' => 'web', 'sub_source' => 'purchasepage');
+        $campBrandingPurchase = $this->getCampaignBranding($camp_arg_data_purchase);
+
+        $camp_arg_data_success = array('source' => 'web', 'sub_source' => 'successpage');
+        $campBrandingSuccess = $this->getCampaignBranding($camp_arg_data_success);
+
+        $camp_arg_data_tnc = array('source' => 'app', 'sub_source' => 'tnc');
+        $campBrandingTnc = $this->getCampaignBranding($camp_arg_data_tnc);
+
         $city = !empty($args['city']) ? $args['city'] : null;
         $pass = !empty($args['pass']) ? $args['pass'] : null;
         $coupon_flags = !empty($args['coupon_flags']) ? $args['coupon_flags'] : null;
         $device_type = !empty($args['device_type']) ? $args['device_type'] : null;
+        $order_data = !empty($args['order_data']) ? $args['order_data'] : null;
         
+        if(!empty($coupon_flags['cashback_100_per'])){
+            $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
+            $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
+
+            $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days', strtotime($order_data['start_date'])));
+        }
+
         $city_name = getmy_city($city);
         
         switch($city_name){
@@ -11047,82 +11123,97 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
+
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = "Full 100% Cashback. TnC Apply";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | 6-10 Dec";
-
-                            if(empty($coupon_flags['no_cashback'])){
-                                $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
-                            }
-
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_mumbai']) ? $campBrandingRatecard['red_15_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_mumbai']) ? $campBrandingPurchase['red_15_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_mumbai']) ? $campBrandingSuccess['red_15_mumbai'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
-        
+
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 30% Off + Addnl 27% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Flat 30% Off + Addnl 27% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_mumbai']) ? $campBrandingRatecard['red_30_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_mumbai']) ? $campBrandingPurchase['red_30_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_mumbai']) ? $campBrandingSuccess['red_30_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 20% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 14% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_mumbai']) ? $campBrandingRatecard['red_90_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_mumbai']) ? $campBrandingPurchase['red_90_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_mumbai']) ? $campBrandingSuccess['red_90_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
-                            
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Flat 25% Off + Addnl 13% Off".getLineBreaker()."Use Code: STEAL Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                        if(!empty($pass['duration']) && $pass['duration'] == 180){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_mumbai']) ? $campBrandingRatecard['red_180_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_mumbai']) ? $campBrandingPurchase['red_180_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_mumbai']) ? $campBrandingSuccess['red_180_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                                $return_arr['purchase_summary_value'] = "Flat 25% Off + Addnl 13% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Flat 25% Off + Addnl 9% Off".getLineBreaker()."Use Code: STEAL Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Flat 25% Off + Addnl 9% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-                            
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 360){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_mumbai']) ? $campBrandingRatecard['red_360_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_mumbai']) ? $campBrandingPurchase['red_360_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_mumbai']) ? $campBrandingSuccess['red_360_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 15){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_mumbai']) ? $campBrandingRatecard['black_15_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_mumbai']) ? $campBrandingPurchase['black_15_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_mumbai']) ? $campBrandingSuccess['black_15_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 22% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 30){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_mumbai']) ? $campBrandingRatecard['black_30_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_mumbai']) ? $campBrandingPurchase['black_30_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_mumbai']) ? $campBrandingSuccess['black_30_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
+                        if(!empty($pass['duration']) && $pass['duration'] == 60){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_mumbai']) ? $campBrandingRatecard['black_60_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_mumbai']) ? $campBrandingPurchase['black_60_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_mumbai']) ? $campBrandingSuccess['black_60_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Flat 26% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 26% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 100){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_mumbai']) ? $campBrandingRatecard['black_100_mumbai'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_mumbai']) ? $campBrandingPurchase['black_100_mumbai'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_mumbai']) ? $campBrandingSuccess['black_100_mumbai'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_mumbai_line1']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_mumbai_line2']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_mumbai_line3']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_mumbai_line4']) ? "\n\n".$campBrandingRatecard['red_footer_mumbai_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_mumbai_line1']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_mumbai_line2']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_mumbai_line3']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_mumbai_line4']) ? "\n\n".$campBrandingRatecard['black_footer_mumbai_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_mumbai']) ? $campBrandingHome['onepass_text_mumbai'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11132,80 +11223,97 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
+
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = "Full 100% Cashback. TnC Apply";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | 6-10 Dec";
-
-                            if(empty($coupon_flags['no_cashback'])){
-                                $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
-                            }
-
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_delhi']) ? $campBrandingRatecard['red_15_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_delhi']) ? $campBrandingPurchase['red_15_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_delhi']) ? $campBrandingSuccess['red_15_delhi'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
-        
+
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 15% Off + Addnl 28% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Flat 15% Off + Addnl 28% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_delhi']) ? $campBrandingRatecard['red_30_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_delhi']) ? $campBrandingPurchase['red_30_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_delhi']) ? $campBrandingSuccess['red_30_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 15% Off + Addnl 14% Off".getLineBreaker()."Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Flat 15% Off + Addnl 14% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_delhi']) ? $campBrandingRatecard['red_90_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_delhi']) ? $campBrandingPurchase['red_90_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_delhi']) ? $campBrandingSuccess['red_90_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
-                            
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Off".getLineBreaker()."Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                        if(!empty($pass['duration']) && $pass['duration'] == 180){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_delhi']) ? $campBrandingRatecard['red_180_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_delhi']) ? $campBrandingPurchase['red_180_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_delhi']) ? $campBrandingSuccess['red_180_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                                $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 12% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Flat 20% Off + Addnl 12% Of".getLineBreaker()." Use Code: STEAL. Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Flat 20% Off + Addnl 12% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 360){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_delhi']) ? $campBrandingRatecard['red_360_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_delhi']) ? $campBrandingPurchase['red_360_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_delhi']) ? $campBrandingSuccess['red_360_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 15){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_delhi']) ? $campBrandingRatecard['black_15_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_delhi']) ? $campBrandingPurchase['black_15_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_delhi']) ? $campBrandingSuccess['black_15_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Flat 22% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 22% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 30){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_delhi']) ? $campBrandingRatecard['black_30_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_delhi']) ? $campBrandingPurchase['black_30_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_delhi']) ? $campBrandingSuccess['black_30_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
+                        if(!empty($pass['duration']) && $pass['duration'] == 60){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_delhi']) ? $campBrandingRatecard['black_60_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_delhi']) ? $campBrandingPurchase['black_60_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_delhi']) ? $campBrandingSuccess['black_60_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 100){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_delhi']) ? $campBrandingRatecard['black_100_delhi'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_delhi']) ? $campBrandingPurchase['black_100_delhi'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_delhi']) ? $campBrandingSuccess['black_100_delhi'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500\n\nBuy Now To Save More! Start At Your Convenience\n\n6-10 Dec";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_delhi_line1']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_delhi_line2']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_delhi_line3']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_delhi_line4']) ? "\n\n".$campBrandingRatecard['red_footer_delhi_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_delhi_line1']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_delhi_line2']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_delhi_line3']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_delhi_line4']) ? "\n\n".$campBrandingRatecard['black_footer_delhi_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_delhi']) ? $campBrandingHome['onepass_text_delhi'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11218,80 +11326,96 @@ Class Utilities {
                 if(!empty($pass)){
                     $return_arr['text'] = $return_arr['purchase_summary_value'] = $return_arr['offer_success_msg'] = $return_arr['msg_data'] = "";
 
+                    if(!empty($coupon_flags)){
+                        $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass.You will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+
+                        $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nYou will receive cashback as FitCash in your Fitternity account on ".$days_30_after_start_date.". Make the most of your FitCash to upgrade your OnePass. \nKindly feel free to reach out to us on +917400062849 for queries";
+                    }
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
 
                         if(!empty($pass['duration']) && $pass['duration'] == 15){
-                            $return_arr['text'] = "Full 100% Cashback. TnC Apply";
-                            $return_arr['purchase_summary_value'] = "Get Full 100% Cashback (No Code Needed) | 6-10 Dec";
-
-                            if(empty($coupon_flags['no_cashback'])){
-                                $return_arr['offer_success_msg'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
-                            }
-
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_15_other']) ? $campBrandingRatecard['red_15_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_15_other']) ? $campBrandingPurchase['red_15_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_15_other']) ? $campBrandingSuccess['red_15_other'] : "";
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
-        
+
                         if(!empty($pass['duration']) && $pass['duration'] == 30){
-                            $return_arr['text'] = "Flat 30% Off + Addnl 21% Off".getLineBreaker()."Use Code: STEAL. Limited Slots";
-                            $return_arr['purchase_summary_value'] ="Flat 30% Off + Addnl 21% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_30_other']) ? $campBrandingRatecard['red_30_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_30_other']) ? $campBrandingPurchase['red_30_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_30_other']) ? $campBrandingSuccess['red_30_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                         if(!empty($pass['duration']) && $pass['duration'] == 90){
-                            $return_arr['text'] = "Flat 35% Off + Addnl 20% Off".getLineBreaker()."Use Code: STEAL";
-                            $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 20% Off On OnePass Membership, Use Code: STEAL. Limited Slots | 6-10 Dec";
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_90_other']) ? $campBrandingRatecard['red_90_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_90_other']) ? $campBrandingPurchase['red_90_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_90_other']) ? $campBrandingSuccess['red_90_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'], [180, 360])){
-                            
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [180])){
-                                $return_arr['text'] = "Flat 35% Off + Addnl 23% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
+                        if(!empty($pass['duration']) && $pass['duration'] == 180){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_180_other']) ? $campBrandingRatecard['red_180_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_180_other']) ? $campBrandingPurchase['red_180_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_180_other']) ? $campBrandingSuccess['red_180_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                                $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 23% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                                $return_arr['text'] = "Flat 35% Off + Addnl 16% Off".getLineBreaker()."Use Code: STEAL \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Flat 35% Off + Addnl 16% Off On OnePass Membership, Use Code: STEAL || Bonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 360){
+                            $return_arr['text'] = !empty($campBrandingRatecard['red_360_other']) ? $campBrandingRatecard['red_360_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['red_360_other']) ? $campBrandingPurchase['red_360_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['red_360_other']) ? $campBrandingSuccess['red_360_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[15])){
-                            $return_arr['text'] = "Flat 19% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 19% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 15){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_15_other']) ? $campBrandingRatecard['black_15_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_15_other']) ? $campBrandingPurchase['black_15_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_15_other']) ? $campBrandingSuccess['black_15_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[30])){
-                            $return_arr['text'] = "Flat 21% Off. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 21% Off. Limited Slots | 6-10 Dec";
+                        if(!empty($pass['duration']) && $pass['duration'] == 30){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_30_other']) ? $campBrandingRatecard['black_30_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_30_other']) ? $campBrandingPurchase['black_30_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_30_other']) ? $campBrandingSuccess['black_30_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
 
-                        if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
+                        if(!empty($pass['duration']) && $pass['duration'] == 60){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_60_other']) ? $campBrandingRatecard['black_60_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_60_other']) ? $campBrandingPurchase['black_60_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_60_other']) ? $campBrandingSuccess['black_60_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
+                        }
 
-                            if(!empty($pass['duration']) && in_array($pass['duration'], [60])){
-                                $return_arr['text'] = "Flat 27% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 27% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }else if(!empty($pass['duration']) && in_array($pass['duration'], [100])){
-                                $return_arr['text'] = "Flat 28% Off. Limited Slots \nBonus Deal: Get A Limited Edition Marvel Universe Fitness Merchandise worth INR 3500";
-
-                                $return_arr['purchase_summary_value'] = "Never Before Steal Sale: Flat 28% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 | 6-10 Dec";
-                            }
-
-
-                            $return_arr['offer_success_msg'] = "Congratulations on purchasing your OnePass. We request you to go to www.fitternity.com -> My Profile-> Type in the delivery address. Your Limited Edition Marvel Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th December 2019. Kindly feel free to reach out to us on +917400062849 for queries";
-
-                            $return_arr['msg_data'] = "Congratulations on purchasing your OnePass. \nWe request you to go to www.fitternity.com - My Profile - Type in the delivery address. \nYour Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 will reach your doorstep by 20th Dec 2019. \nKindly feel free to reach out to us on +917400062849 for queries";
+                        if(!empty($pass['duration']) && $pass['duration'] == 100){
+                            $return_arr['text'] = !empty($campBrandingRatecard['black_100_other']) ? $campBrandingRatecard['black_100_other'] : "";
+                            $return_arr['purchase_summary_value'] = !empty($campBrandingPurchase['black_100_other']) ? $campBrandingPurchase['black_100_other'] : "";
+                            $return_arr['offer_success_msg'] = !empty($campBrandingSuccess['black_100_other']) ? $campBrandingSuccess['black_100_other'] : "";
+                            $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 12th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nNever Before Steal Sale: Upto 30% Off + Limited Edition Marvel Universe Fitness Merchandise Worth INR 3500 \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
-                $return_arr['red_remarks_header'] = "\n\nUp to 60% Off On OnePass Membership, Use Code: STEAL \n\nBuy Now To Save More! Start At Your Convenience \n\n6-10 Dec";
-                $return_arr['footer_text'] = "Up to 60% Off On OnePass Membership.\nBuy Now To Save More! Start At Your Convenience. 6-10 Dec";
+
+                $red_line1 = !empty($campBrandingRatecard['red_footer_other_line1']) ? "\n\n".$campBrandingRatecard['red_footer_other_line1'] : "";
+                $red_line2 = !empty($campBrandingRatecard['red_footer_other_line2']) ? "\n\n".$campBrandingRatecard['red_footer_other_line2'] : "";
+                $red_line3 = !empty($campBrandingRatecard['red_footer_other_line3']) ? "\n\n".$campBrandingRatecard['red_footer_other_line3'] : "";
+                $red_line4 = !empty($campBrandingRatecard['red_footer_other_line4']) ? "\n\n".$campBrandingRatecard['red_footer_other_line4'] : "";
+
+                $black_line1 = !empty($campBrandingRatecard['black_footer_other_line1']) ? "\n\n".$campBrandingRatecard['black_footer_other_line1'] : "";
+                $black_line2 = !empty($campBrandingRatecard['black_footer_other_line2']) ? "\n\n".$campBrandingRatecard['black_footer_other_line2'] : "";
+                $black_line3 = !empty($campBrandingRatecard['black_footer_other_line3']) ? "\n\n".$campBrandingRatecard['black_footer_other_line3'] : "";
+                $black_line4 = !empty($campBrandingRatecard['black_footer_other_line4']) ? "\n\n".$campBrandingRatecard['black_footer_other_line4'] : "";
+
+                $return_arr['black_remarks_header'] = $black_line1."".$black_line2."".$black_line3."".$black_line4;
+                $return_arr['red_remarks_header'] = $red_line1."".$red_line2."".$red_line3."".$red_line4;
+                $return_arr['footer_text'] = !empty($campBrandingHome['onepass_text_other']) ? $campBrandingHome['onepass_text_other'] : "";
+                $return_arr['tnc_red'] = !empty($campBrandingTnc['red']) ? $campBrandingTnc['red'] : "";
+                $return_arr['tnc_black'] = !empty($campBrandingTnc['black']) ? $campBrandingTnc['black'] : "";
                 return $return_arr;
                 break;
             default: return $return_arr;
@@ -11383,5 +11507,58 @@ Class Utilities {
         }
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
+    }
+
+    public function getCampaignData(){
+        $currentCampDet = \Cache::tags('campaign_data')->get('current');
+        
+        if(empty($currentCampDet)){
+            Log::info("empty currentCampDet");
+            $currentCampDet = \NewCampaign::active()->where('start_date', '<=', new DateTime( date("Y-m-d") ))->where('end_date', '>=', new DateTime( date("Y-m-d") ))->first();
+            
+            if(!empty($currentCampDet)){
+                try{
+                    \Cache::tags('campaign_data')->put('current',$currentCampDet,Config::get('cache.cache_time'));
+                }catch(Exception $e){
+                    Log::info($e);
+                }
+            }else{
+                $currentCampDet = array();
+            }
+            
+        }
+
+        return $currentCampDet;
+    }
+
+    public function getCampaignBranding($data = null){
+        Log::info("getCampaignBranding");
+        $campaignData = $this->getCampaignData();
+        
+        if(!empty($campaignData) && !empty($data)){
+            
+            $branding = $campaignData['branding'];
+
+            // Log::info("branding", [$branding]);
+
+            $source = !empty($data['source']) ? $data['source'] : "web";
+            $sub_source = !empty($data['sub_source']) ? $data['sub_source'] : null;
+
+            Log::info("source", [$source]);
+            Log::info("sub_source", [$sub_source]);
+
+            $source_data = $return_data = $branding[$source];
+
+            if(!empty($sub_source)){
+                $return_data = array();
+                if(array_key_exists($sub_source, $source_data)){
+                    $return_data = $branding[$source][$sub_source];
+                }
+            }
+
+            return $return_data;            
+        }
+
+        return null;
     }
 }

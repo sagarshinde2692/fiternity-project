@@ -4429,6 +4429,10 @@ class CustomerController extends \BaseController {
             ];
         }
 		
+		$camp_arg_data = array('source' => 'app', 'sub_source' => 'homepage');
+		$campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+		$result['fitex']['footer'] = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+		
 		if(!empty($result['onepass_pre'])){
 			$agrs1 = array('city' => $city);
 			$brandingData = $this->utilities->getPassBranding($agrs1);
@@ -9244,7 +9248,7 @@ class CustomerController extends \BaseController {
             }
 
 			$voucher_category = !empty($voucher_category) ? $voucher_category : null;
-			$email_communication_check = empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']));
+			$email_communication_check = (empty($new_fitsquad_app) && (empty($customer->loyalty['grid_version']))) || !empty($key);
 			$resp = $this->utilities->voucherClaimedResponse($voucherAttached, $voucher_category, $key, $email_communication_check);
             if(!empty($communication) && (empty($combo_vouchers) || (!empty($combo_vouchers) && count($combo_vouchers)== 0))){
 				$email = $email_communication_check ? $this->voucherEmailReward($resp, $customer) : null;

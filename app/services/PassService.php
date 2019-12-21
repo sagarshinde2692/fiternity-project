@@ -176,6 +176,11 @@ class PassService {
 
             $passDetails['price'] = 'Rs. '.$pass['price'];
             $passDetails['old_price'] = 'Rs. '.$pass['max_retail_price'];
+
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
+                unset($passDetails['old_price']);
+            }
+
             if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
 
                 $this->formatPassOffering($response, $pass, $passDetails, $device, 0);
@@ -1223,7 +1228,7 @@ class PassService {
         $coupon_flags = !empty($order['coupon_flags']) ? $order['coupon_flags'] : null;
         $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
         
-        $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type, 'order_data' => $order);
         $utilities = new Utilities();    
         $brandingData = $utilities->getPassBranding($agrs);
        
@@ -1233,7 +1238,7 @@ class PassService {
 
             $success_template['offer_success_msg'] = "";
             
-            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 && empty($order['coupon_flags']['no_cashback'])){
                 $success_template['offer_success_msg'] = "Congratulations on receiving your instant cashback. You will receive full 100% cashback as FitCash in your Fitternity account on 1st December. Make the most of the cashback to upgrade your OnePass";
             }
 
@@ -1263,7 +1268,7 @@ class PassService {
             }
             unset($success_template['subline_1']);
 
-            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 && empty($order['coupon_flags']['no_cashback'])){
                 $success_template['subline'] .= 'Congratulations on receiving your instant cashback. Make the most of the cashback to upgrade your OnePass';
             }
             
@@ -1541,7 +1546,7 @@ class PassService {
         $coupon_flags = !empty($data['coupon_flags']) ? $data['coupon_flags'] : null;
         $device_type = !empty(Request::header('Device-Type')) ? Request::header('Device-Type') : null;
         
-        $agrs = array('city' => $city, 'pass' => $data['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type);
+        $agrs = array('city' => $city, 'pass' => $data['pass'], 'coupon_flags' => $coupon_flags, 'device_type' => $device_type, 'order_data' => $data);
         $utilities = new Utilities();    
         $brandingData = $utilities->getPassBranding($agrs);
         if(!empty($brandingData['msg_data'])){
@@ -1992,15 +1997,32 @@ class PassService {
     public function passTermsAndCondition(){
         $input = Input::all();
         $passTerms = \Config::get('pass.terms');
+        $utilities = new Utilities();
+        $agrs = array('city' => 'mumbai');
+        $brandingData = $utilities->getPassBranding($agrs);
+
         if(!empty($input['type']) && $input['type']=='unlimited'){
             $passTerms = $passTerms['red'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
+            }
         }
         else if(!empty($input['type']) && $input['type']=='subscribe'){
             $passTerms = $passTerms['black'];
+            
+            if(!empty($brandingData['tnc_black'])){
+                $passTerms[0] = $brandingData['tnc_black'].$passTerms[0];
+            }
         }
         else{
             $passTerms = $passTerms['default'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
+            }
         }
+
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 
@@ -2368,7 +2390,7 @@ class PassService {
             $agrs = array('city' => $city, 'pass' => $order['pass'], 'coupon_flags' => $coupon_flags);
             $brandingData = $utilities->getPassBranding($agrs);
             
-            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 ){
+            if(!empty($order['coupon_flags']['cashback_100_per']) && $order['coupon_flags']['cashback_100_per'] && !empty($order['amount']) && $order['amount'] > 0 && empty($order['coupon_flags']['no_cashback'])){
 
                 $discount_per = $order['coupon_flags']['cashback_100_per'];
 
@@ -2566,13 +2588,13 @@ class PassService {
             if(!empty($data['pass'])){
                 $pass = $data['pass'];
 
-                if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [60,100])) || (!empty($pass['pass_type']) && $pass['pass_type'] == 'red' && !empty($pass['duration']) && in_array($pass['duration'], [180,360]))){
+                // if((!empty($pass['pass_type']) && $pass['pass_type'] == 'black' && !empty($pass['duration']) && in_array($pass['duration'], [60,100]))){
 
-                    if(empty($data['membership_order_id'])){
-                        $rewardinfo['mufm_kit_reward'] = true;
-                        $rewardinfo['reward_ids'] = [79];
-                    }
-                }
+                //     if(empty($data['membership_order_id'])){
+                //         $rewardinfo['mufm_kit_reward'] = true;
+                //         $rewardinfo['reward_ids'] = [79];
+                //     }
+                // }
 
             }
             return $rewardinfo;
