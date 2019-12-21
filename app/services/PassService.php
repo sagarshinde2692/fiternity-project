@@ -2775,8 +2775,8 @@ class PassService {
                 if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && in_array($finder_id, $matched_finders) && !empty($date_check)){
     
                     foreach($matched_finders as $m_f_key=>$m_f_value){
+                        $m_f_value == $finder_id ? $max_booking_count = $value['count'] : null;
                         if($m_f_value == $finder_id && $findersIndexWithBookings[$m_f_value] >= $value['count']){
-                            $max_booking_count = $value['count'];
                             $status = false;
                             break;
                         }
