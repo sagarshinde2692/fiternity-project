@@ -2790,7 +2790,7 @@ class PassService {
                 $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
             }
             else if($max_booking_count != 31){
-                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-$findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
+                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
             }
         }
         
