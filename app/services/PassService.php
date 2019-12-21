@@ -2700,9 +2700,11 @@ class PassService {
         $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count']]);
 
         if(empty($bookings['result'])){
-            if(!empty($passOrder['pass']['max_booking_count'])){
-                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $passOrder['pass']['max_booking_count'], 'total_available'=> $passOrder['pass']['max_booking_count'], 'duration_text' => $passOrder['pass']['duration_text']]);
+            
+            if($passOrder['pass']['max_booking_count']== 31){
+                $msg= '';
             }
+
             return [
                 'status'=> $status, 
                 'data' => [
@@ -2735,7 +2737,7 @@ class PassService {
         }
 
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
-            $max_booking_count = 31;
+            $max_booking_count = $passOrder['pass']['max_booking_count'];
             $msg = '';
             $today = strtotime('now');
             foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
@@ -2773,7 +2775,7 @@ class PassService {
                 if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && in_array($finder_id, $matched_finders) && !empty($date_check)){
     
                     foreach($matched_finders as $m_f_key=>$m_f_value){
-                        if($findersIndexWithBookings[$m_f_value] >= $value['count']){
+                        if($m_f_value == $finder_id && $findersIndexWithBookings[$m_f_value] >= $value['count']){
                             $max_booking_count = $value['count'];
                             $status = false;
                             break;
