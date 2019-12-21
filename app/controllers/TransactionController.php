@@ -8184,8 +8184,13 @@ class TransactionController extends \BaseController {
                     'field' => 'Total Amount Payable',
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
-                $result['finder_name'] = !empty($pass['lite']) ? "ONEPASS LITE" : "ONEPASS";
-                $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
+                $result['finder_name'] = "ONEPASS";
+                if(empty($pass['lite'])){
+                    $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
+                }
+                else{
+                    $result['finder_location'] = "ONEPASS LITE";
+                }
             }
 
         }else{
@@ -10144,9 +10149,11 @@ class TransactionController extends \BaseController {
         if(!empty($data['pass_branding']) && $data['pass_type'] == true){
             $data['pass_type'] = $data['pass_branding'];
         }
+        if(!empty($data['pass_booking_lite'])){
+            $data['pass_type'] = 'lite';
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
-        $desc_subheader_pass = !empty($data['pass_booking_lite']) ? "Onepass Lite": "Onepass ".ucfirst($data['pass_type']);
-        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using ".$desc_subheader_pass;
+        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using ".ucfirst($data['pass_type']);
 
         $des = 'You can cancel this session 1 hour prior to your session time.';
 		if($data['finder_category_id'] == 5){

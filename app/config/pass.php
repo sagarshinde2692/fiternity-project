@@ -641,7 +641,14 @@ return [
             "header2_color" => "#000000",
             "subheader" => "UNLIMITED VALIDITY",
             "desc_subheader" => "Limited Workouts"
-        ]
+        ],
+        "lite" => [
+            "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            "header1" => "ONEPASS",
+            "header1_color" => "#000000",
+            "header2" => "Lite",
+            "header2_color" => "#259BA1"
+        ],
             
     ],
 

@@ -1175,22 +1175,23 @@ class PassService {
             ]
         );
         if($unlimited){
+            $usage_text = !empty($order['pass']['lite']) ? 'LITE': 'UNLIMITED USAGE';
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
                     'duration_text'=> $order['pass']['duration_text'],
-                    'usage_text' => 'UNLIMITED USAGE'
+                    'usage_text' => $usage_text
                 ]
             );
             $success_template['pass']['subheader'] = $order['pass']['duration_text'].' Validity';
-            $success_template['pass']['card_header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
-            $success_template['pass']['header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
+            $success_template['pass']['card_header'] = $usage_text;// $order['pass']['name'];
+            $success_template['pass']['header'] = $usage_text;// $order['pass']['name'];
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass']['image'] = $success['pass_image_silver'];
             $success_template['pass_image'] = $success['pass_image_silver'];
-            $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
+            $success_template['pass']['usage_text'] = $usage_text;
         }
         else{
             $success_template['pass']['card_header'] = strtoupper($order['pass']['duration_text']);// $order['pass']['name'];
@@ -1641,7 +1642,7 @@ class PassService {
             else {
                 $usageLeft =  $totalSessions - $totalBookings;
             }
-            
+
             $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions);
         }
         else if($passOrder['pass']['pass_type']=='red') {
@@ -2503,6 +2504,10 @@ class PassService {
             $subheader = $totalSessions.' SESSIONS';
         }
 
+        if($type=='red' && !empty($passOrder['pass']['light'])){
+            $homePassData['header'] =  'LITE';
+        }
+        
         $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
         $homePassData['subheader'] = $subheader;
         $homePassData['left_value'] = strval($upcomingBookings);
