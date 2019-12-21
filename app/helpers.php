@@ -4779,8 +4779,8 @@ if (!function_exists(('setPassToToken'))){
                 $data['pass_corporate'] = $passOrder['pass']['corporate'];
             }
 
-            if(!empty($passOrder['lite'])){
-                $data['pass_lite'] = $passOrder['lite'];
+            if(!empty($passOrder['pass']['lite'])){
+                $data['pass_lite'] = $passOrder['pass']['lite'];
             }
         }
     }
