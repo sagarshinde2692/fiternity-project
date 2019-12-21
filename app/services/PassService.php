@@ -1642,7 +1642,7 @@ class PassService {
             else {
                 $usageLeft =  $totalSessions - $totalBookings;
             }
-
+            
             $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, $totalSessions);
         }
         else if($passOrder['pass']['pass_type']=='red') {
@@ -2507,7 +2507,7 @@ class PassService {
         if($type=='red' && !empty($passOrder['pass']['light'])){
             $homePassData['header'] =  'LITE';
         }
-        
+
         $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
         $homePassData['subheader'] = $subheader;
         $homePassData['left_value'] = strval($upcomingBookings);
