@@ -2504,7 +2504,7 @@ class PassService {
             $subheader = $totalSessions.' SESSIONS';
         }
 
-        if($type=='red' && !empty($passOrder['pass']['light'])){
+        if($type=='red' && !empty($passOrder['pass']['lite'])){
             $homePassData['header'] =  'LITE';
         }
 

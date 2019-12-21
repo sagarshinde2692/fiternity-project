@@ -8189,7 +8189,7 @@ class TransactionController extends \BaseController {
                     $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
                 }
                 else{
-                    $result['finder_location'] = "ONEPASS LITE";
+                    $result['finder_location'] = "LITE";
                 }
             }
 
