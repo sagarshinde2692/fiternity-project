@@ -1,4 +1,13 @@
 <?php
+require_once __DIR__.'/../vendor/autoload.php';
+
+//to detect environment i.e = .env in root
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+$dotenv->load();
+
+//to fetch different .env i.e = .local.env, .staging.env, .production.env based on APP_ENV present in .env 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../', '.'.getenv('APP_ENV').'.env');
+$dotenv->load();
 
 /*
 |--------------------------------------------------------------------------

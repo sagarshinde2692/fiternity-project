@@ -1,21 +1,9 @@
 <?php
 
-//local
-// $host = "localhost";
-// $username = "";
-// $password = "";
-
-//stage
-// $host = "apistage.fitn.in";
-// $username = "admin";
-// $password = "fit123";
-// $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
-
-//production
-
-$host = "54.179.134.14"; 
-$username = ""; 
-$password = ""; 
+//CONFIGURATION FROM ENV
+$host = getenv('HOST_NAME','54.179.134.14');
+$username = getenv('DB_USERNAME','');
+$password = getenv('DB_PASSWORD','');
 
 return array(
 
@@ -71,7 +59,7 @@ return array(
 			'database' => 'fitadmin', 
 		    'username' => $username, 
 		    'password' => $password, 
-			// 'options' => $options
+			'options' => json_decode(getenv('MONGO_OPTIONS'),true),//json values from env needs to be decoded to parse as array
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
@@ -84,7 +72,7 @@ return array(
 			'database' => 'fitapi', 
 			'username' => $username, 
 			'password' => $password, 
-			// 'options' => $options
+			'options' => json_decode(getenv('MONGO_OPTIONS'),true),//json values from env needs to be decoded to parse as array
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
@@ -97,7 +85,7 @@ return array(
 			'database' => 'fitcheckins', 
 			'username' => $username, 
 			'password' => $password, 
-			// 'options' => $options
+			'options' => json_decode(getenv('MONGO_OPTIONS'),true),//json values from env needs to be decoded to parse as array
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
@@ -194,13 +182,13 @@ return array(
 		'cluster' => false, 
 
 		'default' => array(
-			'host' => '127.0.0.1', 
-			'port' => 6379, 
+			'host' => getenv('REDIS_HOST'), 
+			'port' => getenv('REDIS_PORT'), 
 			'database' => 0, 
 			), 
 		'newredis' => array(
-			'host' => '127.0.0.1', 
-			'port' => 6379, 
+			'host' => getenv('REDIS_HOST'), 
+			'port' => getenv('REDIS_PORT'), 
 			'database' => 1, 
 			), 
 		), 

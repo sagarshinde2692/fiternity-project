@@ -3,122 +3,36 @@
 
 return array(
 
-    //local
-    // 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com/',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://localhost:3030',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>true,
-	// 'paytm_sandbox'=>true,
-	// 'paypal_sandbox'=>true,
-	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	// 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
-    // "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
-    // 'uploadStepsStage'=>'http://localhost:5000/fitness-steps-stage/asia-east2/',
-	// "corporate_mapping" => [
-	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
-	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
-	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
-	// 	[ "id" => "123456789123421", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJzdGFnZSIsImlhdCI6MTU3NDMyNDQzM30.gKSY53izgoVmgNBdsaZlTD51RyJGDPr2u4ns2rsQgro", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
-	// ],
+	//CONFIGURATION FROM ENV
+	'new_search_url' => getenv('NEW_SEARCH_URL'),	
+	'url' => getenv('URL'),
+	'admin_url' => getenv('ADMIN_URL'),
+    'website' => getenv('WEBSITE'),
+    'multifit_website' => getenv('MULTIFIT_WEBSITE'),
+	'sidekiq_url' => getenv('SIDEKIQ_URL'),
+	'queue' => getenv('QUEUE'),
+	'vendor_communication' => getenv('VENDOR_COMMUNICATION'),
+	'env' => getenv('ENV'),
+	'debug' => getenv('DEBUG'),
+	'metropolis' => getenv('METROPOLIS'),
+	'amazonpay_isSandbox' => getenv('AMAZONPAY_IS_SANDBOX'),
+	'reliance_url' => getenv('RELIANCE_URL'),
+	'website_deeplink' => getenv('WEBSITE_DEEPLINK'),
+	'mobikwik_sandbox'=> getenv('MOBIKWIK_SANDBOX'),
+	'paytm_sandbox'=> getenv('PAYTM_SANDBOX'),
+	'paypal_sandbox'=> getenv('PAYPAL_SANDBOX'),
+	'ffTransactionAPI'=> getenv('FF_TRANSACTION_API'),
+	'ffEnquiryAPI'=>getenv('FF_ENQUIRY_API'),
+	'uploadStepsStage'=>getenv('UPLOAD_STEPS_STAGE'),
+	'razorpay' => json_decode(getenv('RAZORPAY'),true),//json values from env needs to be decoded to parse as array
+	'razorPayKey' => getenv('RAZORPAY_KEY'),
+	'razorPaySecret' => getenv('RAZORPAY_SECRET'),
+	'webhook_secret_key' => getenv('WEBHOOK_SECRET_KEY'),
+	'pps_url_branch_io' => getenv('PPS_URL_BRANCH_IO'),
+	'corporate_mapping' => json_decode(getenv('CORPORATE_MAPPING'),true),//array values from env needs to be decoded to parse as array
 
-	//stage
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://apistage.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1133',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://apisatge.fitn.in:8989',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>true,
-	// 'paytm_sandbox'=>true,
-	// 'paypal_sandbox'=>true,
-	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	// 'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
-	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
-	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
-	// "webhook_secret_key"=>"qwepoifghtyvb",
-	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
-	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
-	// "corporate_mapping" => [
-	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
-	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
-	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ]
-	// ],
-
-    //beta
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://beta.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1133',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://apisatge.fitn.in:8989',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>true,
-	// 'paytm_sandbox'=>true,
-	// 'paypal_sandbox'=>true,
-	// 'ffTransactionAPI'=>'http://ffstaging.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	// 'ffEnquiryAPI'=>'http://ffstagingapi.fitnessforce.com/prospect',
-	// 'razorpay' => [ 'key_id' => 'rzp_test_6TKjLnXzpuVIds', 'secret_key' => 'rK7FwR1a4coHHLCuhSSLz8P5', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
-	// 'razorPayKey' => 'rzp_test_6TKjLnXzpuVIds',
-	// 'razorPaySecret' => 'rK7FwR1a4coHHLCuhSSLz8P5',
-	// "webhook_secret_key"=>"qwepoifghtyvb",
-	// "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
-	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
-
-	//live
-	'new_search_url' =>'http://c1.fitternity.com/',	
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-    'website' => 'https://www.fitternity.com',
-    'multifit_website' => 'http://www.multifitgym.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => false,
-	'metropolis' => 'https://c1.fitternity.com',
-	'amazonpay_isSandbox' => 'false',
-	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>false,
-	'paytm_sandbox'=>false,
-	'paypal_sandbox'=>false,
-	'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
-	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
-    'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
-	"corporate_mapping" => [
-		[ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
-		[ "id" => "347583457893", "key" => "yurbvfbhtruworthvfdfjgrk", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
-		[ "id" => "9934985980486", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJwcm9kIiwiaWF0IjoxNTc0MzI0NDMzfQ.-3VmCd-k8H01FZz1CB9mfCyk-UyxzO9R6U00ATmWtW4", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
-	],
-
-	"generic_corporate_exclude" => ['sodexo', 'sbig', 'thelabellife'],
-	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
+	'generic_corporate_exclude' => ['sodexo', 'sbig', 'thelabellife'],
+	'app_download_url_branch_io' => 'https://ftrnty.app.link/8v6VWNGwi0',
     'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
 		['max_price'=>500, 'credits'=>3],
@@ -190,13 +104,13 @@ return array(
 		'paymentmode' => 'fitternity'
     ],
 	
-	"reliance_coupon_code" => "RELIANCE",
+	'reliance_coupon_code' => 'RELIANCE',
 
-    "pps_image"=> 'https://b.fitn.in/global/fit-exclusive-new-14-7-2019.png',    
+    'pps_image'=> 'https://b.fitn.in/global/fit-exclusive-new-14-7-2019.png',    
     'fitsquad_upgrade_api'=> '/customer/loyaltyAppropriation',
 	'fitsquad_cancel_api'=>'/customer/remaincurrentloyalty',
-    "core_key"=> "FITITRNTY",
-	'non_peak_hours' => ["off"=>0.6,"non_peak_title1"=>"Look for this sign to book a slot for ", "non_peak_title"=>"NON RUSH HOUR (40% OFF)", "gym"=>["off"=>0.6,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.6]],
+    'core_key'=> 'FITITRNTY',
+	'non_peak_hours' => ['off'=>0.6,'non_peak_title1'=>'Look for this sign to book a slot for ', 'non_peak_title'=>'NON RUSH HOUR (40% OFF)', 'gym'=>['off'=>0.6,'start'=>10,'end'=>18],'studios'=>['start'=>11,'end'=>17,'off'=>0.6]],
     'product_delivery_charges' => 50,
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
@@ -204,10 +118,10 @@ return array(
 
     'business' => 'http://business.fitternity.com',
 	'static_coupon' => array(
-		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
-		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
-		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
-		array("code" => "starfit", "text" => "Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
+		array('code' => 'fivefit', 'text' => 'Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT','discount_max' => 10000,'discount_amount' => 0,'discount_min' => 0, 'discount_percent'=> 5, 'once_per_user'=> true, 'ratecard_type'=> ['membership','healthytiffinmembership']),
+		array('code' => 'lucky300', 'text' => '3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300','discount_max' => 300,'discount_amount' => 300,'discount_min' => 300, 'once_per_user'=> true, 'ratecard_type'=> ['membership','healthytiffinmembership']),
+		array('code' => 'lucky300', 'text' => '3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300','discount_max' => 300,'discount_amount' => 300,'discount_min' => 300, 'once_per_user'=> true, 'ratecard_type'=> ['membership','healthytiffinmembership']),
+		array('code' => 'starfit', 'text' => 'Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT','discount_max' => 10000,'discount_amount' => 0,'discount_min' => 0, 'discount_percent'=> 5, 'once_per_user'=> true, 'ratecard_type'=> ['membership','healthytiffinmembership']),
 	),
     'app' =>array(
 		'discount'		=> 			0,
@@ -217,14 +131,14 @@ return array(
 	'vendors_without_convenience_fee' => [15082,13965,7116,9149,12008,1860,6593,14085,14081,13761,13765,14079, 2890,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,7116,8872],
 	'payu' => array(
 		'prod'=>array(
-			"key" => 'l80gyM',
-			"salt" => 'QBl78dtK',
-			"url" => "https://info.payu.in/merchant/postservice.php?form=2"
+			'key' => 'l80gyM',
+			'salt' => 'QBl78dtK',
+			'url' => 'https://info.payu.in/merchant/postservice.php?form=2'
 		),
 		'test'=>array(
-			"key" => 'gtKFFx',
-			"salt" => 'eCwWELxi',
-			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
+			'key' => 'gtKFFx',
+			'salt' => 'eCwWELxi',
+			'url' => 'https://test.payu.in/merchant/postservice.php?form=2'
 			)
 		),
 
@@ -353,7 +267,7 @@ return array(
 	|
 	| This array of class aliases will be registered when this application
 	| is started. However, feel free to register as many as you wish as
-	| the aliases are "lazy" loaded so they don't hinder performance.
+	| the aliases are 'lazy' loaded so they don't hinder performance.
 	|
 	*/
 
@@ -486,7 +400,7 @@ return array(
 
 
 	'jwt' => array(
-		'key' => 'fitternity', //secret key to encode token
+		'key' => getenv('JWT_SECRET_KEY'), //secret key to encode token
 		'iat' => time(), // time when token is created
 		'nbf' => time(), // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
@@ -494,17 +408,17 @@ return array(
 	),
 
 	'forgot_password' => array(
-		'key' => 'fitternity', //secret key to encode token
+		'key' => getenv('JWT_SECRET_KEY'), //secret key to encode token
 		'iat' => time(), // time when token is created
 		'exp' => time()+(86400*365), // time when token gets expired (1 day)
 		'alg' => 'HS256',
 	),
 
 	'aws' => array(
-		'key' 								=> 'AKIATSZWJ7JFA747DICW',
-		'secret' 							=> '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',
-		'region' 							=> 'ap-southeast-1',
-		'bucket'							=> 'b.fitn.in',
+		'key' 								=> getenv('AWS_KEY'),
+		'secret' 							=> getenv('AWS_SECRET'),
+		'region' 							=> getenv('AWS_REGION'),
+		'bucket'							=> getenv('AWS_BUCKET'),
 		'ozonetel' =>array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
@@ -537,7 +451,7 @@ return array(
 	'contact_us_customer_email_onepass' => 'onepass@fitternity.com',
 	'contact_us_vendor_number' => '+919699998838',
 	'contact_us_customer_number' => '+912261094444',
-	'contact_us_customer_number_pps' => "+918879886083",
+	'contact_us_customer_number_pps' => '+918879886083',
 	'contact_us_customer_number_onepass' => '+917400062849',
 	'display_contact_us_customer_number_onepass' => '+91 74000 62849',
 	'followup_fitness_concierge' => 'Rachel',
@@ -618,273 +532,273 @@ return array(
 
 
     'workout_results_categorywise'        =>   [
-        65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
-        1       => ["flexibility", "feel centered & calm", "stress buster", "control breathing", "improve postures", "tone up"],
-        2       => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
-        4       => ["super strong core", "stability", "tone & rip", "flexibility", "improve postures", "strong abs"],
-        5       => ["burn fat", "work on all muscle", "chiseled body", "super strong core", "agility", "musclar endurance"],
-        19      => ["catch some sexy moves", "super cardio", "stress buster", "fat burn", "tone & shape legs, butt & hips", "flexibility"],
-        86      => ["burn fat", "super cardio", "increase leg strength", "tone & shape legs, butt & hips", "speed", "stress buster"],
-        111     => ["tone & rip", "increase sports performance", "increase power", "musclar endurance", "strong abs", "burn fat"],
-        114     => ["super cardio", "speed", "agility", "burn fat", "endurance", "lean legs"],
-        123     => ["super cardio", "speed", "agility", "burn fat", "tone & shape legs, butt & hips", "flexibility"],
-        152     => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
-        154     => ["super cardio", "speed", "agility", "co-ordination", "stability", "flexibility"],
-        3       => ["tone up", "co-ordination", "increase power", "work on all muscle", "stability", "increase sports performance"],
-        161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
-        184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
+        65      => ['tone up', 'super cardio', 'endurance', 'muscle definition', 'flat abs', 'increase power'],
+        1       => ['flexibility', 'feel centered & calm', 'stress buster', 'control breathing', 'improve postures', 'tone up'],
+        2       => ['catch some sexy moves', 'super cardio', 'stress buster', 'improve co-ordination', 'tone & shape legs, butt & hips', 'fat burn'],
+        4       => ['super strong core', 'stability', 'tone & rip', 'flexibility', 'improve postures', 'strong abs'],
+        5       => ['burn fat', 'work on all muscle', 'chiseled body', 'super strong core', 'agility', 'musclar endurance'],
+        19      => ['catch some sexy moves', 'super cardio', 'stress buster', 'fat burn', 'tone & shape legs, butt & hips', 'flexibility'],
+        86      => ['burn fat', 'super cardio', 'increase leg strength', 'tone & shape legs, butt & hips', 'speed', 'stress buster'],
+        111     => ['tone & rip', 'increase sports performance', 'increase power', 'musclar endurance', 'strong abs', 'burn fat'],
+        114     => ['super cardio', 'speed', 'agility', 'burn fat', 'endurance', 'lean legs'],
+        123     => ['super cardio', 'speed', 'agility', 'burn fat', 'tone & shape legs, butt & hips', 'flexibility'],
+        152     => ['catch some sexy moves', 'super cardio', 'stress buster', 'improve co-ordination', 'tone & shape legs, butt & hips', 'fat burn'],
+        154     => ['super cardio', 'speed', 'agility', 'co-ordination', 'stability', 'flexibility'],
+        3       => ['tone up', 'co-ordination', 'increase power', 'work on all muscle', 'stability', 'increase sports performance'],
+        161     => ['burn fat', 'endurance', 'control breathing', 'increase sports performance', 'speed', 'shape up'],
+        184     => ['burn fat','shape up','endurance','flat abs','flexibility','work on all muscle']
     ],
 
     'emi_struct'=> array(
 		 	array(
-                "bankCode"=> "EMIA3",
-                "bankName"=> "AXIS",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>12
+                'bankCode'=> 'EMIA3',
+                'bankName'=> 'AXIS',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMIA6",
-                "bankName"=> "AXIS",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>12
+                'bankCode'=> 'EMIA6',
+                'bankName'=> 'AXIS',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMIA9",
-                "bankName"=> "AXIS",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>13
+                'bankCode'=> 'EMIA9',
+                'bankName'=> 'AXIS',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIA12",
-                "bankName"=> "AXIS",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>13
+                'bankCode'=> 'EMIA12',
+                'bankName'=> 'AXIS',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>13
             ),
             
           
             array(
-                "bankCode"=> "EMI",
-                "bankName"=> "HDFC",
-                "bankTitle"=>3,
-                "pgId"=> "15",
-                "minval"=> 3000,
-                "rate"=>12
+                'bankCode'=> 'EMI',
+                'bankName'=> 'HDFC',
+                'bankTitle'=>3,
+                'pgId'=> '15',
+                'minval'=> 3000,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMI6",
-                "bankName"=> "HDFC",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 3000,
-                "rate"=>12
+                'bankCode'=> 'EMI6',
+                'bankName'=> 'HDFC',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 3000,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMI9",
-                "bankName"=> "HDFC",
-                "bankTitle"=>9,
-                "pgId"=> "15",
-                "minval"=> 3000,
-                "rate"=>13
+                'bankCode'=> 'EMI9',
+                'bankName'=> 'HDFC',
+                'bankTitle'=>9,
+                'pgId'=> '15',
+                'minval'=> 3000,
+                'rate'=>13
             ),
           	array(
-                "bankCode"=> "EMI12",
-                "bankName"=> "HDFC",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 3000,
-                "rate"=>13
+                'bankCode'=> 'EMI12',
+                'bankName'=> 'HDFC',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 3000,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIHS03",
-                "bankName"=> "HSBC",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>12.50
+                'bankCode'=> 'EMIHS03',
+                'bankName'=> 'HSBC',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>12.50
             ),
             array(
-                "bankCode"=> "EMIHS06",
-                "bankName"=> "HSBC",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>12.50
+                'bankCode'=> 'EMIHS06',
+                'bankName'=> 'HSBC',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>12.50
             ),
             array(
-                "bankCode"=> "EMIHS09",
-                "bankName"=> "HSBC",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13.50
+                'bankCode'=> 'EMIHS09',
+                'bankName'=> 'HSBC',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13.50
             ),
             array(
-                "bankCode"=> "EMIHS12",
-                "bankName"=> "HSBC",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13.50
+                'bankCode'=> 'EMIHS12',
+                'bankName'=> 'HSBC',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13.50
             ),
             array(
-                "bankCode"=> "EMIHS18",
-                "bankName"=> "HSBC",
-                "bankTitle"=> 18,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13.50
+                'bankCode'=> 'EMIHS18',
+                'bankName'=> 'HSBC',
+                'bankTitle'=> 18,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13.50
             ),
             array(
-                "bankCode"=> "EMIIC3",
-                "bankName"=> "ICICI",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 1500,
-                "rate"=>13
+                'bankCode'=> 'EMIIC3',
+                'bankName'=> 'ICICI',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 1500,
+                'rate'=>13
             ),
 			array(
-                "bankCode"=> "EMIICP6",
-                "bankName"=> "ICICI",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 1500,
-                "rate"=>13
+                'bankCode'=> 'EMIICP6',
+                'bankName'=> 'ICICI',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 1500,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIICP9",
-                "bankName"=> "ICICI",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 1500,
-                "rate"=>13
+                'bankCode'=> 'EMIICP9',
+                'bankName'=> 'ICICI',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 1500,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIIC12",
-                "bankName"=> "ICICI",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 1500,
-                "rate"=>13
+                'bankCode'=> 'EMIIC12',
+                'bankName'=> 'ICICI',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 1500,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIIND3",
-                "bankName"=> "INDUS",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13
+                'bankCode'=> 'EMIIND3',
+                'bankName'=> 'INDUS',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIIND6",
-                "bankName"=> "INDUS",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13
+                'bankCode'=> 'EMIIND6',
+                'bankName'=> 'INDUS',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIIND9",
-                "bankName"=> "INDUS",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13
+                'bankCode'=> 'EMIIND9',
+                'bankName'=> 'INDUS',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13
             ),           
             array(
-                "bankCode"=> "EMIIND12",
-                "bankName"=> "INDUS",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>13
+                'bankCode'=> 'EMIIND12',
+                'bankName'=> 'INDUS',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>13
             ),
             array(
-                "bankCode"=> "EMIIND18",
-                "bankName"=> "INDUS",
-                "bankTitle"=> 18,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>15
+                'bankCode'=> 'EMIIND18',
+                'bankName'=> 'INDUS',
+                'bankTitle'=> 18,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>15
             ),
             array(
-                "bankCode"=> "EMIIND24",
-                "bankName"=> "INDUS",
-                "bankTitle"=> 24,
-                "pgId"=> "8",
-                "minval"=> 2000,
-                "rate"=>15
+                'bankCode'=> 'EMIIND24',
+                'bankName'=> 'INDUS',
+                'bankTitle'=> 24,
+                'pgId'=> '8',
+                'minval'=> 2000,
+                'rate'=>15
             ),
             array(
-                "bankCode"=> "EMIK3",
-                "bankName"=> "KOTAK",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>12
+                'bankCode'=> 'EMIK3',
+                'bankName'=> 'KOTAK',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMIK6",
-                "bankName"=> "KOTAK",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>12
+                'bankCode'=> 'EMIK6',
+                'bankName'=> 'KOTAK',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>12
             ),
             array(
-                "bankCode"=> "EMIK9",
-                "bankName"=> "KOTAK",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>14
+                'bankCode'=> 'EMIK9',
+                'bankName'=> 'KOTAK',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>14
             ),
             array(
-                "bankCode"=> "EMIK12",
-                "bankName"=> "KOTAK",
-                "bankTitle"=> 12,
-                "pgId"=> "8",
-                "minval"=> 500,
-                "rate"=>14
+                'bankCode'=> 'EMIK12',
+                'bankName'=> 'KOTAK',
+                'bankTitle'=> 12,
+                'pgId'=> '8',
+                'minval'=> 500,
+                'rate'=>14
             ),
             array(
-                "bankCode"=> "SBI03",
-                "bankName"=> "SBI",
-                "bankTitle"=>3,
-                "pgId"=> "8",
-                "minval"=> 2500,
-                "rate"=>14
+                'bankCode'=> 'SBI03',
+                'bankName'=> 'SBI',
+                'bankTitle'=>3,
+                'pgId'=> '8',
+                'minval'=> 2500,
+                'rate'=>14
             ),
             array(
-                "bankCode"=> "SBI06",
-                "bankName"=> "SBI",
-                "bankTitle"=>6,
-                "pgId"=> "8",
-                "minval"=> 2500,
-                "rate"=>14
+                'bankCode'=> 'SBI06',
+                'bankName'=> 'SBI',
+                'bankTitle'=>6,
+                'pgId'=> '8',
+                'minval'=> 2500,
+                'rate'=>14
             ),
             array(
-                "bankCode"=> "SBI09",
-                "bankName"=> "SBI",
-                "bankTitle"=>9,
-                "pgId"=> "8",
-                "minval"=> 2500,
-                "rate"=>14
+                'bankCode'=> 'SBI09',
+                'bankName'=> 'SBI',
+                'bankTitle'=>9,
+                'pgId'=> '8',
+                'minval'=> 2500,
+                'rate'=>14
             ),
             array(
-                "bankCode"=> "SBI12",
-                "bankName"=> "SBI",
-                "bankTitle"=>12,
-                "pgId"=> "8",
-                "minval"=> 2500,
-                "rate"=>14
+                'bankCode'=> 'SBI12',
+                'bankName'=> 'SBI',
+                'bankTitle'=>12,
+                'pgId'=> '8',
+                'minval'=> 2500,
+                'rate'=>14
             )
         ),
 	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com', 'kailash.cp2419@gmail.com'],	
@@ -892,11 +806,11 @@ return array(
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
 
-	// 'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"]
+	// 'delay_methods' =>['bookTrialReminderAfter2Hour','bookTrialReminderAfter2HourRegular','bookTrialReminderBefore12Hour','bookTrialReminderBefore1Hour','bookTrialReminderBefore20Min','bookTrialReminderBefore3Hour','bookTrialReminderBefore6Hour', 'manualBookTrial', 'reminderToConfirmManualTrial', 'manual2ndBookTrial', 'before3HourSlotBooking', 'orderRenewalMissedcall', 'sendPaymentLinkAfter3Days', 'sendPaymentLinkAfter7Days', 'sendPaymentLinkAfter45Days', 'purchaseAfter10Days', 'purchaseAfter30Days']
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min', 'offhoursConfirmation', "bookTrialReminderAfter30Mins", 'abandonCartCustomerAfter2hoursFinder'],
+	'delay_methods' =>['bookTrialReminderAfter2HourRegular','bookTrialReminderBefore12Hour','bookTrialReminderBefore1Hour','bookTrialReminderBefore20Min','bookTrialReminderBefore6Hour', 'manualBookTrial', 'reminderToConfirmManualTrial', 'manual2ndBookTrial', 'orderRenewalMissedcall', 'sendPaymentLinkAfter3Days', 'sendPaymentLinkAfter7Days', 'sendPaymentLinkAfter45Days', 'purchaseAfter10Days', 'purchaseAfter30Days', 'postTrialStatusUpdate', 'bookTrialReminderAfter2Hour', 'bookTrialReminderBefore10Min', 'bookTrialReminderBefore3Hour', 'bookTrialReminderBefore20Min', 'offhoursConfirmation', 'bookTrialReminderAfter30Mins', 'abandonCartCustomerAfter2hoursFinder'],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
@@ -1009,7 +923,7 @@ return array(
     
     'snap_bangalore_finder_ids'=>[],
 
-	'rating_text'=>["Bad","OK","Average","Good","Excellent",],
+	'rating_text'=>['Bad','OK','Average','Good','Excellent',],
 
 	'voucher_grid'=>[
 		[
@@ -1059,11 +973,11 @@ return array(
 	'multiply_app_download_link' => 'http://onelink.to/abmultiply',
 
 	'reward_type'=>[
-		1 => "Instant Reward",
-		2 => "Instant Reward + Fit Squad ",
-		3 => "Instant Reward + 100% Cashback",
-		4 => "Instant Reward + Fit Squad + 100% Cashback",
-		5 => "100% Cashback"
+		1 => 'Instant Reward',
+		2 => 'Instant Reward + Fit Squad ',
+		3 => 'Instant Reward + 100% Cashback',
+		4 => 'Instant Reward + Fit Squad + 100% Cashback',
+		5 => '100% Cashback'
     ],
     
     'no_instant_reward_types'=>[5,6],
@@ -1121,8 +1035,8 @@ return array(
 	'occasion_dates' => ['2019-10-26', '2019-10-29'],
     
 	'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251],
-	"service_icon_base_url" => "http://b.fitn.in/iconsv1/",
-	"service_icon_base_url_extention" => ".png",
-	"checkin_checkout_max_distance_in_meters" => 2000
+	'service_icon_base_url' => 'http://b.fitn.in/iconsv1/',
+	'service_icon_base_url_extention' => '.png',
+	'checkin_checkout_max_distance_in_meters' => 2000
     
 );
