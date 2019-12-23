@@ -1273,7 +1273,7 @@ class PassService {
                 $success_template['pass']['subheader'],
                 [
                     'duration_text'=> $order['pass']['duration_text'],
-                    'usage_text' => 'UNLIMITED VALIDITY'
+                    'usage_text' => (!empty($order['corporate_source']) || in_array($order['customer_source'], ['sodexo', 'thelabellife']))?'ALL ACCESS PASS':'UNLIMITED VALIDITY'
                 ]
             );
             $success_template['pass']['subheader'] = 'Unlimited Validity';
