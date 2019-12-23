@@ -109,9 +109,9 @@ if(!function_exists('citywise_category')){
                 "swimming",
                 "pilates",
                 "luxury-hotels",
-                "healthy-snacks-and-beverages",
+                // "healthy-snacks-and-beverages",
                 "spinning-and-indoor-cycling",
-                "healthy-tiffins",
+                // "healthy-tiffins",
                 "sport-nutrition-supplement-stores",
                 "aqua-fitness", "_id" => 51
             ];
@@ -131,7 +131,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -154,7 +154,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
@@ -175,7 +175,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -196,7 +196,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Marathon Training","slug" => "marathon-training", "_id" => 36],
@@ -218,7 +218,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
@@ -401,14 +401,14 @@ if(!function_exists('citywise_category')){
                 ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
                 ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
-                ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
+                // ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
                 ["name" => "Marathon Training","slug" => "marathon-training", "_id" => 36],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -4816,6 +4816,13 @@ if (!function_exists(('newFitsquadCompatabilityVersion'))){
         }
 
         return true;
+    }
+}
+
+if (!function_exists(('isApiKeyPresent'))){
+    function isApiKeyPresent(){        
+        return !empty($_GET['apikey']) && $_GET['apikey'] == "askjbLKNknsdnksd9";
+
     }
 }
 ?>

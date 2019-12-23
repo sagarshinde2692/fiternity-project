@@ -25,6 +25,12 @@ return array(
 	// 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
     // "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
     // 'uploadStepsStage'=>'http://localhost:5000/fitness-steps-stage/asia-east2/',
+	// "corporate_mapping" => [
+	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
+	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
+	// 	[ "id" => "123456789123421", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJzdGFnZSIsImlhdCI6MTU3NDMyNDQzM30.gKSY53izgoVmgNBdsaZlTD51RyJGDPr2u4ns2rsQgro", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
+	// ],
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -84,42 +90,47 @@ return array(
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-stage.cloudfunctions.net/',
 
 	//live
-	// 'new_search_url' =>'http://c1.fitternity.com/',	
-	// 'url' => 'https://a1.fitternity.com',
-	// 'admin_url' => 'https://fitn.in',
-    // 'website' => 'https://www.fitternity.com',
-    // 'multifit_website' => 'http://www.multifitgym.com',
-	// 'sidekiq_url' => 'http://nw.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => true,
-	// 'env' => 'production',
-	// 'debug' => false,
-	// 'metropolis' => 'https://c1.fitternity.com',
-	// 'amazonpay_isSandbox' => 'false',
-	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'mobikwik_sandbox'=>false,
-	// 'paytm_sandbox'=>false,
-	// 'paypal_sandbox'=>false,
-	// 'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
-	// 'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
-	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
-    // 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
-	// "corporate_mapping" => [
-	//     [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ]
-	// ],
+	'new_search_url' =>'http://c1.fitternity.com/',	
+	'url' => 'https://a1.fitternity.com',
+	'admin_url' => 'https://fitn.in',
+    'website' => 'https://www.fitternity.com',
+    'multifit_website' => 'http://www.multifitgym.com',
+	'sidekiq_url' => 'http://nw.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => true,
+	'env' => 'production',
+	'debug' => false,
+	'metropolis' => 'https://c1.fitternity.com',
+	'amazonpay_isSandbox' => 'false',
+	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>false,
+	'paytm_sandbox'=>false,
+	'paypal_sandbox'=>false,
+	'ffTransactionAPI'=>'https://demo.fitnessforce.com/WebPurchase/Webtransaction.aspx?source=',
+	'ffEnquiryAPI'=>'http://api.fitnessforce.com/prospect',
+	'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
+    'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
+	"corporate_mapping" => [
+		[ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+		[ "id" => "347583457893", "key" => "yurbvfbhtruworthvfdfjgrk", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
+		[ "id" => "9934985980486", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJwcm9kIiwiaWF0IjoxNTc0MzI0NDMzfQ.-3VmCd-k8H01FZz1CB9mfCyk-UyxzO9R6U00ATmWtW4", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
+	],
 
+	"generic_corporate_exclude" => ['sodexo', 'sbig', 'thelabellife'],
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
 		['max_price'=>500, 'credits'=>3],
 		['max_price'=>749, 'credits'=>4]
 	],
-
+	'sbig_acronym' => 'sbig',
+	'sbig_coupon_code' => 'qwersbigpoiu34876',
+	'sbig_complementary_coupon_code' => 'compsbigpoiu58632',
 	'pass_payment_options' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[
@@ -147,7 +158,7 @@ return array(
 	'pass_payment_options_wallets_test' => [
 		[
 			'title' => 'Paypal',
-			'subtitle' => 'Get 50% Instant Cashback Upto INR 700 (New Users Only)',
+			'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
 			'value' => 'paypal'
 		],
 		[

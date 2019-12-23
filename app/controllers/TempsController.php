@@ -385,6 +385,7 @@ class TempsController extends \BaseController {
         Log::info("verifyOtpV1");
         $customerToken = "";
         $jwt_token = Request::header('Authorization');
+        $source = Request::header('source');
 
         if($jwt_token){
             $decoded = decode_customer_token();
@@ -552,7 +553,7 @@ class TempsController extends \BaseController {
                 
                 if ($temp['source'] != 'kiosk'){
                     
-                    $all_accounts = $this->getAllCustomersByPhone($temp);
+                    $all_accounts = $this->getAllCustomersByPhone($temp, $source);
                     if(!empty($all_accounts)){
                         $customer_data = $all_accounts[0];
                         $customerToken = $customer_data['customerToken'];
@@ -1204,7 +1205,7 @@ class TempsController extends \BaseController {
 
     }
 
-    function getAllCustomersByPhone($data){
+    function getAllCustomersByPhone($data, $source=null){
         
         $customer_data = [];
         Customer::$withoutAppends = true;
@@ -1230,7 +1231,12 @@ class TempsController extends \BaseController {
 
         if(!empty($customers) && count($customers)>0){
             if(count($customers) != 1){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('default_account', true)->orderBy('_id','desc')->get();
+                if(!empty($source) && $source=='sbig') {
+                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('email', $data['customer_email'])->orderBy('_id','desc')->get();
+                }
+                else {
+                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender','corporate_id')->where('email', 'exists', true)->where('contact_no', substr($data['customer_phone'], -10))->where('default_account', true)->orderBy('_id','desc')->get();
+                }
 
                 Log::info("Customers by primary contact no default");
                 Log::info($defaultCustomer);

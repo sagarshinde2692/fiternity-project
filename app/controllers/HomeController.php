@@ -4034,11 +4034,14 @@ class HomeController extends BaseController {
         $device_type = $data['device_type'];
         $to = $data['to'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']),"label"=>$data['label']);
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1, "label"=>$data['label']), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
+        if(!empty($data['campaign'])) {
+            $notificationData['campaign'] = $data['campaign'];
+        }
         $route  = $device_type;
         return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
     }

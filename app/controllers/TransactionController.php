@@ -6254,7 +6254,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 | 6-10 Dec",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: MEM20 | 21-27 Dec ",'position'=>$position++];
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
@@ -6273,7 +6273,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: X100','position'=>$position++];
 
             // $first_session_free = $this->firstSessionFree($data);
             // if(!empty($first_session_free) && $first_session_free){
@@ -7399,6 +7399,15 @@ class TransactionController extends \BaseController {
         if(!empty($headerSource) && $headerSource=='multifit'){
             $data['multifit'] = true;
         }
+        else if(!empty($headerSource) && $headerSource==Config::get('app.sbig_acronym') && (!empty($data['pass_id']) || !empty($data['order_id'])) && !empty($data['email'])){
+            $data['sbig'] = true;
+            $data['customer_source'] = "sbig";
+            if(empty($data['pass_id'])) {
+                $_passOrder = Order::find(intval($data['order_id']));
+                $data['pass_id'] = $_passOrder['pass.pass_id'];
+            }
+            $data['coupon'] = $this->utilities->getSBIGCouponCode($headerSource, $data['email'], $data['pass_id']);
+        }
         Log::info("checkoutSummary");
 
         Log::info($data);
@@ -8122,8 +8131,7 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['coupon_discount']
                     ];
                 }
-
-                if(!empty($order["coupon_discount_amount"])){
+                else if(!empty($order["coupon_discount_amount"])){
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
                         'value' => '-Rs. '.(string)$order["coupon_discount_amount"]
@@ -10153,7 +10161,7 @@ class TransactionController extends \BaseController {
             $free_trial_ratecard = Ratecard::where('service_id', $data['service_id'])->where('type', 'trial')->where('price', 0)->first();
 
             if($free_trial_ratecard){
-                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], $data['customer_phone'], true)){
+                if(!$this->utilities->checkTrialAlreadyBooked($data['finder_id'], null, $data['customer_email'], !empty($data['customer_phone']) ? $data['customer_phone'] : null, true)){
                     $first_session_free = true;
                 }
             }
