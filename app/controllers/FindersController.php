@@ -5185,69 +5185,69 @@ class FindersController extends \BaseController {
 				
 				$isIntegratedVendor = $this->utilities->isIntegratedVendor($finderData['finder']);
 
-                if($extended_validity_ratecards >= 2 && $isIntegratedVendor){
+                // if($extended_validity_ratecards >= 2 && $isIntegratedVendor){
                     
-                    $finderData['fit_ex'] =[
-                        'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
-                        'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
-                        'image'=>'https://b.fitn.in/global/fitex-logo.png',
-                        'data'=>[
-                            [
-                                'title'=>"Unlimited Validity Membership",
-                                'subtitle'=>"Buy a sessions pack and use it over a longer duration",
-                                'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
-                            ],
-                            [
-                                'title'=>"Money Saver",
-                                'subtitle'=>"Pay only for the days you workout",
-                                'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
-                            ],
-                            [
-                                'title'=>"Easy to Book",
-                                'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
-                                'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
-                            ],
-                            [
-                                'title'=>"Track Your Usage",
-                                'subtitle'=>"Check the workout counter in your Fitternity profile",
-                                'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
-                            ],
-                        ]
-                    ];
-                }else if($isIntegratedVendor){
+                //     $finderData['fit_ex'] =[
+                //         'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
+                //         'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                //         'image'=>'https://b.fitn.in/global/fitex-logo.png',
+                //         'data'=>[
+                //             [
+                //                 'title'=>"Unlimited Validity Membership",
+                //                 'subtitle'=>"Buy a sessions pack and use it over a longer duration",
+                //                 'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
+                //             ],
+                //             [
+                //                 'title'=>"Money Saver",
+                //                 'subtitle'=>"Pay only for the days you workout",
+                //                 'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
+                //             ],
+                //             [
+                //                 'title'=>"Easy to Book",
+                //                 'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
+                //                 'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
+                //             ],
+                //             [
+                //                 'title'=>"Track Your Usage",
+                //                 'subtitle'=>"Check the workout counter in your Fitternity profile",
+                //                 'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
+                //             ],
+                //         ]
+                //     ];
+                // }else if($isIntegratedVendor){
                     
-                    if($pps_stripe){
+                //     if($pps_stripe){
                         
-                        $finderData['fit_ex'] =[
-                            'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
-                            'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
-                            'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20188%403x.png',
-                            'data'=>[
-                                [
-                                    'title'=>"Money Saver",
-                                    'subtitle'=>"Pay only for the days you workout",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
-                                ],
-                                [
-                                    'title'=>"Unlimited Access",
-                                    'subtitle'=>"Book multiple sessions.",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
-                                ],
-                                [
-                                    'title'=>"Super Easy",
-                                    'subtitle'=>"Book, Reschedule, Cancel on the go",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
-                                ],
-                                [
-                                    'title'=>"Get Addicted",
-                                    'subtitle'=>"Book, Burn & get rewarded on every workout",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20322%403x.png'
-                                ],
-                            ]
-                        ];
-                    }
+                //         $finderData['fit_ex'] =[
+                //             'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                //             'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                //             'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20188%403x.png',
+                //             'data'=>[
+                //                 [
+                //                     'title'=>"Money Saver",
+                //                     'subtitle'=>"Pay only for the days you workout",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Unlimited Access",
+                //                     'subtitle'=>"Book multiple sessions.",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Super Easy",
+                //                     'subtitle'=>"Book, Reschedule, Cancel on the go",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Get Addicted",
+                //                     'subtitle'=>"Book, Burn & get rewarded on every workout",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20322%403x.png'
+                //                 ],
+                //             ]
+                //         ];
+                //     }
                         
-                }
+                // }
                 
                 $this->serviceRemoveFlexiIfExtendedPresent($finderData, "app");
                 
