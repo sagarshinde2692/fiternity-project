@@ -120,7 +120,7 @@ return [
                     ]
                 ],
                 "about_pass" => [
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Available in 2 options - OnePass and Pocket Friendly OnePass Lite"),
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
                     'button_text' => 'CHECKOUT GYMS and STUDIOS'
                 ],
                 'offerings' => [
