@@ -5050,7 +5050,8 @@ Class Utilities {
 			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
 			
 			$key = 'gtKFFx';
-            $salt = 'eCwWELxi';
+			$salt = 'eCwWELxi';
+			
 			if($env == "production"){
 				$key = 'l80gyM';$salt = 'QBl78dtK';
 			}

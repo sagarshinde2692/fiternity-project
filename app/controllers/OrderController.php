@@ -2131,6 +2131,7 @@ class OrderController extends \BaseController {
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -2855,6 +2856,7 @@ class OrderController extends \BaseController {
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';

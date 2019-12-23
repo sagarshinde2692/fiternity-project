@@ -2938,6 +2938,7 @@ if (!function_exists(('getReversehash'))){
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -2993,6 +2994,7 @@ if (!function_exists(('getHash'))){
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -3109,7 +3111,8 @@ if (!function_exists(('getReverseHashProduct'))){
 			} */
 			
 			$key = 'gtKFFx';
-            $salt = 'eCwWELxi';
+			$salt = 'eCwWELxi';
+			
 			if($env == "production"){
 				$key = 'l80gyM';$salt = 'QBl78dtK';
 			}

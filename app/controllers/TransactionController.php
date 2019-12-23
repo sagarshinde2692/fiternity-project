@@ -5199,6 +5199,7 @@ class TransactionController extends \BaseController {
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
         if($env == "production"){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
@@ -9117,15 +9118,8 @@ class TransactionController extends \BaseController {
     	   
         if($this->vendor_token)
             array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
-    
-        // if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
-        //     $payment_options['googlepay']  = [
-        //         'title' => 'GooglePay',
-        //         'notes' => "Open your Google Pay app on your phone to approve the payment request from Fitternity"
-        //     ];
-        // }
-
-    	return $payment_modes;
+	
+            return $payment_modes;
     }
 
     public function checkProductCaptureFailureStatus($data){
