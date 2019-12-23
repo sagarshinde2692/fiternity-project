@@ -50,6 +50,7 @@ use FitnessForceAPILog;
 use Capture;
 
 use Booktrial;
+use CampaignNotification;
 
 Class Utilities {
 
