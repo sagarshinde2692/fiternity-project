@@ -96,6 +96,7 @@ class FindersController extends \BaseController {
 
 		// Log::info($_SERVER['REQUEST_URI']);        
 
+		$request_params = Input::all();
 		$thirdPartySector = Request::header('sector');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
 
@@ -1456,6 +1457,7 @@ class FindersController extends \BaseController {
 
                 $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
                 $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
+                !empty($finder['flags']['onepass_max_booking_count']) ?  $response['finder']['onepass_max_booking_count'] = $finder['flags']['onepass_max_booking_count'] :null ;
 
 				// if($this->utilities->isIntegratedVendor($response['finder'])){
 				// 	$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
@@ -1573,6 +1575,7 @@ class FindersController extends \BaseController {
 		}
 
 		$this->multifitGymWebsiteVendorUpdate($response);
+		$this->utilities->onePassBookingRestrictionMessage($response, $request_params);
 
 		return Response::json($response);
 

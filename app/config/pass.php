@@ -1238,7 +1238,13 @@ return [
             'failed_icon' => 'https://b.fitn.in/onepass/premium_session_failed.png',
             'success' => 'This is a premium booking. You can book only no_of_premium_session premium session using the trial OnePass.',
             'failed' => 'You have exhausted your premium booking limit.'
-        ]
+        ],
+
+        'finder_page' => [
+            'background_color' => '#0B445D',
+            'max_count' => 0,
+            'success' => 'You can only book left_session sessions here via trial OnePass.',
+        ],
     ]
 
 ];

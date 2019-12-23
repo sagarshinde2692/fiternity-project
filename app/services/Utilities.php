@@ -11408,4 +11408,28 @@ Class Utilities {
             $result['popup_data'] = $response_data;
         }
     }
+
+    public function onePassBookingRestrictionMessage(&$finder_response, $input){
+
+        if(empty($finder_response['finder']['onepass_max_booking_count'])){
+            return;
+        }
+
+        $restriction_message = config::get('pass.booking_restriction.finder_page');
+        $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];
+        if(empty($input['corporate']) && empty($input['generic']) && !empty($input['from']) && $input['from']== 'checkout'){
+            $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $finder_response['finder']['onepass_max_booking_count']]);
+        }
+        else if(
+            (!empty($input['corporate']) || empty($input['generic'])) 
+            && 
+            empty($input['from'])
+        ){
+            $restriction_message['msg'] = '';
+        }
+
+        unset($restriction_message['success']);
+        $finder_response['finder']['onepass_session_message'] = $restriction_message;
+        
+    }
 }
