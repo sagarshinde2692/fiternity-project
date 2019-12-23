@@ -770,7 +770,8 @@ return [
             "header1" => "ONEPASS",
             "header1_color" => "#000000",
             "header2" => "Lite",
-            "header2_color" => "#259BA1"
+            "header2_color" => "#259BA1",
+            "subheader" => ''
         ],
             
     ],
