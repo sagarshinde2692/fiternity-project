@@ -5551,7 +5551,7 @@ class HomeController extends BaseController {
 		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
     }
 
-    public function getCampaignData(){
-        return $this->utilities->getCampaignData();
-    }
+    // public function getCampaignData(){
+    //     return $this->utilities->getCampaignData();
+    // }
 }

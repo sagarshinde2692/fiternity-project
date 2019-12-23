@@ -2828,20 +2828,21 @@ class PassService {
 
 
         $today_date = date("d-m-Y hh:mm:ss");
-        $campaing = $this->utilities->getCampaignData();
+        // $campaing = $this->utilities->getCampaignData();
 
-        if(empty($campaing['_id'])){
-            return $resp;
-        }
+        // if(empty($campaing['_id'])){
+        //     return $resp;
+        // }
 
-        $coupons = Coupon::active()
-        ->where('pass_type', $pass_type)
-        ->where('start_date', '<=', new \DateTime())
-        ->where('end_date', '>', new \DateTime())
-        ->where('ratecard_type', $ratecard_type)
-        ->where('campaign.campaign_id', (string)$campaing['_id'])
-        ->where('total_available', '>', 0)
-        ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+        $coupons = null;
+        // Coupon::active()
+        // ->where('pass_type', $pass_type)
+        // ->where('start_date', '<=', new \DateTime())
+        // ->where('end_date', '>', new \DateTime())
+        // ->where('ratecard_type', $ratecard_type)
+        // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        // ->where('total_available', '>', 0)
+        // ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
 
         if(empty($coupons)) {
             return $resp;
