@@ -2012,7 +2012,7 @@ Class CustomerReward {
 
                     if(empty($jwt_token)){
 
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
 
                         return $resp;
                     }
@@ -2051,7 +2051,7 @@ Class CustomerReward {
                 
                 $jwt_token = Request::header('Authorization');
                 if(empty($jwt_token)){
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
                     return $resp;
                 }
 
@@ -2083,7 +2083,7 @@ Class CustomerReward {
 
                     if(empty($jwt_token)){
 
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
 
                         return $resp;
                     }
@@ -2212,7 +2212,7 @@ Class CustomerReward {
 
                     if(empty($jwt_token)){
 
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
 
                         return $resp;
                     }
@@ -2327,7 +2327,7 @@ Class CustomerReward {
 
                 if(empty($jwt_token)){
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Details Required","user_login_error"=>true);
 
                     return $resp;
                 }
@@ -2377,7 +2377,7 @@ Class CustomerReward {
 
                 if(empty($jwt_token)){
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Details Required","user_login_error"=>true);
 
                     return $resp;
                 }
@@ -2406,7 +2406,7 @@ Class CustomerReward {
 
                 if(empty($jwt_token)){
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Details Required","user_login_error"=>true);
 
                     return $resp;
                 }
@@ -2431,7 +2431,7 @@ Class CustomerReward {
 
                 if(empty($jwt_token)){
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Details Required","user_login_error"=>true);
 
                     return $resp;
                 }
@@ -2827,7 +2827,7 @@ Class CustomerReward {
                     
                                         if(empty($jwt_token)){
                     
-                                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
                     
                                             return $resp;
                                         }
@@ -3051,7 +3051,7 @@ Class CustomerReward {
                     
                                         if(empty($jwt_token)){
                     
-                                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+                                            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Details Required","user_login_error"=>true);
                     
                                             return $resp;
                                         }
@@ -3317,7 +3317,7 @@ Class CustomerReward {
                 }else{
 
                     $resp['user_login_error'] = true;
-                    $resp['error_message'] = 'User Login Required';
+                    $resp['error_message'] = 'User Details Required';
 
                     return $resp;
                 }
@@ -3380,7 +3380,7 @@ Class CustomerReward {
                 }else{
 
                     $resp['user_login_error'] = true;
-                    $resp['error_message'] = 'User Login Required';
+                    $resp['error_message'] = 'User Details Required';
 
                     return $resp;
                 }
