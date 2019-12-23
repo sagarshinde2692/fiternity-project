@@ -25,7 +25,9 @@
 
 var x = db.passes.updateMany(
     {
-        pass_type:"red", 
+        pass_type:{
+            $in :["black","red"]
+        }, 
         status: "1",
     }, 
     {
