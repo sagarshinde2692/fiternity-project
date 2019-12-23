@@ -1416,7 +1416,7 @@ class FindersController extends \BaseController {
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift. Use Code: MEM20<br><br>21-27 Dec";
+							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift. Use Code: MEM20 | 21-27 Dec";
 						}
 						
 						if(!empty($vendor_stripe_line)){
