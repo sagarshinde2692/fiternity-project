@@ -11368,56 +11368,44 @@ Class Utilities {
         }
         return $couponCode;
     }
+    
+    public function campaignNotification($customer, $city=null, &$result){
 
-    public function campaignSeenStatus(){
-		$data = Input::all();
-
-		$rules = [
-			'campaign_id' => 'required'
-		];
-		$validator = Validator::make($data, $rules);
-		if ($validator->fails()) {
-			return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())));
-		}
-
-		$jwt_token = Request::header('Authorization');
-		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decodedToken->customer->_id;
-		$customer = Customer::active()
-		->where('_id', $customer_id)
-		->first();
-
-		if(empty($customer->campaing_notification_seen)){
-			$customer->campaing_notification_seen = [
-				(int)$data['campaign_id']
-			];
-		}
-		else if(in_array((int)$data['campaign_id'], $customer->campaing_notification_seen)) {
-			return [
-				"status" => 200,
-				"msg" => "Success",
-				"repeated_request" => true
-			];
-		}
-		else {
-			$temp = $customer->campaing_notification_seen;
-			array_push($temp, (int)$data['campaign_id']);
-			$customer->campaing_notification_seen = $temp;
-			unset($temp);
-		}
-
-		try{
-			$customer->save();
-			return [
-				"status" => 200,
-				"msg" => "Success"
-			];
-		}catch(\Exception $e){
-			Log::info('eror occured while saving customer notificatio save::::', [$e]);
-			return [
-				"status" => 400,
-				"msg" => "Something went wrong"
-			];
-		}
-	}
+        if(empty($customer['campaing_notification_seen'])){
+            $customer['campaing_notification_seen'] = [];
+        }
+        
+        if(empty($city['_id'])){
+            $city_id= null;
+        }
+        else {
+            $city_id = $city['_id'];
+        }
+        
+        $response_data = Config::get('home.popup_data');
+        
+        $campaign_data = CampaignNotification::active()
+        ->where('city_id', $city_id)
+        ->whereNotIn('campaign_id', $customer['campaing_notification_seen'])
+        ->where('start_date', '<', new MongoDate(strtotime('now')))
+        ->where('end_date', '>=', new MongoDate(strtotime('now')))
+        ->first(['image', 'campaign_id', 'text', 'deep_link']);
+        
+        if(!empty($campaign_data)){
+            $campaign_data = $campaign_data->toArray();
+        }
+        else{
+            $campaign_data = [];
+        }
+        
+        $response_data = array_merge($response_data, $campaign_data);
+        
+        if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
+            $response_data['cancel_url'] .= $response_data['campaign_id'];
+            unset($response_data['campaign_id']);
+            unset($response_data['_id']);
+            $result['popup_data'] = $response_data;
+        }
+    }
+    
 }
