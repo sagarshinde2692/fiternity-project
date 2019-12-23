@@ -68,7 +68,7 @@ class PassService {
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
         }
-        else if(false && !empty($city)){
+        else if(!empty($city)){
             $local_pass_count =  Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city)->count();
             Log::info('localpass count::::', [$local_pass_count, $city]);
 
@@ -139,9 +139,10 @@ class PassService {
                 $passList = $passList->where('cities', $city);
             }
 
-            if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
-                $passList->where('lite', null);
-            }
+            // if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
+            //     $passList->where('lite', null);
+            // }
+            $passList->where('lite', null);
             $passList = $passList->orderBy('duration')->get();
         }
         

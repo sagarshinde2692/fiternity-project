@@ -10202,7 +10202,7 @@ class TransactionController extends \BaseController {
             $data['pass_type'] = 'lite';
         }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
-        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using ".ucfirst($data['pass_type']);
+        $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
         $des = 'You can cancel this session 1 hour prior to your session time.';
 		if($data['finder_category_id'] == 5){
