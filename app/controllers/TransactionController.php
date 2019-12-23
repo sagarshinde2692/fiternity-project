@@ -9119,7 +9119,7 @@ class TransactionController extends \BaseController {
         if($this->vendor_token)
             array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
 	
-            return $payment_modes;
+    	return $payment_modes;
     }
 
     public function checkProductCaptureFailureStatus($data){
