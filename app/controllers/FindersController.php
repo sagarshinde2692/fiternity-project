@@ -11,6 +11,7 @@ use App\Services\Cacheapi as Cacheapi;
 use App\Services\Cron as Cron;
 use App\Services\Utilities as Utilities;
 use App\Services\PassService as PassService;
+use App\Services\CouponService as CouponService;
 
 class FindersController extends \BaseController {
 
@@ -26,7 +27,7 @@ class FindersController extends \BaseController {
 	protected $findermailer;
 	protected $cacheapi;
 
-	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities, PassService $passService) {
+	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities, PassService $passService, CouponService $couponService) {
 
 		parent::__construct();
 		$this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
@@ -40,7 +41,7 @@ class FindersController extends \BaseController {
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
 		$this->utilities 						= $utilities;
 		$this->passService 						= $passService;
-
+		$this->couponService                    = $couponService;
 		$this->vendor_token = false;
 
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1494,7 +1495,18 @@ class FindersController extends \BaseController {
 
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
-
+				if(empty($response['finder']['flags']['state']) || !in_array($response['finder']['flags']['state'], ['closed', 'temporarily_shut']) && $response['finder']['membership'] != "disable"){ 
+					if(!in_array($response['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($response['finder']['flags']['monsoon_flash_discount_disabled']))  && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+					  $vendor_page_without_login = false;
+					  if(empty($jwt_token)){
+						  $vendor_page_without_login = true;
+					  }
+					  $coupon_data = $this->couponService->addcoupoun($response['finder']['services'],$vendor_page_without_login,$request_from = "web",$response['finder']);
+					  if(!empty($coupon_data)) {
+						  $response['finder']['coupons'] = $coupon_data;
+					  }
+			  }
+		  }	
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
 
@@ -4958,7 +4970,25 @@ class FindersController extends \BaseController {
 					$this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
-				
+				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
+					if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+					   
+					   //   $vendor_page_without_login = false;
+					   // if(empty($jwt_token)){
+					   //  $vendor_page_without_login = true;
+					   // }
+					   //vendor_page_without_login set to default false as dhruv said it will be general coupon only which will be applicable to all users
+					   $vendor_page_without_login = false;
+					   $coupon_data = $this->couponService->addcoupoun($data['finder']['services'],$vendor_page_without_login,$request_from = "app",$data['finder']);
+					   if(isset($coupon_data['services_coupon']) && !empty($coupon_data['services_coupon'])){
+						   $data['finder']['services_coupon'] = $coupon_data['services_coupon'];
+					   }
+		   
+					   if(isset($coupon_data['offers']) && !empty($coupon_data['offers'])){
+						   $data['finder']['offers'] = $coupon_data['offers'];
+					   }
+					 }
+				   }
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -5447,7 +5477,24 @@ class FindersController extends \BaseController {
 					unset($finderData['finder']['finder_one_line']);
 				}
 			}
-
+			$finderData['finder']['finder_one_line']= "";
+            if(isset($finderData['finder']['services_coupon'])) {
+            foreach($finderData['finder']['services'] as $srkey => $srval){
+                foreach($srval['ratecard'] as $ratecardKey => $ratecard){
+                    if(isset($finderData['finder']['services_coupon'][$ratecard['_id']])) {
+                      $finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecard['_id']]['coupons'];      
+                    }
+                }    
+        }
+        if(isset($finderData['finder']['offers']['options'])){
+            foreach($finderData['finder']['offers']['options'] as $val){
+                if(isset($val['is_applicable'])){
+                    $finderData['finder']['finder_one_line']= strtoupper($val['code'])." code is pre-applied on the rate card below. Explore all other coupons on checkout.";
+                }
+            }
+        } 
+        unset($finderData['finder']['services_coupon']);
+    }
 		}else{
 
 			$finderData['status'] = 404;

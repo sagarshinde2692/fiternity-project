@@ -20,4 +20,11 @@ class Coupon extends \Basemodel {
 		
 		$this->attributes['_id'] = intval($value);
 	}
+
+	public function getActiveVendorCoupon($coupon_condition){
+        return Coupon::where($coupon_condition)
+                        ->where("start_date", "<=" , new \DateTime())
+                        ->where("end_date", ">=" , new \DateTime())
+                        ->get();
+    }
 }
