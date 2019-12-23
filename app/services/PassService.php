@@ -2669,11 +2669,15 @@ class PassService {
         $messages = Config::get('pass.booking_restriction');
         $msg = '';
 
+        $response = [
+            'status'=> $status, 
+            'data' => [
+                'msg' => $msg,
+                'background_color' => $messages['service_page']['background_color']
+            ]
+        ];
         if(empty($passOrder['pass']['max_booking_count']) && empty($finder['flags']['onepass_max_booking_count'])){
-            return [
-                'status'=> $status, 
-                'data'=> []
-            ];
+            return $response;
         }
 
         $max_booking_count = !empty($passOrder['pass']['max_booking_count']) ? $passOrder['pass']['max_booking_count']: null;
@@ -2683,15 +2687,9 @@ class PassService {
 
         if(empty($bookings['result']) && !empty($max_booking_count)){
 
-            $msg = strtr($messages['service_page']['success'], [ 'left_session' => $max_booking_count, 'total_available' => $max_booking_count]);
+            $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session' => $max_booking_count, 'total_available' => $max_booking_count]);
 
-            return [
-                'status'=> $status, 
-                'data' => [
-                    'msg' => $msg,
-                    'background_color' => $messages['service_page']['background_color']
-                ]
-            ];
+            return $response;
         }
 
         $findersList = [];
@@ -2713,16 +2711,12 @@ class PassService {
                 $msg = strtr($messages['service_page']['success'], ['left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count ]);
             }
 
-            return [
-                'status'=> $status, 
-                'data' => [
-                    'msg' => $msg,
-                    'background_color' => $messages['service_page']['background_color']
-                ]
-            ];
+            $response['status'] = $status;
+            $response['data']['msg'] = $msg;
+            return $response;
         }
 
-        return $this->passBookingsRestriction($status, $bookings, $messages, $finder, $passOrder, $findersIndexWithBookings, $finder_id);
+        return $this->passBookingsRestriction($status, $bookings, $messages, $finder, $passOrder, $findersIndexWithBookings, $finder_id, $response);
     }
 
     public function passBookingsRestriction($status, $bookings, $messages,  $finder, $passOrder, $findersIndexWithBookings, $finder_id){
@@ -2732,27 +2726,20 @@ class PassService {
         if(empty($max_booking_count)){
             return; 
         }
-        
-        if(!empty($status)){
-            $msg = '';
+        $status = $findersIndexWithBookings[$finder_id] >= $max_booking_count;
 
-            if(empty($status)){
-                $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
-            }
-            else{
-                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
-            }
+        if(empty($status)){
+            $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
         }
+        else{
+            $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
+        }
+        $response['status'] = $status;
+        $response['msg'] = $msg;
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
 
-        return [
-            'status'=> $status,
-            'data' => [
-                'msg' => $msg,
-                'background_color' => $messages['service_page']['background_color']
-            ]
-        ];
+        return $response;
     }
 
     public function isPremiumSessionAvailableV2($customer_id, $passOrder, $ratecard_price=0, $finder){
