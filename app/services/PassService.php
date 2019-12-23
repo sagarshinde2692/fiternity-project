@@ -2786,6 +2786,10 @@ class PassService {
                 else {
                     $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
                 }
+
+                if(!empty($pass['pass_type'])){
+                    unset($response['app_passes'][$index]['offerings']['button_text']);
+                }
             }
             else {
                 $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
