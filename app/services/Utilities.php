@@ -11411,24 +11411,46 @@ Class Utilities {
 
     public function onePassBookingRestrictionMessage(&$finder_response, $input){
 
-        if(empty($finder_response['finder']['onepass_max_booking_count'])){
+        if( 
+            (
+                empty($input['from'])
+                &&
+                $input['from'] != 'checkout'
+            )
+            || 
+            (
+                empty($finder_response['finder']['onepass_max_booking_count']) 
+                && 
+                empty($input['corporate']) 
+                && 
+                empty($input['generic'])
+            )
+        ){
             return;
         }
 
         $restriction_message = config::get('pass.booking_restriction.finder_page');
-        $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];
-        if(empty($input['corporate']) && empty($input['generic']) && !empty($input['from']) && $input['from']== 'checkout'){
+        if(!empty($finder_response['finder']['onepass_max_booking_count']) && empty($input['corporate']) && empty($input['generic'])){
             $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $finder_response['finder']['onepass_max_booking_count']]);
+
+            $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];
         }
-        else if(
-            (!empty($input['corporate']) || empty($input['generic'])) 
-            && 
-            empty($input['from'])
-        ){
-            $restriction_message['msg'] = '';
+        else if(!empty($input['corporate']) || empty($input['generic'])){
+            $input['corporate'] = strtolower($input['corporate']);
+
+            $corporate = \Pass::active()
+            ->where('pass_type', 'hybrid')
+            ->where('corporate', $input['corporate'])
+            ->where('max_booking_count', 'exists', true)
+            ->first(['max_booking_count']);
+
+            Log::info('corporate ::CVVDFVDFVD', [$corporate]);
+            $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $corporate->max_booking_count]);
+            $restriction_message['max_count'] = $corporate->max_booking_count;
         }
 
         unset($restriction_message['success']);
+        unset($finder_response['finder']['onepass_max_booking_count']);
         $finder_response['finder']['onepass_session_message'] = $restriction_message;
         
     }
