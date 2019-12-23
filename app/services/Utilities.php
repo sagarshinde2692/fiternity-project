@@ -11407,5 +11407,5 @@ Class Utilities {
             $result['popup_data'] = $response_data;
         }
     }
-    
+
 }
