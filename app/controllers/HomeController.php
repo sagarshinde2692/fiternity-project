@@ -1058,12 +1058,17 @@ class HomeController extends BaseController {
 
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
+                // $camp_arg_data = array('source' => 'app', 'sub_source' => 'successpage');
+			    // $campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+                // $concate_subline = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+
                 $header = "BOOKING SUCCESSFUL!";
                 
                 $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";
 
                 if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                    // $subline .= "<br><br> ".$concate_subline;
                 }
 
                 if(!empty($item['pass_order_id'])){
@@ -1085,6 +1090,7 @@ class HomeController extends BaseController {
 
                     if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                         $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                        // $subline .= "<br><br> ".$concate_subline;
                     }
 
                     if(!empty($item['first_session_free'])){
@@ -1982,6 +1988,7 @@ class HomeController extends BaseController {
                         
                         if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                             $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                            // $subline .= "<br><br> ".$concate_subline;
                         }
 
                         break;
@@ -5542,6 +5549,9 @@ class HomeController extends BaseController {
  
  	public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false) {
 		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
-	}
+    }
 
+    public function getCampaignData(){
+        return $this->utilities->getCampaignData();
+    }
 }

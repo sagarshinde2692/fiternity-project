@@ -31,7 +31,7 @@ class PassService {
         $this->device_id = !empty(Request::header('Device-Id'))? Request::header('Device-Id'): null;
     }
 
-    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null, $email = null, $corporateSource=null){
+    public function listPasses($customerId, $pass_type=null, $device=null, $version=null, $category=null, $city=null, $source=null, $email = null, $corporateSource=null, $include_onepass_lite_web=null){
         
         $utilities = new Utilities();
 
@@ -68,7 +68,7 @@ class PassService {
             $response['app_passes'][0]['header'] = $response['app_passes'][0]['header']. " LOCAL";
             unset($response['app_passes'][1]);
         }
-        else if(!empty($city)){
+        else if(false && !empty($city)){
             $local_pass_count =  Pass::where('status', '1')->where('pass_category', 'local')->where('local_cities.city_name', $city)->count();
             Log::info('localpass count::::', [$local_pass_count, $city]);
 
@@ -138,6 +138,10 @@ class PassService {
                 $city = getmy_city($city);
                 $passList = $passList->where('cities', $city);
             }
+
+            if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
+                $passList->where('lite', null);
+            }
             $passList = $passList->orderBy('duration')->get();
         }
         
@@ -188,11 +192,7 @@ class PassService {
 
             $agrs = array('pass' => $pass, 'city' => $city);
             $brandingData = $utilities->getPassBranding($agrs);
-            if(empty($brandingData['text'])){
-                unset($passDetails['text']);
-            }else{
-                $passDetails['text'] = $brandingData['text'];
-            }
+            unset($passDetails['text']);
 
             if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
@@ -222,36 +222,69 @@ class PassService {
             }
 
             if(($pass['pass_type']=='red') || ($pass['pass_type']=='hybrid' && $pass['branding']=='red')) {
-                if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['app_passes'][0]['offerings']['ratecards'][] = $passDetails;
-                }
-                else {
-                    $response['passes'][0]['offerings']['ratecards'][] = $passDetails;
-                }
+
+                $this->formatPassOffering($response, $pass, $passDetails, $device, 0);
+
             } else{
-                if(!empty($device) && in_array($device, ['android', 'ios'])) {
-                    $response['app_passes'][1]['offerings']['ratecards'][] = $passDetails;
-                }
-                else {
-                    $response['passes'][1]['offerings']['ratecards'][] = $passDetails;
-                }
+                
+                $this->formatPassOffering($response, $pass, $passDetails, $device, 1);
             }
         }
+
+        $this->formatPassListingWithOnePassLite($response, $include_onepass_lite_web, $city);
+        
         if(!empty($device) && in_array($device, ['android', 'ios'])) {
             $response['passes'] = $response['app_passes'];
         }
         unset($response['app_passes']);
+        unset($response['passes'][0]['offerings_lite']);
+        unset($response['passes'][1]['offerings_lite']);
 
         $agrs1 = array('city' => $city);
         $brandingData1 = $utilities->getPassBranding($agrs1);
         if(!empty($brandingData1['red_remarks_header'])){
             $response['passes'][0]['remarks']['header'] .= $brandingData1['red_remarks_header'];
+            $response['passes'][0]['about_pass']['campaign_text'] = $brandingData1['red_remarks_header'];
         }
 
         if(!empty($brandingData1['black_remarks_header'])){
-            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];
+            $response['passes'][1]['remarks']['header'] .= $brandingData1['black_remarks_header'];         
+            $response['passes'][1]['about_pass']['campaign_text'] = $brandingData1['black_remarks_header'];
         }
 
+        if(!empty($response['passes'][0]['about_pass']) && !empty($response['passes'][0]['offerings'][1]['offering_text'])){
+            $response['passes'][0]['offerings'][1]['text'] = $response['passes'][0]['offerings'][1]['offering_text'];
+            unset($response['passes'][0]['offerings'][1]['offering_text']);
+        }
+
+        $red_pass_coupons = null;
+        $black_pass_coupons = null;
+
+        if(empty($pass_type)){
+            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+        }
+        else if(!empty($pass_type) && $pass_type=='red'){
+            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+        }
+        else {
+            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+        }
+    
+        if(!empty($red_pass_coupons['options'])){
+            $response['passes'][0]['coupons'] = $red_pass_coupons;
+        }
+        if(!empty($black_pass_coupons['options'])){
+            $response['passes'][1]['coupons'] = $black_pass_coupons;
+        }
+
+        if((!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)) && !empty($pass_type)){
+            if($pass_type == 'black'){
+                $response['passes'][0] = $response['passes'][1];
+            }
+
+            unset($response['passes'][1]);
+        }
         // $passConfig = Config::get('pass');
         // $passCount = Order::active()->where('type', 'pass')->count();
         // if($passCount>=$passConfig['total_available']) {
@@ -874,17 +907,27 @@ class PassService {
 
         $passType = null;
         $profile_completed = false;
+        $onepass_lite = false;
         if(!empty($passOrder)) {
             $passType = $passOrder['pass']['pass_type'];
 
-            // $profile_completed = !empty($fromService) ? $this->utilities->checkOnepassProfileCompleted($customer): true;
-            // Log::info('pass orders:::::::::::::::::', [$amount, $passOrder, $profile_completed]);
+            if(!empty($passOrder['pass']['lite'])){
+                Log::info('insode onepass lite orders::::');
+                $onepass_lite = true;
+                // $upper_amount = Config::get('pass.onepass_lite_price_upper_limit');
+            }
         }
 
         $finder = null;
         if(!empty($finderId)) {
+            $finder_onepass_flag = 'flags.not_available_on_onepass';
+
+            if(!empty($passOrder['pass']['lite'])){
+                $finder_onepass_flag = 'flags.not_available_on_onepass_lite';
+            }
+            
             Finder::$withoutAppends = true;
-            $finder = Finder::active()->where('_id', $finderId)->where('flags.not_available_on_onepass', '!=', true)->first();
+            $finder = Finder::active()->where('_id', $finderId)->where($finder_onepass_flag, '!=', true)->first();
             
             if(
                 empty($finder) 
@@ -899,7 +942,7 @@ class PassService {
                     )
                 )
             ) {
-            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType/*, 'profile_incomplete' => !$profile_completed*/ ];
+            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
         
@@ -929,14 +972,8 @@ class PassService {
                     if(!empty($passOrder['pass']['corporate']) && $passOrder['pass']['corporate'] == 'sodexo') {
                         $upper_amount = Config::get('pass.sodexo_price_upper_limit');
                     }
-                    // $duration = $passOrder['pass']['duration'];
-                    // if(empty($finder) || empty($finder['brand_id']) || !in_array($finder['brand_id'], array_column($passOrder['pass']['brands'], '_id'))){
-                    //     Log::info('inside hybrid passs:::::', [$finder, $finderId,  array_column($passOrder['pass']['brands'], '_id')]);
-                    //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> "Not Applicable on ".$finder['title']];
-                    // }
 
                     if($schedule_time<strtotime($passOrder['end_date'])){
-                        // $month=(int)date("n",strtotime($date));
 
                         Booktrial::$withoutAppends = true;
                         $todaysBooking = Booktrial::where('pass_order_id', $passOrder['_id'])->where('schedule_date', new \MongoDate($schedule_time))->where('going_status_txt', '!=', 'cancel')->first();
@@ -961,88 +998,22 @@ class PassService {
                                 
                                 $monthly_bookings = $passOrder['monthly_total_sessions_used']; 
                                 for($i=0; $i < $length; $i++){
-                                    // Log::info('inside hybrid pass:::::::::::::::::::', [$trial_date, strtotime(date('Y-m-d H:i:s',$monthly_bookings[$i]['start_date']->sec)), $i, strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))]);
+
                                     if(
                                         (
                                             $trial_date >= strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['start_date']->sec)) && $trial_date < strtotime(date('Y-m-d H:i:s', $monthly_bookings[$i]['end_date']->sec))
                                         )
                                     ){
-                                        Log::info('inside hybrid pass:::::::::::::::::::', [$monthlySessionsTotal,  $monthly_bookings[$i]['count'], $date]);
                                         if($monthlySessionsTotal > $monthly_bookings[$i]['count']){
                                             $canBook= true;
                                         }
                                         break;
                                     }
                                 }
-                                // Booktrial::$withoutAppends = true;
-                                // $monthlySessionsUsed = Booktrial::where('pass_order_id', $passOrder['_id'])->where('going_status_txt', '!=', 'cancel')->where('schedule_date', '>=', new \MongoDate($pass_start_date))->where('schedule_date', '<', new \MongoDate($end_date))->count();
-                                // Log::info('monthly session total used :::::::', [$monthlySessionsUsed]);
-                                // if($monthlySessionsTotal>$monthlySessionsUsed) {
-                                //     $canBook = true;
-                                // }
+                                
                             }
                             $pass_branding = $passOrder['pass']['branding'];
 
-
-                            // $pass_order_id = $passOrder['_id'];//411922;
-                            // $booking_counters =Booktrial::raw(function($collection) use($month, $pass_order_id){
-                            //     $match = [
-                            //         '$match' => [
-                            //             'pass_order_id' => $pass_order_id,
-                            //             'going_status_txt' => [
-                            //                 '$ne' => 'cancel'
-                            //             ]
-                            //         ]
-                            //     ];
-                            //     $addField = [
-                            //         '$addFields' =>[
-                            //             'month_value' => [
-                            //                 '$month' => '$schedule_date'
-                            //             ]
-                            //         ]
-                            //     ];
-                            //     $group = [
-                            //         '$group' =>[
-                            //             '_id'=> null,
-                            //             'total_bookings' => [
-                            //                 '$sum' => 1
-                            //             ],
-
-                            //             'monthly_total_bookings' => [
-                            //                 '$sum' => [
-                            //                     '$cond' => [
-                            //                         [
-                            //                             '$eq' => ['$month_value', $month]
-                            //                         ],
-                            //                         1, 
-                            //                         0
-                            //                     ]
-                            //                 ]
-                            //             ]
-                            //         ]
-                            //     ];
-
-                            //     return $collection->aggregate([
-                            //         $match,
-                            //         $addField,
-                            //         $group
-                            //     ]);
-                            // });
-                            // Log::info('inside hybrid passs::::: counts', [$booking_counters['result'], $sessionsTotal, $monthlySessionsTotal]);
-                            
-                            // $totlaSessionsUsed = !empty($booking_counters['result'][0]['total_bookings']) ? $booking_counters['result'][0]['total_bookings'] : 0;
-                            // $BookingMonthSessionsUsed = !empty($booking_counters['result'][0]['monthly_total_bookings']) ? $booking_counters['result'][0]['monthly_total_bookings'] : 0;
-                            // Log::info('info::::::',[$BookingMonthSessionsUsed, $BookingMonthSessionsUsed >= $monthlySessionsTotal]);
-                            // if($totlaSessionsUsed >= $sessionsTotal) {
-                            //     $msg =  "You have used all ".$sessionsTotal." sessions.";
-                            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
-                            // }
-                            // if($BookingMonthSessionsUsed >= $monthlySessionsTotal){
-                            //     $msg =  "You have used all monthly ".$BookingMonthSessionsUsed." session";
-                            //     return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, "msg"=> $msg];
-                            // }
-                            // $canBook = true;
-                            // $pass_branding = $passOrder['pass']['branding'];
                         }
                         
                     }
@@ -1051,13 +1022,12 @@ class PassService {
             Log::info('allow session uppper amount', [$upper_amount]);
             if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, /*'profile_incomplete' => !$profile_completed,*/ 'pass_branding' => $pass_branding];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding];
             }
             else {
                 // below 1001
                 
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount/*, 'profile_incomplete' => !$profile_completed*/ ];
-
+            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'onepass_lite' => $onepass_lite];
                 //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
             }
         }
@@ -1267,22 +1237,23 @@ class PassService {
             ]
         );
         if($unlimited){
+            $usage_text = !empty($order['pass']['lite']) ? 'LITE': 'UNLIMITED USAGE';
             $success_template['pass']['subheader'] = strtr(
                 $success_template['pass']['subheader'],
                 [
                     'duration_text'=> $order['pass']['duration_text'],
-                    'usage_text' => 'UNLIMITED USAGE'
+                    'usage_text' => $usage_text
                 ]
             );
             $success_template['pass']['subheader'] = $order['pass']['duration_text'].' Validity';
-            $success_template['pass']['card_header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
-            $success_template['pass']['header'] = 'UNLIMITED USAGE';// $order['pass']['name'];
+            $success_template['pass']['card_header'] = $usage_text;// $order['pass']['name'];
+            $success_template['pass']['header'] = $usage_text;// $order['pass']['name'];
             $success_template['pass']['type'] = '';//strtoupper($order['pass']['type']);
             $success_template['pass']['price'] =  $order['pass']['price'];
             $success_template['pass']['pass_type'] =  $order['pass']['pass_type'];
             $success_template['pass']['image'] = $success['pass_image_silver'];
             $success_template['pass_image'] = $success['pass_image_silver'];
-            $success_template['pass']['usage_text'] = 'UNLIMITED USAGE';
+            $success_template['pass']['usage_text'] = $usage_text;
         }
         else{
             $success_template['pass']['card_header'] = strtoupper($order['pass']['duration_text']);// $order['pass']['name'];
@@ -2090,15 +2061,32 @@ class PassService {
     public function passTermsAndCondition(){
         $input = Input::all();
         $passTerms = \Config::get('pass.terms');
+        $utilities = new Utilities();
+        $agrs = array('city' => 'mumbai');
+        $brandingData = $utilities->getPassBranding($agrs);
+
         if(!empty($input['type']) && $input['type']=='unlimited'){
             $passTerms = $passTerms['red'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
+            }
         }
         else if(!empty($input['type']) && $input['type']=='subscribe'){
             $passTerms = $passTerms['black'];
+            
+            if(!empty($brandingData['tnc_black'])){
+                $passTerms[0] = $brandingData['tnc_black'].$passTerms[0];
+            }
         }
         else{
             $passTerms = $passTerms['default'];
+
+            if(!empty($brandingData['tnc_red'])){
+                $passTerms[0] = $brandingData['tnc_red'].$passTerms[0];
+            }
         }
+
         return array("status"=> 200, "data"=> $passTerms[0], "msg"=> "success");
     }
 
@@ -2579,6 +2567,10 @@ class PassService {
             $subheader = $totalSessions.' SESSIONS';
         }
 
+        if($type=='red' && !empty($passOrder['pass']['lite'])){
+            $homePassData['header'] =  'LITE';
+        }
+
         $homePassData['name'] = strtoupper(trim($passOrder['customer_name']));
         $homePassData['subheader'] = $subheader;
         $homePassData['left_value'] = strval($upcomingBookings);
@@ -2699,5 +2691,168 @@ class PassService {
         }
 
         return $data;
+    }
+
+    public function formatPassListingWithOnePassLite(&$response, $include_onepass_lite_web, $city){
+
+        if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
+            $this->formatOfferingOnePassLite('app_passes', 0, $response);
+            $this->formatOfferingOnePassLite('app_passes', 1, $response);
+            
+            $response['faq'] = $response['faq_v_2'];
+
+            unset($response['app_passes'][0]['remarks']['text']);
+            unset($response['app_passes'][0]['remarks']['title']);
+            unset($response['app_passes'][0]['remarks']['url']);
+            unset($response['app_passes'][1]['remarks']['text']);
+            unset($response['app_passes'][1]['remarks']['title']);
+            unset($response['app_passes'][1]['remarks']['url']);
+            if(!empty($response['app_passes'][0]['offerings'][1]['onepass_lite']) && !empty($response['app_passes'][0]['offerings'][1]['border_text'])){
+                unset($response['app_passes'][0]['offerings'][1]['border_text']);
+            }
+
+            if(!empty($response['app_passes'][0]['offerings'][0]['text_lite'])){
+                $response['app_passes'][0]['offerings'][0]['text'] = $response['app_passes'][0]['offerings'][0]['text_lite'];
+            }
+
+            if(!empty($response['app_passes'][0]['offerings'][1]['text_lite'])){
+                $response['app_passes'][0]['offerings'][1]['text'] = $response['app_passes'][0]['offerings'][1]['text_lite'];
+            }
+
+            if(!empty($response['app_passes'][1]['offerings'][0]['text_lite'])){
+                $response['app_passes'][1]['offerings'][0]['text'] = $response['app_passes'][1]['offerings'][0]['text_lite'];
+            }
+
+            empty($city) ? $city= 'mumbai': null;
+            $response['app_passes'][0]['tnc']['url'] = strtr($response['app_passes'][0]['tnc']['url'], ['city_name' => $city]);
+            $response['app_passes'][1]['tnc']['url'] = strtr($response['app_passes'][1]['tnc']['url'], ['city_name' => $city]);
+        }
+        else if(!empty($include_onepass_lite_web)){
+            $this->formatOfferingOnePassLite('passes', 0, $response, true);
+            $this->formatOfferingOnePassLite('passes', 1, $response, true);
+        }
+        else {
+            unset($response['app_passes'][0]['about_pass']);
+            unset($response['app_passes'][1]['about_pass']);
+            unset($response['app_passes'][0]['tnc']);
+            unset($response['app_passes'][1]['tnc']);
+        }
+        unset($response['faq_v_2']);
+
+        if(!empty($response['app_passes'][0]['offerings'][0]['text_lite'])){
+            unset($response['app_passes'][0]['offerings'][0]['text_lite']);
+        }
+
+        if(!empty($response['app_passes'][0]['offerings'][1]['text_lite'])){
+            unset($response['app_passes'][0]['offerings'][1]['text_lite']);
+        }
+
+        if(!empty($response['app_passes'][1]['offerings'][0]['text_lite'])){
+            unset($response['app_passes'][1]['offerings'][0]['text_lite']);
+        }
+    }
+
+    public function formatOfferingOnePassLite($key, $index, &$response, $web=null){
+
+        if(!empty($response[$key][$index]['offerings_lite']['ratecards'])){
+            if(empty($web)){
+                $response[$key][$index]['offerings'] = [
+                    $response[$key][$index]['offerings'],
+                    $response[$key][$index]['offerings_lite']
+                ];
+            }
+            else{
+                $response[$key][$index]['offerings'] = [
+                    $response[$key][$index]['offerings_lite'],
+                    $response[$key][$index]['offerings']
+                ];
+            }
+        }else {
+            $response[$key][$index]['offerings'] = [
+                $response[$key][$index]['offerings']
+            ];
+        }
+
+    }
+
+    public function formatPassOffering(&$response, $pass, $passDetails, $device, $index){
+
+        if(!empty($device) && in_array($device, ['android', 'ios'])) {
+            if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
+                if(!empty($pass['lite'])){
+                    $response['app_passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
+                }
+                else {
+                    $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
+                }
+            }
+            else {
+                $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
+            }
+        }
+        else {
+            if(!empty($pass['lite'])){
+                $response['onepass_lite_available'] = true;
+                $response['passes'][$index]['offerings_lite']['ratecards'][] = $passDetails;
+            }
+            else {
+                $response['passes'][$index]['offerings']['ratecards'][] = $passDetails;
+            }
+        }
+
+    }
+
+    public function listValidCouponsOfOnePass($ratecard_type, $pass_type='red'){
+        
+        $resp=[
+
+            "header"=>"Offers For You",
+            "text" => "View Offers",
+            "options"=>[]
+        ];
+                
+        $customer_email=null;
+        $customer_id=null;
+        $customer_phone=null;
+
+        $jwt_token = Request::header('Authorization');
+        $device = Request::header('Device-Type');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+            $customer_email=$decoded->customer->email;
+            $customer_phone = $decoded->customer->contact_no;
+        }
+
+
+        $today_date = date("d-m-Y hh:mm:ss");
+        $campaing = $this->utilities->getCampaignData();
+
+        if(empty($campaing['_id'])){
+            return $resp;
+        }
+
+        $coupons = Coupon::active()
+        ->where('pass_type', $pass_type)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
+        ->where('campaign.campaign_id', (string)$campaing['_id'])
+        ->where('total_available', '>', 0)
+        ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+
+        if(empty($coupons)) {
+            return $resp;
+        }
+        
+        $coupons=$coupons->toArray();
+        
+        if(!in_array($device, ['ios', 'android'])) {
+            $coupons = $this->utilities->removeMobileCodes($coupons);
+        }
+        $resp['options'] = $coupons;
+        return $resp;
+            
     }
 }

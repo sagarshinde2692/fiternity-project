@@ -1,5 +1,6 @@
 <?php
 $apiUrl = \Config::get('app.url');
+$website_url = \Config::get('app.website');
 $success_page_template = Config::get('successPage');
 // $red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
 // $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
@@ -9,8 +10,10 @@ $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
     'price_upper_limit' => 1001,
     'sodexo_price_upper_limit' => 751,
+    'onepass_lite_price_upper_limit' => 301,
     'list' => [
         'title'=>'ONEPASS',
+        'onepass_lite_available' => false,
         'passes' => [
             [
                 'header' => 'UNLIMITED USAGE',
@@ -28,8 +31,10 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'UNLIMITED USAGE PASS',
+                    "border_text" => "RECOMMENDED",
+                    'header' => "<b>Limitless Workouts</b> across 12,000+ fitness studios, gyms and swimming pools across India",
                     'text' => '(Limited Access)',
+                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [
@@ -42,6 +47,15 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                'offerings_lite' => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
+                    "onepass_lite" => true,
+                    'button_text' => 'Check Options On OnePass Lite',
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ],
             [
@@ -60,6 +74,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'header' => 'UNLIMITED VALIDITY PASS',
                     'text' => '(Unlimited Access)',
                     'ratecards' => []
@@ -70,6 +85,14 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
+                ],
+                'offerings_lite' => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'header' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
+                    "onepass_lite" => true,
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ]
         ],
@@ -96,13 +119,21 @@ return [
                         'Onepass Red gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Available in 2 options - OnePass and Pocket Friendly OnePass Lite"),
+                    'button_text' => 'CHECKOUT GYMS and STUDIOS'
+                ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
+                    "image" => "http://b.fitn.in/passes/onepass-app.png",
                     'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
-                    'button_text' => 'Checkout Gyms/Studios',
+                    'text_lite' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 15 days to 1 year.",
+                    "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
+                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -111,7 +142,21 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
-                ]
+                ],
+                "offerings_lite" => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
+                    'button_text' => 'Check Options On OnePass Lite',
+                    "onepass_lite" => true,
+                    'ratecards' => []
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $website_url.'/onepass/tnc/red/city_name?mobile_app=true'
+                ],
             ],
             [
                 'header' => 'ONEPASS BLACK',
@@ -135,18 +180,29 @@ return [
                         'Onepass Black gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')."  Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
+                    'button_text' => 'CHECKOUT GYMS and STUDIOS',
+                ],
                 'offerings' => [
+                    "image" => "http://b.fitn.in/passes/onepass-app.png",
                     'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
-                    'button_text' => 'Checkout Gyms/Studios',
+                    'text_lite' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity.",
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
-                ]
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $website_url.'/onepass/tnc/black/city_name?mobile_app=true'
+                ],
             ]
         ],
         'faq' => [
@@ -154,6 +210,12 @@ return [
             'text' => 'Click here to view all FAQ`s ',
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
+        ],
+        "faq_v_2" => [
+            "icon" =>  "https://b.fitn.in/onepass/FAQ_3x.png",
+            "header" => "Frequently Asked Questions",
+            "title" => "FAQ Title",
+            "url" =>  $apiUrl.'/passfaq'
         ],
         'subheader' => 'duration_text PASS FOR usage_text'
     ],
@@ -702,7 +764,14 @@ return [
             "header2_color" => "#000000",
             "subheader" => "UNLIMITED VALIDITY",
             "desc_subheader" => "Limited Workouts"
-        ]
+        ],
+        "lite" => [
+            "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            "header1" => "ONEPASS",
+            "header1_color" => "#000000",
+            "header2" => "Lite",
+            "header2_color" => "#259BA1"
+        ],
             
     ],
 
@@ -945,7 +1014,8 @@ return [
             'icon' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
             'header' => 'Terms and Conditions',
             'title' => '',
-            'url' => $apiUrl.'/passtermscondition'
+            'url' => $apiUrl.'/passtermscondition',
+            "url_lite" => $website_url.'/onepass/tnc/red/city_name?mobile_app=true'
         ],
 
         'footer' => [

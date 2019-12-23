@@ -4521,6 +4521,10 @@ if (!function_exists('setNewToken')) {
         Log::info(gettype($customer_data));
         Log::info('gettype($customer_data)');
         $pass_data = [];
+
+        deletePassDetailFromToken($customer_data);
+        $update_header = true;
+        
         if(!empty($pass)){
             
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
@@ -4545,24 +4549,14 @@ if (!function_exists('setNewToken')) {
                 $pass_data['pass_sessions_monthly_total'] = $pass['pass']['monthly_total_sessions'];
                 $pass_data['pass_sessions_monthly_used'] = (!empty($pass['monthly_total_sessions_used']))?$pass['monthly_total_sessions_used']:0;
             }
+
+            if(!empty($pass['pass']['lite'])){
+                $pass_data['pass_lite'] = $pass['pass']['lite'];
+            }
+
             $customer_data = array_merge($customer_data, $pass_data);
-            $update_header = true;
-        }else if(empty($pass)){
-            unset($customer_data['pass']);
-            unset($customer_data['pass_id']);
-            unset($customer_data['pass_start_date']);
-            unset($customer_data['pass_expiry_date']);
-            unset($customer_data['pass_type']);
-            unset($customer_data['pass_sessions_total']);
-            unset($customer_data['pass_sessions_used']);
-            unset($customer_data['pass_city_id']);
-            unset($customer_data['pass_city_name']);
-            unset($customer_data['pass_sessions_monthly_total']);
-            unset($customer_data['pass_sessions_monthly_used']);
-            unset($customer_data['pass_order_id']);
-            unset($customer_data['pass_corporate']);
-            $update_header = true;
         }
+        
         if(!empty($update_header) || $rel_banner_shown){
             $new_token = createCustomerToken(null, $customer_data, $rel_banner_shown);
             $response->headers->set('token', $new_token);
@@ -4772,6 +4766,10 @@ if (!function_exists(('setPassToToken'))){
             if(!empty($passOrder['pass']['corporate'])){
                 $data['pass_corporate'] = $passOrder['pass']['corporate'];
             }
+
+            if(!empty($passOrder['pass']['lite'])){
+                $data['pass_lite'] = $passOrder['pass']['lite'];
+            }
         }
     }
 }
@@ -4826,6 +4824,32 @@ if (!function_exists(('isApiKeyPresent'))){
     function isApiKeyPresent(){        
         return !empty($_GET['apikey']) && $_GET['apikey'] == "askjbLKNknsdnksd9";
 
+    }
+}
+
+if(!function_exists(('deletePassDetailFromToken'))){
+    function deletePassDetailFromToken(&$customer_data){
+        unset($customer_data['pass']);
+        unset($customer_data['pass_id']);
+        unset($customer_data['pass_start_date']);
+        unset($customer_data['pass_expiry_date']);
+        unset($customer_data['pass_type']);
+        unset($customer_data['pass_sessions_total']);
+        unset($customer_data['pass_sessions_used']);
+        unset($customer_data['pass_city_id']);
+        unset($customer_data['pass_city_name']);
+        unset($customer_data['pass_sessions_monthly_total']);
+        unset($customer_data['pass_sessions_monthly_used']);
+        unset($customer_data['pass_order_id']);
+        unset($customer_data['pass_corporate']);
+        unset($customer_data['pass_lite']);
+        unset($customer_data['pass_premium_session_restriction']);
+        unset($customer_data['premium_min_booking_price_restriction']);
+        unset($customer_data['pass_premium_booking_price']);
+        unset($customer_data['exhausted_vendors']);
+        unset($customer_data['pass_premium_session_exhausted']);
+        unset($customer_data['pass_premium_min_booking_price']);
+        unset($customer_data['pass_premium_booking_price']);
     }
 }
 ?>

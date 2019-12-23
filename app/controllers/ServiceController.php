@@ -843,7 +843,10 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : "",
 				'free_trial_available'=>!empty($item['freeTrialRatecards']),
-				'flags' => ['classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false)]
+				'flags' => [
+					'classpass_available' => ((!empty($item['flags']['classpass_available']))?$item['flags']['classpass_available']:false),
+					'lite_classpass_available' => ((!empty($item['flags']['lite_classpass_available']))?$item['flags']['lite_classpass_available']:false)
+				]
 			);
 
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
@@ -940,8 +943,28 @@ class ServiceController extends \BaseController {
 						$rsh['price_only']=(isset($p_np['peak']))?$p_np['peak']:((isset($p_np['non_peak']) && isset($p_np['non_peak_discount'])) ? $p_np['non_peak'] + $p_np['non_peak_discount']:"");
                         $nrsh['price_only']=(isset($p_np['non_peak']))?$p_np['non_peak']:"";
                         Log::info("rsh price",[$rsh['price_only']]);
-                        Log::info("nrsh price",[$rsh['price_only']]);
-						if(!empty($allowSession['allow_session']) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+                        Log::info("nrsh price",[$rsh['price_only'], $allowSession, $service['flags']]);
+						if(
+							!empty($allowSession['allow_session']) 
+							&& 
+							(
+								(
+									!empty($service['flags']['classpass_available']) 
+									&& 
+									$service['flags']['classpass_available']
+									&&
+									empty($allowSession['onepass_lite'])
+								)
+								||
+								(
+									!empty($allowSession['onepass_lite'])
+									&&
+									!empty($service['flags']['lite_classpass_available'])
+									&& 
+									$service['flags']['lite_classpass_available']
+								)
+							)
+						){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
 							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
@@ -950,7 +973,13 @@ class ServiceController extends \BaseController {
 							if($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
-							
+
+
+							if(!empty($allowSession['onepass_lite'])){
+								$rsh['price'] = Config::get('app.onepass_lite_free_string');
+								$nrsh['price'] = Config::get('app.onepass_lite_free_string');
+							}
+							Log::info('insoide fhbvdfvhbjdfvbjhdfvbjdfvdfjvdfbhdfjhvdfvjdfhjvf:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
 						}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                             
                             $str = '';
@@ -1072,7 +1101,35 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 
 						$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-						if(!empty($allowSession['allow_session']) && ($ratecard_price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+						if(
+							!empty($allowSession['allow_session']) 
+							&& 
+							(
+								(
+									(
+										$ratecard_price < Config::get('pass.price_upper_limit') 
+										|| 
+										$this->utilities->forcedOnOnepass($finder)
+									) 
+									&& 
+									(
+										!empty($service['flags']['classpass_available']) 
+										&& 
+										$service['flags']['classpass_available']
+									)
+									&&
+									empty($allowSession['onepass_lite'])
+								)
+								||
+								(
+									!empty($allowSession['onepass_lite'])
+									&&
+									!empty($service['flags']['lite_classpass_available']) 
+									&& 
+									$service['flags']['lite_classpass_available']	
+								)
+							)
+						){
 							array_set($slot, 'skip_share_detail', true);
 						}
 
@@ -1222,8 +1279,36 @@ class ServiceController extends \BaseController {
                 }
 
 				// $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
-				if(!empty($allowSession['allow_session']) && ($service['non_peak']['price'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder)) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
-					$service['non_peak']['price'] = Config::get('app.onepass_free_string');
+				if(
+					!empty($allowSession['allow_session']) 
+					&& 
+					(
+						(
+							(
+								$service['non_peak']['price'] < Config::get('pass.price_upper_limit') 
+								|| $this->utilities->forcedOnOnepass($finder)
+							) 
+							&& 
+							(
+								!empty($service['flags']['classpass_available']) 
+								&& $service['flags']['classpass_available']
+							)
+							&&
+							empty($allowSession['onepass_lite'])
+						)
+
+						||
+
+						(
+							!empty($allowSession['onepass_lite'])
+							&&
+							!empty($service['flags']['lite_classpass_available'])
+							&& 
+							$service['flags']['lite_classpass_available']
+						)
+					)
+				){
+					$service['non_peak']['price'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string');
 				}else if(empty($finder['flags']['monsoon_campaign_pps'])){
                     $str = "";
 				
@@ -1390,7 +1475,7 @@ class ServiceController extends \BaseController {
 				foreach($data['schedules'] as &$sc){
 					$onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
 
-					Log::info('type:::::::::::::::::::::', [$type]);
+					Log::info('type:::::::::::::::::::::', [$type, $sc]);
                     if((!empty($_GET['init_source']) && $_GET['init_source'] == 'pps') || (!empty($onepassHoldCustomer) && $onepassHoldCustomer && (!empty($sc['price_int']) && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))))){
                         $sc['free_trial_available'] = false;
                     }
@@ -1430,8 +1515,45 @@ class ServiceController extends \BaseController {
 						$str = '';
 					}
                     
-                    if(!empty($allowSession['allow_session']) && (!empty($sc['price_int'])  && (!empty($type) && $type!='trialschedules') && ($sc['price_int'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($finder))) && (!empty($sc['flags']['classpass_available']) && $sc['flags']['classpass_available'])){
-						$sc['cost'] = Config::get('app.onepass_free_string');
+                    if(
+						!empty($allowSession['allow_session']) 
+						&& 
+						(
+							(
+								(
+									!empty($sc['price_int'])  
+									&& 
+									(
+										!empty($type) && $type!='trialschedules'
+									) 
+									&& 
+									(
+										$sc['price_int'] < Config::get('pass.price_upper_limit') 
+										|| 
+										$this->utilities->forcedOnOnepass($finder)
+									)
+								) 
+								&& 
+								(
+									!empty($sc['flags']['classpass_available']) 
+									&& 
+									$sc['flags']['classpass_available']
+								)
+								&& 
+								empty($allowSession['onepass_lite'])
+							)
+							||
+
+							(
+								!empty($allowSession['onepass_lite'])
+								&&
+								!empty($sc['flags']['lite_classpass_available'])
+								&& 
+								$sc['flags']['lite_classpass_available']
+							)
+						)
+					){
+						$sc['cost'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string') : Config::get('app.onepass_free_string');
 					}else{
 						$sc['cost'] .= $str;
 					}
@@ -2131,9 +2253,36 @@ class ServiceController extends \BaseController {
 			// }
 		}
 		
-		if(!empty($allowSession['allow_session']) && ($service_details['amount'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])) && (!empty($service_details['flags']['classpass_available']) && $service_details['flags']['classpass_available'])){
+		if(
+			!empty($allowSession['allow_session']) 
+			&& 
+			(
+				(	
+					(
+						$service_details['amount'] < Config::get('pass.price_upper_limit') 
+						|| 
+						$this->utilities->forcedOnOnepass(['flags' => $service_details['finder_flags']])
+					) 
+					&& 
+					(
+						!empty($service_details['flags']['classpass_available']) 
+						&& $service_details['flags']['classpass_available']
+					)
+					&&
+					empty($allowSession['onepass_lite'])
+				)
+				||
+				(
+					!empty($allowSession['onepass_lite'])
+					&& 
+					!empty($service_details['flags']['lite_classpass_available']) 
+					&& 
+					$service_details['flags']['lite_classpass_available']
+				)
+			)
+		){
 			
-			$service_details['price'] = Config::get('app.onepass_free_string');
+			$service_details['price'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string');
 			
 		}
 

@@ -4430,6 +4430,10 @@ class CustomerController extends \BaseController {
             ];
         }
 		
+		// $camp_arg_data = array('source' => 'app', 'sub_source' => 'homepage');
+		// $campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+		// $result['fitex']['footer'] = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+		
 		if(!empty($result['onepass_pre'])){
 			$agrs1 = array('city' => $city);
 			$brandingData = $this->utilities->getPassBranding($agrs1);
