@@ -11533,7 +11533,7 @@ Class Utilities {
 
     public function getCampaignBranding($data = null){
         Log::info("getCampaignBranding");
-        $campaignData = $this->getCampaignData();
+        // $campaignData = $this->getCampaignData();
         
         if(!empty($campaignData) && !empty($data)){
             
