@@ -50,6 +50,7 @@ use FitnessForceAPILog;
 use Capture;
 
 use Booktrial;
+use CampaignNotification;
 
 Class Utilities {
 
@@ -11368,4 +11369,44 @@ Class Utilities {
         }
         return $couponCode;
     }
+    
+    public function campaignNotification($customer, $city=null, &$result){
+
+        if(empty($customer['campaing_notification_seen'])){
+            $customer['campaing_notification_seen'] = [];
+        }
+        
+        if(empty($city['_id'])){
+            $city_id= null;
+        }
+        else {
+            $city_id = $city['_id'];
+        }
+        
+        $response_data = Config::get('home.popup_data');
+        
+        $campaign_data = CampaignNotification::active()
+        ->where('city_id', $city_id)
+        ->whereNotIn('campaign_id', $customer['campaing_notification_seen'])
+        ->where('start_date', '<', new MongoDate(strtotime('now')))
+        ->where('end_date', '>=', new MongoDate(strtotime('now')))
+        ->first(['image', 'campaign_id', 'text', 'deep_link']);
+        
+        if(!empty($campaign_data)){
+            $campaign_data = $campaign_data->toArray();
+        }
+        else{
+            $campaign_data = [];
+        }
+        
+        $response_data = array_merge($response_data, $campaign_data);
+        
+        if(!empty($response_data['image']) && !empty($response_data['campaign_id'])){
+            $response_data['cancel_url'] .= $response_data['campaign_id'];
+            unset($response_data['campaign_id']);
+            unset($response_data['_id']);
+            $result['popup_data'] = $response_data;
+        }
+    }
+
 }
