@@ -4423,57 +4423,60 @@ class FindersController extends \BaseController {
 					}
 					// unset($finder['services']);
 				}
+        		if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
 				
 
-				if(count($finder['photos']) > 0 ){
-					$photoArr        =   [];
-					usort($finder['photos'], "sort_by_order");
-					foreach ($finder['photos'] as $photo) {
-						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
-						$photoObj                   =   array_except($photo,['servicetags']);
-						$photoObj['servicetags']    =   $servicetags;
-						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
-						array_push($photoArr, $photoObj);
-					}
-					array_set($finder, 'photos', $photoArr);
+					if(count($finder['photos']) > 0 ){
+						$photoArr        =   [];
+						usort($finder['photos'], "sort_by_order");
+						foreach ($finder['photos'] as $photo) {
+							$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+							$photoObj                   =   array_except($photo,['servicetags']);
+							$photoObj['servicetags']    =   $servicetags;
+							$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+							array_push($photoArr, $photoObj);
+						}
+						array_set($finder, 'photos', $photoArr);
 
 
-					$service_tags_photo_arr             =   [];
-					$info_tags_photo_arr                =   [];
+						$service_tags_photo_arr             =   [];
+						$info_tags_photo_arr                =   [];
 
-					if(count($photoArr) > 0 ) {
-						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
-						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+						if(count($photoArr) > 0 ) {
+							$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+							$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
 
-						foreach ($unique_service_tags_arr as $unique_service_tags) {
-							$service_tags_photoObj = [];
-							$service_tags_photoObj['name'] = $unique_service_tags;
-							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
-								if (in_array($unique_service_tags, $value['servicetags'])) {
-									return $value;
-								}
-							});
-							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
-							array_push($service_tags_photo_arr, $service_tags_photoObj);
+							foreach ($unique_service_tags_arr as $unique_service_tags) {
+								$service_tags_photoObj = [];
+								$service_tags_photoObj['name'] = $unique_service_tags;
+								$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+									if (in_array($unique_service_tags, $value['servicetags'])) {
+										return $value;
+									}
+								});
+								$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+								array_push($service_tags_photo_arr, $service_tags_photoObj);
+							}
+
+							foreach ($unique_info_tags_arr as $unique_info_tags) {
+								$info_tags_photoObj = [];
+								$info_tags_photoObj['name'] = $unique_info_tags;
+								$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+									if (in_array($unique_info_tags, $value['tags'])) {
+										return $value;
+									}
+								});
+								$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+								array_push($info_tags_photo_arr, $info_tags_photoObj);
+							}
 						}
 
-						foreach ($unique_info_tags_arr as $unique_info_tags) {
-							$info_tags_photoObj = [];
-							$info_tags_photoObj['name'] = $unique_info_tags;
-							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
-								if (in_array($unique_info_tags, $value['tags'])) {
-									return $value;
-								}
-							});
-							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
-							array_push($info_tags_photo_arr, $info_tags_photoObj);
-						}
+						array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+						array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+
 					}
-
-					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
-					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
-
 				}
+				
 
 				if($finderarr['category_id'] == 5){
 					$finder['type'] = "gyms";
@@ -5339,8 +5342,13 @@ class FindersController extends \BaseController {
 				];
 			}
             $finderData['total_photos_count'] = count($finder['photos']);
+
+        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
             
-            try{
+            	$finderData['finder']['total_photos_count'] = count($finder['photos']);
+			}
+            
+			try{
                 $this->orderRatecards($finderData, 'app');
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
@@ -5446,6 +5454,12 @@ class FindersController extends \BaseController {
 				else if(!empty($finderData['finder']['finder_one_line'])) {
 					unset($finderData['finder']['finder_one_line']);
 				}
+			}
+
+        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+            
+				$finderData['finder']['photos_url'] = Config::get('app.url')."/finderdetailphoto/app/".$tslug;
+				unset($finderData['finder']['photos']);
 			}
 
 		}else{
@@ -8881,5 +8895,63 @@ class FindersController extends \BaseController {
 		}
 
 	}
+
+	public function finderdetailAppPhoto($slug){
+		$tslug  = (string) strtolower($slug);
+		$finderarr = Finder::active()->where('slug','=',$tslug)
+					->first(array('photos'));
+		$finder = array();
+		$finderdata = array();
+		$finder['photos'] =  $finderarr['photos'];
+				if(count($finder['photos']) > 0 ){
+					$photoArr        =   [];
+					usort($finder['photos'], "sort_by_order");
+					foreach ($finder['photos'] as $photo) {
+						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+						$photoObj                   =   array_except($photo,['servicetags']);
+						$photoObj['servicetags']    =   $servicetags;
+						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+						array_push($photoArr, $photoObj);
+					}
+					array_set($finder, 'photos', $photoArr);
+					
+					$service_tags_photo_arr             =   [];
+					$info_tags_photo_arr                =   [];
+					if(count($photoArr) > 0 ) {
+						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+						foreach ($unique_service_tags_arr as $unique_service_tags) {
+							$service_tags_photoObj = [];
+							$service_tags_photoObj['name'] = $unique_service_tags;
+							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+								if (in_array($unique_service_tags, $value['servicetags'])) {
+									return $value;
+								}
+							});
+							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+							array_push($service_tags_photo_arr, $service_tags_photoObj);
+						}
+						foreach ($unique_info_tags_arr as $unique_info_tags) {
+							$info_tags_photoObj = [];
+							$info_tags_photoObj['name'] = $unique_info_tags;
+							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+								if (in_array($unique_info_tags, $value['tags'])) {
+									return $value;
+								}
+							});
+							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+							array_push($info_tags_photo_arr, $info_tags_photoObj);
+						}
+					}
+					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+					$finderdata['status'] = 200;
+					$finderdata['response']['photos'] = $finder['photos'];
+				} else {
+					$finderdata['status'] =404;
+				}        
+				return Response::json($finderdata,$finderdata['status']);
+	}
+
 
 }
