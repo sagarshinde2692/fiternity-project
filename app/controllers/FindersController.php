@@ -4423,57 +4423,60 @@ class FindersController extends \BaseController {
 					}
 					// unset($finder['services']);
 				}
+        		if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
 				
 
-				if(count($finder['photos']) > 0 ){
-					$photoArr        =   [];
-					usort($finder['photos'], "sort_by_order");
-					foreach ($finder['photos'] as $photo) {
-						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
-						$photoObj                   =   array_except($photo,['servicetags']);
-						$photoObj['servicetags']    =   $servicetags;
-						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
-						array_push($photoArr, $photoObj);
-					}
-					array_set($finder, 'photos', $photoArr);
+					if(count($finder['photos']) > 0 ){
+						$photoArr        =   [];
+						usort($finder['photos'], "sort_by_order");
+						foreach ($finder['photos'] as $photo) {
+							$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+							$photoObj                   =   array_except($photo,['servicetags']);
+							$photoObj['servicetags']    =   $servicetags;
+							$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+							array_push($photoArr, $photoObj);
+						}
+						array_set($finder, 'photos', $photoArr);
 
 
-					$service_tags_photo_arr             =   [];
-					$info_tags_photo_arr                =   [];
+						$service_tags_photo_arr             =   [];
+						$info_tags_photo_arr                =   [];
 
-					if(count($photoArr) > 0 ) {
-						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
-						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+						if(count($photoArr) > 0 ) {
+							$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+							$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
 
-						foreach ($unique_service_tags_arr as $unique_service_tags) {
-							$service_tags_photoObj = [];
-							$service_tags_photoObj['name'] = $unique_service_tags;
-							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
-								if (in_array($unique_service_tags, $value['servicetags'])) {
-									return $value;
-								}
-							});
-							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
-							array_push($service_tags_photo_arr, $service_tags_photoObj);
+							foreach ($unique_service_tags_arr as $unique_service_tags) {
+								$service_tags_photoObj = [];
+								$service_tags_photoObj['name'] = $unique_service_tags;
+								$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+									if (in_array($unique_service_tags, $value['servicetags'])) {
+										return $value;
+									}
+								});
+								$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+								array_push($service_tags_photo_arr, $service_tags_photoObj);
+							}
+
+							foreach ($unique_info_tags_arr as $unique_info_tags) {
+								$info_tags_photoObj = [];
+								$info_tags_photoObj['name'] = $unique_info_tags;
+								$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+									if (in_array($unique_info_tags, $value['tags'])) {
+										return $value;
+									}
+								});
+								$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+								array_push($info_tags_photo_arr, $info_tags_photoObj);
+							}
 						}
 
-						foreach ($unique_info_tags_arr as $unique_info_tags) {
-							$info_tags_photoObj = [];
-							$info_tags_photoObj['name'] = $unique_info_tags;
-							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
-								if (in_array($unique_info_tags, $value['tags'])) {
-									return $value;
-								}
-							});
-							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
-							array_push($info_tags_photo_arr, $info_tags_photoObj);
-						}
+						array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+						array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+
 					}
-
-					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
-					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
-
 				}
+				
 
 				if($finderarr['category_id'] == 5){
 					$finder['type'] = "gyms";
@@ -5182,69 +5185,69 @@ class FindersController extends \BaseController {
 				
 				$isIntegratedVendor = $this->utilities->isIntegratedVendor($finderData['finder']);
 
-                if($extended_validity_ratecards >= 2 && $isIntegratedVendor){
+                // if($extended_validity_ratecards >= 2 && $isIntegratedVendor){
                     
-                    $finderData['fit_ex'] =[
-                        'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
-                        'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
-                        'image'=>'https://b.fitn.in/global/fitex-logo.png',
-                        'data'=>[
-                            [
-                                'title'=>"Unlimited Validity Membership",
-                                'subtitle'=>"Buy a sessions pack and use it over a longer duration",
-                                'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
-                            ],
-                            [
-                                'title'=>"Money Saver",
-                                'subtitle'=>"Pay only for the days you workout",
-                                'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
-                            ],
-                            [
-                                'title'=>"Easy to Book",
-                                'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
-                                'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
-                            ],
-                            [
-                                'title'=>"Track Your Usage",
-                                'subtitle'=>"Check the workout counter in your Fitternity profile",
-                                'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
-                            ],
-                        ]
-                    ];
-                }else if($isIntegratedVendor){
+                //     $finderData['fit_ex'] =[
+                //         'title'=>"Most effective way to workout at ".$finderData['finder']['title']." is here!",
+                //         'subtitle'=>"Use Fitternity’s Extended Validity Membership to workout here with a longer validity period",
+                //         'image'=>'https://b.fitn.in/global/fitex-logo.png',
+                //         'data'=>[
+                //             [
+                //                 'title'=>"Unlimited Validity Membership",
+                //                 'subtitle'=>"Buy a sessions pack and use it over a longer duration",
+                //                 'image'=>'https://b.fitn.in/global/web%20NVM%403x.png'
+                //             ],
+                //             [
+                //                 'title'=>"Money Saver",
+                //                 'subtitle'=>"Pay only for the days you workout",
+                //                 'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
+                //             ],
+                //             [
+                //                 'title'=>"Easy to Book",
+                //                 'subtitle'=>"Book your workout through the app or scan QR code at gym/studio",
+                //                 'image'=>'https://b.fitn.in/non-validity/success-page/mob%20icon%201.png'
+                //             ],
+                //             [
+                //                 'title'=>"Track Your Usage",
+                //                 'subtitle'=>"Check the workout counter in your Fitternity profile",
+                //                 'image'=>'https://b.fitn.in/non-validity/success-page/WEB%20icon%202.png'
+                //             ],
+                //         ]
+                //     ];
+                // }else if($isIntegratedVendor){
                     
-                    if($pps_stripe){
+                //     if($pps_stripe){
                         
-                        $finderData['fit_ex'] =[
-                            'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
-                            'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
-                            'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20188%403x.png',
-                            'data'=>[
-                                [
-                                    'title'=>"Money Saver",
-                                    'subtitle'=>"Pay only for the days you workout",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
-                                ],
-                                [
-                                    'title'=>"Unlimited Access",
-                                    'subtitle'=>"Book multiple sessions.",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
-                                ],
-                                [
-                                    'title'=>"Super Easy",
-                                    'subtitle'=>"Book, Reschedule, Cancel on the go",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
-                                ],
-                                [
-                                    'title'=>"Get Addicted",
-                                    'subtitle'=>"Book, Burn & get rewarded on every workout",
-                                    'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20322%403x.png'
-                                ],
-                            ]
-                        ];
-                    }
+                //         $finderData['fit_ex'] =[
+                //             'title'=>"Now working out at ".$finderData['finder']['title']." is possible without buying a membership",
+                //             'subtitle'=>"Use Fitternity's Pay-Per-Session to workout here and pay session by session",
+                //             'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20188%403x.png',
+                //             'data'=>[
+                //                 [
+                //                     'title'=>"Money Saver",
+                //                     'subtitle'=>"Pay only for the days you workout",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Path%2027%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Unlimited Access",
+                //                     'subtitle'=>"Book multiple sessions.",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20323%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Super Easy",
+                //                     'subtitle'=>"Book, Reschedule, Cancel on the go",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20325%403x.png'
+                //                 ],
+                //                 [
+                //                     'title'=>"Get Addicted",
+                //                     'subtitle'=>"Book, Burn & get rewarded on every workout",
+                //                     'image'=>'https://b.fitn.in/global/pps%20-%20web/Group%20322%403x.png'
+                //                 ],
+                //             ]
+                //         ];
+                //     }
                         
-                }
+                // }
                 
                 $this->serviceRemoveFlexiIfExtendedPresent($finderData, "app");
                 
@@ -5339,8 +5342,13 @@ class FindersController extends \BaseController {
 				];
 			}
             $finderData['total_photos_count'] = count($finder['photos']);
+
+        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
             
-            try{
+            	$finderData['finder']['total_photos_count'] = count($finder['photos']);
+			}
+            
+			try{
                 $this->orderRatecards($finderData, 'app');
             }catch(Exception $e){
                 Log::info("Error while sorting ratecard", [$e]);
@@ -5446,6 +5454,12 @@ class FindersController extends \BaseController {
 				else if(!empty($finderData['finder']['finder_one_line'])) {
 					unset($finderData['finder']['finder_one_line']);
 				}
+			}
+
+        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+            
+				$finderData['finder']['photos_url'] = Config::get('app.url')."/finderdetailphoto/app/".$tslug;
+				unset($finderData['finder']['photos']);
 			}
 
 		}else{
@@ -8596,8 +8610,10 @@ class FindersController extends \BaseController {
                     foreach($s[$ratecard_key] as &$r){
 
                         if($r['type'] == 'extended validity'){
-							$r[ "button_color"] = Config::get('app.ratecard_button_color');
-							$r['pps_image'] = Config::get('app.pps_image');
+							// $r[ "button_color"] = Config::get('app.ratecard_button_color');
+							// $r['pps_image'] = Config::get('app.pps_image');
+							$r['pps_know_more'] = true;
+							$r['pps_title'] = "Session pack";
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
 							if(empty($r['offers']) && ($this->device_type=='ios')) {
 								$r['offers'] = [[
@@ -8881,5 +8897,63 @@ class FindersController extends \BaseController {
 		}
 
 	}
+
+	public function finderdetailAppPhoto($slug){
+		$tslug  = (string) strtolower($slug);
+		$finderarr = Finder::active()->where('slug','=',$tslug)
+					->first(array('photos'));
+		$finder = array();
+		$finderdata = array();
+		$finder['photos'] =  $finderarr['photos'];
+				if(count($finder['photos']) > 0 ){
+					$photoArr        =   [];
+					usort($finder['photos'], "sort_by_order");
+					foreach ($finder['photos'] as $photo) {
+						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+						$photoObj                   =   array_except($photo,['servicetags']);
+						$photoObj['servicetags']    =   $servicetags;
+						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+						array_push($photoArr, $photoObj);
+					}
+					array_set($finder, 'photos', $photoArr);
+					
+					$service_tags_photo_arr             =   [];
+					$info_tags_photo_arr                =   [];
+					if(count($photoArr) > 0 ) {
+						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+						foreach ($unique_service_tags_arr as $unique_service_tags) {
+							$service_tags_photoObj = [];
+							$service_tags_photoObj['name'] = $unique_service_tags;
+							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+								if (in_array($unique_service_tags, $value['servicetags'])) {
+									return $value;
+								}
+							});
+							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+							array_push($service_tags_photo_arr, $service_tags_photoObj);
+						}
+						foreach ($unique_info_tags_arr as $unique_info_tags) {
+							$info_tags_photoObj = [];
+							$info_tags_photoObj['name'] = $unique_info_tags;
+							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+								if (in_array($unique_info_tags, $value['tags'])) {
+									return $value;
+								}
+							});
+							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+							array_push($info_tags_photo_arr, $info_tags_photoObj);
+						}
+					}
+					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+					$finderdata['status'] = 200;
+					$finderdata['response']['photos'] = $finder['photos'];
+				} else {
+					$finderdata['status'] =404;
+				}        
+				return Response::json($finderdata,$finderdata['status']);
+	}
+
 
 }

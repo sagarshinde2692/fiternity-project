@@ -31,7 +31,8 @@ class PassController extends \BaseController {
         $source = null;
         $email = null;
         $corporateSource = null;
-
+        $include_onepass_lite_web= null;
+        
         if(!empty($input['category'])){
             $category = $input['category'];
         }
@@ -69,7 +70,12 @@ class PassController extends \BaseController {
             }
         }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $email, $corporateSource);
+        
+        if(!empty($input['include_onepass_lite_web'])) {
+            $include_onepass_lite_web = true;
+        }
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $email, $corporateSource, $include_onepass_lite_web);
+        
         if(empty($passes)) {
             return [
                 "status" => 400,
@@ -217,6 +223,7 @@ class PassController extends \BaseController {
         // }
         $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
         $selected_region =  !empty($input['selected_region'])? $input['selected_region'] : null;
+        $isRenew = !empty($input['is_renew']) ? true: false;
 
         $coordinate = [
             'lat' => !empty($input['lat']) ? $input['lat']: "",
@@ -250,7 +257,7 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if(empty($isRenew) && $passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
             $vendor_search = $coordinate;
@@ -258,6 +265,10 @@ class PassController extends \BaseController {
             $vendor_search['selected_region'] = $selected_region;
             $vendor_search['onepass_available'] = true;
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
+            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]))){
+                $result['onepass_pre']['tnc']['url'] = strtr($result['onepass_pre']['tnc']['url_lite'], ['city_name'=>strtolower($city)]);
+            }
+            unset($result['onepass_pre']['tnc']['url_lite']);
             //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
             Log::info('near by vendors');

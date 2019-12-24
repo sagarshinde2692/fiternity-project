@@ -307,6 +307,7 @@ Route::group(array('before' => 'validatetoken'), function() {
     Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
     /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
 
+	Route::post('customer/campaignseenstatus', array('as' => 'customer.campaignseenstatus','uses' => 'CustomerController@campaignSeenStatus'));
 });
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
@@ -409,6 +410,8 @@ Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopre
 
 Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
 // Route::get("/pushBrandOutlets/{index_name}", "GlobalPushController@pushBrandOutlets");
+Route::get('finderdetailphoto/app/{slug}', array('as' => 'finders.finderdetailAppPhoto','uses' => 'FindersController@finderdetailAppPhoto'));
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -1419,4 +1422,4 @@ Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
 Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
 
-
+// Route::get('getcampaigndata', 'HomeController@getCampaignData');

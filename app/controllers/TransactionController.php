@@ -3745,7 +3745,28 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session') {
             Order::$withoutAppends = true;
             $passSession = $this->passService->allowSession($data['amount'], $data['customer_id'], $data['schedule_date'], $data['finder_id']);
-            if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+            if(
+                $passSession['allow_session'] 
+                && 
+                (
+                    (
+                        !empty($data['service_flags']['classpass_available']) 
+                        && 
+                        $data['service_flags']['classpass_available']
+                        &&
+                        empty($passSession['onepass_lite'])
+                    )
+                    ||
+                    (
+                        !empty($passSession['onepass_lite'])
+                        &&
+                        !empty($data['service_flags']['lite_classpass_available'])
+                        && 
+                        $data['service_flags']['lite_classpass_available']
+                    )
+                )
+
+            ) {
                 $data['pass_type'] = $passSession['pass_type'];
                 $data['pass_order_id'] = $passSession['order_id'];
                 $data['pass_booking'] = true;
@@ -3755,6 +3776,10 @@ class TransactionController extends \BaseController {
                 }
                 if(!empty($passSession['pass_branding'])){
                     $data['pass_branding'] = $passSession['pass_branding'];
+                }
+
+                if(!empty($passSession['onepass_lite'])){
+                    $data['pass_booking_lite'] = true;
                 }
                 $amount = 0;
             }
@@ -6580,7 +6605,27 @@ class TransactionController extends \BaseController {
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
-                if(!empty($allowSession['allow_session']) && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+                if(
+                    !empty($allowSession['allow_session']) 
+                    && 
+                    (   
+                        (
+                            !empty($data['service_flags']['classpass_available']) 
+                            && 
+                            $data['service_flags']['classpass_available']
+                            && 
+                            empty($allowSession['onepass_lite'])
+                        )
+                        ||
+                        (
+                            !empty($allowSession['onepass_lite'])
+                            &&
+                            !empty($data['service_flags']['lite_classpass_available'])
+                            && 
+                            $data['service_flags']['lite_classpass_available']
+                        )
+                    )
+                ) {
                     $allowSession = $allowSession['allow_session'];
                 }
                 else {
@@ -6592,7 +6637,7 @@ class TransactionController extends \BaseController {
                 $payment_details['amount_summary'] = [];
                 $payment_details['amount_payable'] = array(
                     'field' => 'Total Amount Payable',
-                    'value' => Config::get('app.onepass_free_string')
+                    'value' => !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string'): Config::get('app.onepass_free_string')
                 );
                 unset($payment_details['payment_details']['savings']);
             }
@@ -6657,7 +6702,7 @@ class TransactionController extends \BaseController {
 
             $payment_options['upi'] = [
                 'title' => 'UPI',
-                'notes' => "Note: In the next step you will be redirected to the bank's website to verify yourself"
+                'notes' => "Open your UPI app on your phone to approve the payment request from Fitternity"
             ];
 
             $payment_options['wallet'] = [
@@ -6691,6 +6736,14 @@ class TransactionController extends \BaseController {
                                 'value' => 'payu'
                         ]
                 ]
+            ];
+        }
+
+        if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+            $payment_options['payment_options_order'] = ["wallet", "googlepay", "cards", "netbanking", "emi", "upi"];
+            $payment_options['googlepay']  = [
+                'title' => 'GooglePay',
+                'notes' => "Open your Google Pay app on your phone to approve the payment request from Fitternity"
             ];
         }
         
@@ -7642,7 +7695,26 @@ class TransactionController extends \BaseController {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
-                    if($passSession['allow_session'] && (!empty($data['service_flags']['classpass_available']) && $data['service_flags']['classpass_available'])) {
+                    if(
+                        $passSession['allow_session'] 
+                        &&
+                        (
+                            (
+                                !empty($data['service_flags']['classpass_available']) 
+                                && $data['service_flags']['classpass_available']
+                                &&
+                                empty($passSession['onepass_lite'])
+                            )
+                            ||
+                            (
+                                !empty($passSession['onepass_lite'])
+                                &&
+                                !empty($data['service_flags']['lite_classpass_available'])
+                                && 
+                                $data['service_flags']['lite_classpass_available']
+                            )
+                        )
+                    ) {
                         $result['payment_details']['amount_summary'][] = [
                             'field' => ((!empty($passSession['pass_type']) && $passSession['pass_type'] == 'unlimited')?'Unlimited Access':'Monthly Access').' Pass Applied',
                             'value' => "Unlimited Access Applied"//(string)$creditsApplicable['credits'].' Sweat Points Applied'
@@ -8162,7 +8234,12 @@ class TransactionController extends \BaseController {
                     'value' => 'Rs. '.(string)$data['amount_payable']
                 ];
                 $result['finder_name'] = "ONEPASS";
-                $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
+                if(empty($pass['lite'])){
+                    $result['finder_location'] = (!empty($pass['pass_type']) && $pass['pass_type']!='hybrid')?strtoupper($pass['pass_type']):strtoupper($pass['branding']);
+                }
+                else{
+                    $result['finder_location'] = "LITE";
+                }
             }
 
         }else{
@@ -10121,6 +10198,9 @@ class TransactionController extends \BaseController {
         if(!empty($data['pass_branding']) && $data['pass_type'] == true){
             $data['pass_type'] = $data['pass_branding'];
         }
+        if(!empty($data['pass_booking_lite'])){
+            $data['pass_type'] = 'lite';
+        }
         $onepass_details = Config::get('pass.transaction_capture.'.$data['pass_type']);
         $onepass_details['desc_subheader'] = "You are booking your ".$ordinalBookingCount." session using Onepass ".ucfirst($data['pass_type']);
 
@@ -10169,6 +10249,50 @@ class TransactionController extends \BaseController {
         
         Log::info(http_build_query($success_data, '', '&'));
         return $base_url."?". http_build_query($success_data, '', '&');
+    }
+
+    public function getPuchaseRemarkData($arg_data = null){
+        Log::info("getheaderConcatData");
+		$purchasesummary_remark = "";
+        $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+		$campBranding = $this->utilities->getCampaignBranding($arg_data);
+
+		if(!empty($campBranding)){
+            if(!empty($arg_data['tra_data'])){
+                $data = $arg_data['tra_data'];
+
+                if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
+                    $purchasesummary_remark = !empty($campBranding['membership_text']) ? $campBranding['membership_text'] : "";
+        
+                    if(!empty($data['brand_id']) && $data['brand_id']== 88){
+                        if($data['ratecard_amount'] >= 8000){
+                            $purchasesummary_remark = !empty($campBranding['multifit8000_membership_text']) ? $campBranding['multifit8000_membership_text'] : "";
+                        }else{
+                            $purchasesummary_remark = !empty($campBranding['multifit_membership_text']) ? $campBranding['multifit_membership_text'] : "";
+                        }
+                    }
+                    
+                    if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) ){ 
+                        $purchasesummary_remark = "";
+                    }
+                }
+        
+                if(!empty($data['type']) && $data['type'] == 'workout-session'){
+                    $purchasesummary_remark = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+                    
+                    if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
+                        $purchasesummary_remark = "";
+                    }
+        
+                    if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) ){
+                        $purchasesummary_remark = "";
+                    }
+                }
+
+            }
+        }
+
+        return $purchasesummary_remark;
     }
 
 }

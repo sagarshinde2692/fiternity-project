@@ -4384,6 +4384,10 @@ class CustomerController extends \BaseController {
 		}
         $result['load_trending_vendors'] = false;
 
+		if(!empty($customer) && checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+			$this->utilities->campaignNotification($customer, $city_id, $result);
+		}
+		
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
 			unset($result['upcoming']);
@@ -4429,6 +4433,10 @@ class CustomerController extends \BaseController {
                 "footer"=>"Get 100% Instant Cashback on Workout Sessions"
             ];
         }
+		
+		// $camp_arg_data = array('source' => 'app', 'sub_source' => 'homepage');
+		// $campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+		// $result['fitex']['footer'] = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
 		
 		if(!empty($result['onepass_pre'])){
 			$agrs1 = array('city' => $city);
@@ -11328,4 +11336,55 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function campaignSeenStatus(){
+		$data = Input::all();
+
+		$rules = [
+			'campaign_id' => 'required'
+		];
+		$validator = Validator::make($data, $rules);
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())));
+		}
+
+		$jwt_token = Request::header('Authorization');
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decodedToken->customer->_id;
+		$customer = Customer::active()
+		->where('_id', $customer_id)
+		->first();
+
+		if(empty($customer->campaing_notification_seen)){
+			$customer->campaing_notification_seen = [
+				(int)$data['campaign_id']
+			];
+		}
+		else if(in_array((int)$data['campaign_id'], $customer->campaing_notification_seen)) {
+			return [
+				"status" => 200,
+				"msg" => "Success",
+				"repeated_request" => true
+			];
+		}
+		else {
+			$temp = $customer->campaing_notification_seen;
+			array_push($temp, (int)$data['campaign_id']);
+			$customer->campaing_notification_seen = $temp;
+			unset($temp);
+		}
+
+		try{
+			$customer->save();
+			return [
+				"status" => 200,
+				"msg" => "Success"
+			];
+		}catch(\Exception $e){
+			Log::info('eror occured while saving customer notificatio save::::', [$e]);
+			return [
+				"status" => 400,
+				"msg" => "Something went wrong"
+			];
+		}
+    }
 }
