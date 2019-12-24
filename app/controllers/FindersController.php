@@ -8628,6 +8628,9 @@ class FindersController extends \BaseController {
 								unset($r["button_color"]);
 								unset($r["pps_image"]);
 							}
+							else if(!empty($this->device_type) && $this->device_type =='android'){
+								unset($r['pps_title']);
+							}
 							
 							if(!empty($this->device_type) && $this->device_type =='ios'){
 								unset($r["button_color"]);
