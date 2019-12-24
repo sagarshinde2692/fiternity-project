@@ -8610,10 +8610,16 @@ class FindersController extends \BaseController {
                     foreach($s[$ratecard_key] as &$r){
 
                         if($r['type'] == 'extended validity'){
+
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
-							// $r['pps_know_more'] = true;
-							// $r['pps_title'] = "Session pack";
+
+							if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
+								unset($r[ "button_color"]);
+								unset($r[ "pps_image"]);
+								$r['pps_know_more'] = true;
+								$r['pps_title'] = "Session pack";
+							}
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
 							if(empty($r['offers']) && ($this->device_type=='ios')) {
 								$r['offers'] = [[
