@@ -8624,7 +8624,7 @@ class FindersController extends \BaseController {
 							$r['pps_title'] = "Session pack";
 							$r['pps_know_more'] = true;
 
-							if(checkAppVersionFromHeader(['android'=> "5.33"])){
+							if(!empty($this->device_type) && !empty($this->app_version) &&  $this->device_type =='android' &&  $this->app_version > '5.32'){
 								unset($r["button_color"]);
 								unset($r["pps_image"]);
 							}
