@@ -8629,9 +8629,7 @@ class FindersController extends \BaseController {
 								unset($r["pps_image"]);
 							}
 							else if(!empty($this->device_type) && $this->device_type =='android'){
-								// unset($r['pps_title']);
-
-								unset($r["pps_image"]);
+								unset($r['pps_title']);
 							}
 							
 							if(!empty($this->device_type) && $this->device_type =='ios'){
