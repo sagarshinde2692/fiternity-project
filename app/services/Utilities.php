@@ -11421,21 +11421,20 @@ Class Utilities {
             (
                 empty($finder_response['finder']['onepass_max_booking_count']) 
                 && 
-                empty($input['corporate']) 
-                && 
-                empty($input['generic'])
+                empty($input['corporate'])
             )
         ){
             return;
         }
 
         $restriction_message = config::get('pass.booking_restriction.finder_page');
-        if(!empty($finder_response['finder']['onepass_max_booking_count']) && empty($input['corporate']) && empty($input['generic'])){
+        $restriction_message['msg'] = '';
+        if(!empty($finder_response['finder']['onepass_max_booking_count']) && empty($input['corporate'])){
             $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $finder_response['finder']['onepass_max_booking_count']]);
 
             $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];
         }
-        else if(!empty($input['corporate']) || empty($input['generic'])){
+        else if(!empty($input['corporate'])){
             $input['corporate'] = strtolower($input['corporate']);
 
             $corporate = \Pass::active()
@@ -11445,13 +11444,17 @@ Class Utilities {
             ->first(['max_booking_count']);
 
             Log::info('corporate ::CVVDFVDFVD', [$corporate]);
-            $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $corporate->max_booking_count]);
-            $restriction_message['max_count'] = $corporate->max_booking_count;
+            if(!empty($corporate->max_booking_count)){
+                $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $corporate->max_booking_count]);
+                $restriction_message['max_count'] = $corporate->max_booking_count;
+            }
         }
 
         unset($restriction_message['success']);
         unset($finder_response['finder']['onepass_max_booking_count']);
-        $finder_response['finder']['onepass_session_message'] = $restriction_message;
+        if(!empty($restriction_message['msg'])){
+            $finder_response['finder']['onepass_session_message'] = $restriction_message;
+        }
         
     }
 }
