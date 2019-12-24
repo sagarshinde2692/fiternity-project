@@ -2469,8 +2469,14 @@ class PassService {
                     $cashback_amount = round(($amount_paid * $discount_per) / 100);
                 }
 
-                if($cashback_amount > 2000){
-                    $cashback_amount = 2000;
+                if(!empty($coupon_flags['cashback_max'])){
+                    if($coupon_flags['cashback_max'] != -1){
+                        $cashback_amount = ($cashback_amount > $coupon_flags['cashback_max']) ? $coupon_flags['cashback_max'] : $cashback_amount;
+                    }
+                }else{
+                    if($cashback_amount > 2000){
+                        $cashback_amount = 2000;
+                    }
                 }
 
                 $cashback_amount_after_gst = $cashback_amount;
