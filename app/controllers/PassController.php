@@ -457,4 +457,23 @@ class PassController extends \BaseController {
         }
 
     }
+
+    public function nearByVendor(){
+        $input = Input::all();
+        // return $input;
+
+        $city = !empty($input['city']) ? $input['city'] : "mumbai";
+
+        $vendor_search['city'] = $city;
+        $vendor_search['onepass_available'] = true;
+        $vendor_search['limit'] = 4;
+        $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
+        $result = array();
+        if(count($vendor_near_by['data']) > 0){
+            $result['near_by'] = $vendor_near_by['data'];
+        }
+
+        $response = Response::make($result);
+		return $response;
+    }
 }

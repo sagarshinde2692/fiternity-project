@@ -10842,7 +10842,7 @@ Class Utilities {
     public function getVendorNearMe($data){
         $near_by_vendor_request = [
             "offset" => 0,
-            "limit" => 9,
+            "limit" => (!empty($data['limit'])) ? $data['limit'] : 9,
             "radius" => "2km",
             "category"=> "",
             "lat"=> !empty($data['lat']) ? $data['lat']: "",
