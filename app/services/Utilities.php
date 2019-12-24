@@ -11414,7 +11414,7 @@ Class Utilities {
         if( 
             (
                 empty($input['from'])
-                &&
+                ||
                 $input['from'] != 'checkout'
             )
             || 
