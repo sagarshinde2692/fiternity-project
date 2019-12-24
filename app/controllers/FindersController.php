@@ -8630,6 +8630,7 @@ class FindersController extends \BaseController {
 							}
 							else if(!empty($this->device_type) && $this->device_type =='android'){
 								unset($r['pps_title']);
+								$r['pps_know_more'] = false;
 							}
 							
 							if(!empty($this->device_type) && $this->device_type =='ios'){
