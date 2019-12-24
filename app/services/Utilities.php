@@ -5671,6 +5671,7 @@ Class Utilities {
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
         \Cache::tags('finder_detail_android_5_1_8')->forget($slug);
         \Cache::tags('finder_detail_android_5_1_9')->forget($slug);
+        \Cache::tags('finder_detail_android_5_3_3')->forget($slug);
         
     }
 

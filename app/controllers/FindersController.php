@@ -2581,6 +2581,10 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		
 		if(!empty($reviewdata['service_id'])){
 			$service = Service::find($reviewdata['service_id'], ['slug']);
@@ -4127,6 +4131,10 @@ class FindersController extends \BaseController {
         
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.18'){
 			$cache_name = "finder_detail_android_5_1_9";
+		}
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.32'){
+			$cache_name = "finder_detail_android_5_3_3";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
@@ -8613,13 +8621,19 @@ class FindersController extends \BaseController {
 
 							$r[ "button_color"] = Config::get('app.ratecard_button_color');
 							$r['pps_image'] = Config::get('app.pps_image');
+							$r['pps_title'] = "Session pack";
+							$r['pps_know_more'] = true;
 
-							if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])){
-								unset($r[ "button_color"]);
-								unset($r[ "pps_image"]);
-								$r['pps_know_more'] = true;
-								$r['pps_title'] = "Session pack";
+							if(checkAppVersionFromHeader(['android'=> "5.33"])){
+								unset($r["button_color"]);
+								unset($r["pps_image"]);
 							}
+							
+							if(!empty($this->device_type) && $this->device_type =='ios'){
+								unset($r["button_color"]);
+								unset($r["pps_image"]);
+							}
+							
 							$r['recommended'] = Config::get('nonvalidity.recommnded_block');
 							if(empty($r['offers']) && ($this->device_type=='ios')) {
 								$r['offers'] = [[
