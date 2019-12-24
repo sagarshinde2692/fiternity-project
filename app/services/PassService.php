@@ -443,6 +443,7 @@ class PassService {
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
             $this->addMonthlyBookingCounter($data);
+            $this->addVendorRestriction($data);
             if(empty($order_exists)){
                 $order = new Order($data);
                 $order['_id'] = $data['_id'];
@@ -2668,7 +2669,6 @@ class PassService {
         $status = true;
         $messages = Config::get('pass.booking_restriction');
         $msg = '';
-
         $response = [
             'status'=> $status, 
             'data' => [
@@ -2676,24 +2676,45 @@ class PassService {
                 'background_color' => $messages['service_page']['background_color']
             ]
         ];
-        if(empty($passOrder['pass']['max_booking_count']) && empty($finder['flags']['onepass_max_booking_count'])){
+        if(empty($passOrder['pass']['vendor_restriction']) && (empty($passOrder['pass']['max_booking_count']) || $passOrder['pass']['max_booking_count']==31)){
             return $response;
         }
 
-        $max_booking_count = !empty($passOrder['pass']['max_booking_count']) ? $passOrder['pass']['max_booking_count']: null;
-        
+        $max_booking_count = !empty($passOrder['pass']['max_booking_count']) ? $passOrder['pass']['max_booking_count']: 31;
+        $finder_found = false;
 
+        if(!empty($finder_id) && !empty($passOrder['pass']['vendor_restriction'])){
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+                $finder_found = in_array($finder_id, $value['ids']);
+                if(!empty($finder_found)){
+                    $max_booking_count = $value['count'];
+                    break;
+                }
+            }
+        }
+
+        if(empty($finder_found) && $max_booking_count == 31){
+            $response['data']['msg'] = '';
+            return $response;
+        }
+        
         $bookings = bookingsSumOnVendor($customer, $passOrder);
 
-        if(empty($bookings['result']) && !empty($max_booking_count)){
+        $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count, 'total_available'=> $max_booking_count]);
 
-            $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session' => $max_booking_count, 'total_available' => $max_booking_count]);
+        if(empty($bookings['result'])){
+            
+            if($max_booking_count == 31){
+                $response['data']['msg'] = '';
+            }
 
             return $response;
         }
 
         $findersList = [];
         $findersIndexWithBookings = [];
+
+        //add max booking count of generic
         
         foreach($bookings['result'] as $key=>$value){
             array_push($findersList, $value['_id']);
@@ -2701,41 +2722,59 @@ class PassService {
 
         }
 
-        if(!empty($max_booking_count) && !empty($findersIndexWithBookings[$finder_id])){
+        if(!empty($findersIndexWithBookings[$finder_id])){
 
             if($max_booking_count <= $findersIndexWithBookings[$finder_id]){
                 $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
                 $status = false;
             }
             else{
-                $msg = strtr($messages['service_page']['success'], ['left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count ]);
+                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
+            }
+        }
+
+        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
+            $msg = '';
+            $today = strtotime('now');
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+
+                $matched_finders = array_intersect($findersList, $value['ids']);
+                $total_bookings_count = 0;
+                
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && in_array($finder_id, $matched_finders)){
+    
+                    $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
+                        return $findersIndexWithBookings[$matched_finder];
+                    }, $matched_finders)[0];
+    
+                    Log::info('total bookingLLLL::::', [$total_bookings_count]);
+                    
+                    $status = $value['count'] > $total_bookings_count  ?  true : false;
+                }
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && in_array($finder_id, $matched_finders)){
+    
+                    foreach($matched_finders as $m_f_key=>$m_f_value){
+                        if($m_f_value == $finder_id && $findersIndexWithBookings[$m_f_value] >= $value['count']){
+                            $status = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if(empty($status)){
+                    break;
+                }
             }
 
             $response['status'] = $status;
-            $response['data']['msg'] = $msg;
-            return $response;
+            if(empty($status)){
+                $response['data']['msg'] = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
+            }
+            else if($max_booking_count != 31){
+                $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
+            }
         }
-
-        return $this->passBookingsRestriction($status, $bookings, $messages, $finder, $passOrder, $findersIndexWithBookings, $finder_id, $response);
-    }
-
-    public function passBookingsRestriction($status, $bookings, $messages,  $finder, $passOrder, $findersIndexWithBookings, $finder_id){
-
-        $max_booking_count = !empty($finder['flags']['onepass_max_booking_count']) ? $finder['flags']['onepass_max_booking_count'] : null;
-
-        if(empty($max_booking_count)){
-            return; 
-        }
-        $status = $findersIndexWithBookings[$finder_id] >= $max_booking_count;
-
-        if(empty($status)){
-            $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
-        }
-        else{
-            $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
-        }
-        $response['status'] = $status;
-        $response['msg'] = $msg;
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
 
@@ -2796,5 +2835,48 @@ class PassService {
         $resp['data']['background_color'] = $messages['background_color'];
 
         return $resp;
+    }
+
+    public function addVendorRestriction(&$data){
+
+        $booking_restrictions = Finder::raw(function($collection){
+            $match = [
+                '$match' => [
+                    'status' => "1",
+                    'flags.onepass_max_booking_count' => [
+                        '$exists' => true
+                    ]
+                ]
+            ];
+            $group = [
+                '$group' => [
+                    '_id' => '$flags.onepass_max_booking_count',
+                    'ids' => [
+                        '$addToSet' => '$_id'
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $booking_restrictions = $booking_restrictions['result'];
+        if(!empty($booking_restrictions)){
+            $temp = [
+                "ids" => [],
+                "count" => 0,
+                "count_type" => 'each'
+            ];
+
+            foreach($booking_restrictions as $key=>$value){
+                $temp['count'] = $value['_id'];
+                $temp['ids'] = $value['ids'];
+                $data['pass']['vendor_restriction'][] = $temp;
+            }
+        }
     }
 }
