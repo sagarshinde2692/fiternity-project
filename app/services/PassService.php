@@ -1007,6 +1007,7 @@ class PassService {
                     $premiun_session_message = $booking_restrictions['data'];
                 }
 
+                Log::info('booking restriction respose :::::::::::', [$booking_restrictions]);
                 if(!empty($status)){
                     $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer['_id'], $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
@@ -1014,6 +1015,8 @@ class PassService {
                     if(!empty($premiumSessionCheck['pass_premium_session'])){
                         $pass_premium_session = true;
                     }
+
+                    Log::info('booking restriction respose ::::::::::: preimum', [$premiumSessionCheck]);
                 }
 
                 if(!empty($premiumSessionCheck['data']['msg'])){
@@ -2733,6 +2736,7 @@ class PassService {
             }
         }
 
+        Log::info('max booking countshdvdhjvdjvfhvdhjvdfvfd', [$msg, $findersList, $findersIndexWithBookings]);
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
             $msg = '';
             $today = strtotime('now');
