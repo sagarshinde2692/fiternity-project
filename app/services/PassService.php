@@ -2690,7 +2690,7 @@ class PassService {
 
         }
 
-        if($cityData){
+        if(!empty($cityData)){
             $data['finder_city'] = $cityData['slug'];
             $data['city_id'] = $cityData['_id'];
             $data['city_name'] = $cityData['slug'];
