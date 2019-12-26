@@ -1007,7 +1007,6 @@ class PassService {
                     $premiun_session_message = $booking_restrictions['data'];
                 }
 
-                Log::info('booking restriction respose :::::::::::', [$booking_restrictions]);
                 if(!empty($status)){
                     $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer['_id'], $passOrder, $amount, $finder);
                     $status = $premiumSessionCheck['status'];
@@ -1016,7 +1015,6 @@ class PassService {
                         $pass_premium_session = true;
                     }
 
-                    Log::info('booking restriction respose ::::::::::: preimum', [$premiumSessionCheck]);
                 }
 
                 if(!empty($premiumSessionCheck['data']['msg'])){
@@ -2728,15 +2726,14 @@ class PassService {
         if(!empty($findersIndexWithBookings[$finder_id])){
 
             if($max_booking_count <= $findersIndexWithBookings[$finder_id]){
-                $msg = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
+                $response['data']['msg'] = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
                 $status = false;
             }
             else{
-                $msg = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
+                $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
             }
         }
 
-        Log::info('max booking countshdvdhjvdjvfhvdhjvdfvfd', [$msg, $findersList, $findersIndexWithBookings, $passOrder['pass']['vendor_restriction']]);
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
             $msg = '';
             $today = strtotime('now');
@@ -2751,8 +2748,6 @@ class PassService {
                         return $findersIndexWithBookings[$matched_finder];
                     }, $matched_finders)[0];
     
-                    Log::info('total bookingLLLL::::', [$total_bookings_count]);
-                    
                     $status = $value['count'] > $total_bookings_count  ?  true : false;
                 }
     
@@ -2771,17 +2766,18 @@ class PassService {
                 }
             }
 
-            $response['status'] = $status;
             if(empty($status)){
                 $response['data']['msg'] = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
             }
-            else if($max_booking_count != 31){
+            else if(!empty($status) && $max_booking_count != 31){
                 $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
+
             }
         }
         
         Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id'], $response]);
 
+        $response['status'] = $status;
         return $response;
     }
 
