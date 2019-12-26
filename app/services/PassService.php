@@ -2776,7 +2776,7 @@ class PassService {
             }
         }
         
-        Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id']]);
+        Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id'], $response]);
 
         return $response;
     }
