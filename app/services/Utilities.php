@@ -11415,7 +11415,7 @@ Class Utilities {
             (
                 empty($input['from'])
                 ||
-                $input['from'] != 'checkout'
+                $input['from'] != 'pass'
             )
             || 
             (
