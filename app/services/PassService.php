@@ -2736,7 +2736,7 @@ class PassService {
             }
         }
 
-        Log::info('max booking countshdvdhjvdjvfhvdhjvdfvfd', [$msg, $findersList, $findersIndexWithBookings]);
+        Log::info('max booking countshdvdhjvdjvfhvdhjvdfvfd', [$msg, $findersList, $findersIndexWithBookings, $passOrder['pass']['vendor_restriction']]);
         if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
             $msg = '';
             $today = strtotime('now');
