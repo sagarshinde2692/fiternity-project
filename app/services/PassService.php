@@ -2821,7 +2821,9 @@ class PassService {
             "text" => "View Offers",
             "options"=>[]
         ];
-                
+           
+        return $resp;
+        
         $customer_email=null;
         $customer_id=null;
         $customer_phone=null;
