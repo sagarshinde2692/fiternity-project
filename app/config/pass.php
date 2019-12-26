@@ -224,8 +224,8 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>FitMas Santa Sale<br>
-                21-27 Dec</b>
+                <li><b>FitMania: No Excuses 2020<br>
+                28-30 Dec</b>
                 </li>
                 <br>
                 <li>A.Get EXTRA 20% Off On Lowest Price OnePass Red, Use Code: XMAS20<br />
@@ -299,8 +299,8 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>FitMas Santa Sale<br>
-                21-27 Dec</b>
+                <li><b>FitMania: No Excuses 2020<br>
+                28-30 Dec</b>
                 </li>
                 <br>
                 <li>A.Get EXTRA 20% Off On Lowest Price OnePass Red, Use Code: XMAS20<br />
@@ -373,8 +373,8 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>FitMas Santa Sale<br>
-                21-27 Dec</b>
+                <li><b>FitMania: No Excuses 2020<br>
+                28-30 Dec</b>
                 </li>
                 <br>
                 <li>A.Get EXTRA 20% Off On Lowest Price OnePass Red, Use Code: XMAS20<br />

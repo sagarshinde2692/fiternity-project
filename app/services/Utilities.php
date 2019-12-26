@@ -11139,7 +11139,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "EXTRA 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                     }
@@ -11147,18 +11147,18 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
+                $return_arr['black_remarks_header'] = "\n\nLast Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nLast Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['footer_text'] = "Fitmania: No Excuses 2020\n\nLast Chance- Best Deal Of 2019\n\nFLAT 55% Off On OnePass Memberships\n\nPrices Going Up, HURRY\n\n28-30 Dec";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11189,7 +11189,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "EXTRA 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                     }
@@ -11197,18 +11197,18 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
+                $return_arr['black_remarks_header'] = "\n\nLast Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nLast Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['footer_text'] = "Fitmania: No Excuses 2020\n\nLast Chance- Best Deal Of 2019\n\nFLAT 55% Off On OnePass Memberships\n\nPrices Going Up, HURRY\n\n28-30 Dec";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11241,7 +11241,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "EXTRA 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "EXTRA 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                     }
@@ -11249,18 +11249,18 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "FLAT 20% Off + Assured Gift".getLineBreaker()."Use Code: XMAS20. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 21-27 Dec";
+                            $return_arr['purchase_summary_value'] = "FLAT 20% Off On OnePass Membership + Assured Gift, Use Code: XMAS20. Limited Slots | 28-30 Dec";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 20% Off On OnePass Membership + Assured Gift\n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['red_remarks_header'] = "\n\nEXTRA 20% Off  OnePass Membership + Assured Gift \n\nUse Code: XMAS20, Limited Slots\n\n21-27 Dec";
-                $return_arr['footer_text'] = "EXTRA 20% Off On Lowest Price OnePass Membership + Assured Gift";
+                $return_arr['black_remarks_header'] = "\n\nLast Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nLast Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon\n\n28-30 Dec";
+                $return_arr['footer_text'] = "Fitmania: No Excuses 2020\n\nLast Chance- Best Deal Of 2019\n\nFLAT 55% Off On OnePass Memberships\n\nPrices Going Up, HURRY\n\n28-30 Dec";
                 return $return_arr;
                 break;
             default: return $return_arr;
