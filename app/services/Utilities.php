@@ -11429,7 +11429,7 @@ Class Utilities {
 
         $restriction_message = config::get('pass.booking_restriction.finder_page');
         $restriction_message['msg'] = '';
-        if(!empty($finder_response['finder']['onepass_max_booking_count']) && empty($input['corporate'])){
+        if(!empty($finder_response['finder']['onepass_max_booking_count']) && $finder_response['finder']['onepass_max_booking_count'] >0 && empty($input['corporate'])){
             $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $finder_response['finder']['onepass_max_booking_count']]);
 
             $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];

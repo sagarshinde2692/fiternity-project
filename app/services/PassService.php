@@ -2844,7 +2844,7 @@ class PassService {
                 '$match' => [
                     'status' => "1",
                     'flags.onepass_max_booking_count' => [
-                        '$exists' => true
+                        '$gt' => 0
                     ]
                 ]
             ];
