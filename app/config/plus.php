@@ -9,12 +9,4 @@ return [
     'finder_slug' => $finder_slug,
     'service_name' => $service_name,
     'service_id' => $service_id,
-    'plus_base_price' => 5000,
-    'plus_a' => [
-        'lower_limit' => 5001,
-        'upper_limit' => 10000
-    ],
-    'plus_b' => [
-        'lower_limit' => 10001
-    ]
 ];

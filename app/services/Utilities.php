@@ -6378,7 +6378,7 @@ Class Utilities {
 
     } 
     
-    public function assignVoucher($customer, $voucher_category){
+    public function assignVoucher($customer, $voucher_category, $order_data = null){
         
         $already_assigned_voucher = \LoyaltyVoucher::
                 where('milestone', $voucher_category->milestone)
@@ -6392,6 +6392,17 @@ Class Utilities {
                 where('milestone', $voucher_category->milestone)
                 ->where('selected_voucher', $voucher_category->_id)
                 ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
+        }
+
+        if(!empty($order_data) && !empty($voucher_category['plus_id'])){
+            Log::info("plus_id");
+            $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('selected_voucher', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->where('order_id', $order_data['_id'])
                 ->orderBy('_id', 'asc')
                 ->first();
         }
@@ -6416,7 +6427,7 @@ Class Utilities {
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
             
-            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
+            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category, $order_data);
         
         }else{
             // Log::info("new".$voucher_category->_id);
@@ -6458,6 +6469,14 @@ Class Utilities {
 
         if(!empty($voucher_category['title'])){
             $new_voucher->title = $voucher_category['title'];
+        }
+
+        if(isset($voucher_category['plus_id'])){
+            $voucher_data['plus_id'] = $voucher_category['plus_id'];
+        }
+
+        if(isset($order_data['_id'])){
+            $voucher_data['order_id'] = $order_data['_id'];
         }
 
         if(!empty($voucher_category['required_info'])){
@@ -7725,7 +7744,7 @@ Class Utilities {
         }
     }
 
-    public function assignManualVoucher($customer, $voucher_category){
+    public function assignManualVoucher($customer, $voucher_category, $order_data = null){
         
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
@@ -7748,6 +7767,14 @@ Class Utilities {
             $voucher_data['title'] = $voucher_category['title'];
         }
 
+        if(isset($voucher_category['plus_id'])){
+            $voucher_data['plus_id'] = $voucher_category['plus_id'];
+        }
+
+        if(isset($order_data['_id'])){
+            $voucher_data['order_id'] = $order_data['_id'];
+        }
+
         if(!empty($voucher_category['flags']['diet_plan'])){
         
             $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
@@ -7759,9 +7786,14 @@ Class Utilities {
             $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
 
-        if(!empty($voucher_category['flags']['swimming_session']) || !empty($voucher_category['flags']['workout_session'])){
+        $coupon_conditions = !empty($voucher_category['coupon_conditions']) ? $voucher_category['coupon_conditions'] : null;
+        $order_data_arg = !empty($order_data) ? $order_data : null;
+
+        if(!empty($voucher_category['flags']['swimming_session']) || !empty($voucher_category['flags']['workout_session']) || !empty($voucher_category['flags']['renewal'])){
             $workout_session_flag = !empty($voucher_category['flags']['workout_session']) ? true: null;
-            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))], $workout_session_flag);
+            $renewal_flag = !empty($voucher_category['flags']['renewal']) ? true: null;
+            
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months')), 'coupon_conditions' => $coupon_conditions, 'voucher_category' => $voucher_category, 'order_data' => $order_data_arg], $workout_session_flag, $renewal_flag);
             Log::info("asdsad");
         }
         
@@ -7792,7 +7824,7 @@ Class Utilities {
         return $new_voucher;
     }
 
-    public function generateSwimmingCouponCode($data, $workout_session_flag=null){
+    public function generateSwimmingCouponCode($data, $workout_session_flag=null, $renewal_flag = null){
 
         $coupon = [
             "name" =>$data['description'],
@@ -7844,7 +7876,15 @@ Class Utilities {
         $coupon["ratecard_type"] = [ "workout session"];
         $coupon["loyalty_reward"] = true;
 
-        $coupon['code'] = $this->getSwimmingSessionCode($data['customer'], $workout_session_flag);
+        if(!empty($data['coupon_conditions'])){
+            $coupon = array();
+            $coupon_data = $this->plusCouponCondition($data);
+            if(!empty($coupon_data)){
+                $coupon = array_merge($coupon,$coupon_data);
+            }   
+        }
+
+        $coupon['code'] = $this->getSwimmingSessionCode($data['customer'], $workout_session_flag, $renewal_flag);
         // print_r($coupon);
         // exit();
         
@@ -7855,7 +7895,7 @@ Class Utilities {
 
     }
 
-    public function getSwimmingSessionCode($customer, $workout_session_flag){
+    public function getSwimmingSessionCode($customer, $workout_session_flag, $renewal_flag){
         $random_string = $this->generateRandomString();
         $code = 'sw'.$random_string;
         if(!empty($customer['name']) && !empty($workout_session_flag)){
@@ -7864,12 +7904,18 @@ Class Utilities {
                 $code = substr($customer['name'],0,3).$random_string;
             }
         }
+        if(!empty($customer['name']) && !empty($renewal_flag)){
+            $code = $customer['name'].$random_string;
+            if(strlen($customer['name']) >3 ){
+                $code = "renew".substr($customer['name'],0,3).$random_string."fit";
+            }
+        }
         $code = strtolower($code);
         // print_r($code);
         // exit();
         $alreadyExists = Coupon::where('code', $code)->first();
         if($alreadyExists){
-            return $this->getSwimmingSessionCode($customer, $workout_session_flag);
+            return $this->getSwimmingSessionCode($customer, $workout_session_flag, $renewal_flag);
         }
         return $code;
     }
@@ -11410,4 +11456,74 @@ Class Utilities {
         }
     }
 
+    public function plusCouponCondition($data){
+        $customer = $data['customer'];
+        $voucher_category = $data['voucher_category'];
+        $coupon_conditions = $data['coupon_conditions'];
+        $order_data = $data['order_data'];
+        
+        $coupon['name'] = !empty($voucher_category['title']) ? $voucher_category['title'] : $voucher_category['description'];
+        $coupon['description'] = !empty($voucher_category['description']) ? $voucher_category['description'] : null;
+        $coupon['discount_percent'] = !empty($coupon_conditions['discount_percent']) ? $coupon_conditions['discount_percent'] : 0;
+        $coupon['discount_max'] = !empty($coupon_conditions['discount_max']) ? $coupon_conditions['discount_max'] : 0;
+        $coupon['discount_amount'] = !empty($coupon_conditions['discount_amount']) ? $coupon_conditions['discount_amount'] : 0;
+        $coupon['start_date'] = new MongoDate();
+        $coupon['end_date'] = !empty($coupon_conditions['end_date_in_months']) ? new MongoDate(strtotime('+'.$coupon_conditions['end_date_in_months'].' months')) : new MongoDate(strtotime('+2 months'));
+
+        if(!empty($customer['email'])){
+            $coupon['customer_emails'] = [$customer['email']];
+        }
+        
+        if(!empty($coupon_conditions['and_conditions'])){
+            $coupon['and_conditions'] = $coupon_conditions['and_conditions'];
+        }
+        
+        if(!empty($coupon_conditions['once_per_user'])){
+            $coupon['once_per_user'] = $coupon_conditions['once_per_user'];
+        }
+
+        if(!empty($coupon_conditions['flags'])){
+            $coupon['flags'] = $coupon_conditions['flags'];
+        }
+
+        if(!empty($coupon_conditions['ratecard_type'])){
+            $coupon['ratecard_type'] = $coupon_conditions['ratecard_type'];
+        }
+
+        if(!empty($voucher_category['flags']['renewal'])){
+
+            $coupon['end_date'] = !empty($coupon_conditions['end_date_in_months']) ? new MongoDate(strtotime('+'.$coupon_conditions['end_date_in_months'].' months', strtotime($order_data['end_date']))) : new MongoDate(strtotime('+2 months'));
+
+            if(!empty($order_data['finder_id'])){
+                if(!empty($coupon['and_conditions'])){
+                    array_push(
+                        $coupon['and_conditions'],
+                        [
+                            "key" =>"finder._id",
+                            "operator" =>"in",
+                            "values" =>[ 
+                                $order_data['finder_id']
+                            ]
+                        ]
+                    );
+                }else{
+                    $coupon['and_conditions'] = [
+                        [
+                            "key" =>"finder._id",
+                            "operator" =>"in",
+                            "values" =>[ 
+                                $order_data['finder_id']
+                            ]
+                        ]   
+                    ];
+                }
+            }
+        }
+        
+        $coupon['total_available'] = !empty($coupon_conditions['total_available']) ? $coupon_conditions['total_available'] : 1;
+        $coupon['fitternity_plus'] = true;
+        $coupon['total_used'] = 0;
+        
+        return $coupon;
+    }
 }

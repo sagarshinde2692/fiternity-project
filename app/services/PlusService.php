@@ -14,6 +14,8 @@ use Request;
 use stdClass;
 use Input;
 use Customer;
+use Plusratecards;
+use VoucherCategory;
 
 class PlusService {
     protected $utilities;
@@ -26,32 +28,55 @@ class PlusService {
     }
 
     public function applyPlus($data){
-        $base_amount = $data['base_amount'];
-
-        $plus_a_limit = Config::get('plus.plus_a');
-        $plus_b_limit = Config::get('plus.plus_b');
-
-        if($base_amount >= $plus_a_limit['lower_limit'] && $base_amount <= $plus_a_limit['upper_limit']){
-            $data['plus_id'] = 1;
-        }else if($base_amount >= $plus_b_limit['lower_limit']){
-            $data['plus_id'] = 2;
-        }
-
+        Log::info("applyPlus");
         $plus_ratecard = $this->plusRatecardData($data);
-        if(!empty($plus_ratecard)){
-            $this->applyRewards($plus_ratecard);
-        }
+        return $plus_ratecard;
     }
 
     public function plusRatecardData($data){
-        if(!empty($data['plus_id'])){
-            $plus = Plusratecards::active()->where('plus_id', $data['plus_id'])->first()->toArray();
-        }
-        
+        Log::info("plusRatecardData");
+        $plus = Plusratecards::active()->where('min', '<=', $data['base_amount'])->where('max', '>=', $data['base_amount'])->first()->toArray();
         return (!empty($plus)) ? $plus : null;
     }
 
-    public function applyRewards($ratecard){
+    public function createPlusRewards($data){
+        Log::info("createRewards");
+
+        $customer_id = $data['customer_id'];
+        Log::info('customer_id',[$customer_id]);
+        $customer = Customer::find($customer_id);
+        
+        $plus_id = $data['plus']['plus_id'];
+        Log::info("plus_id",[$plus_id]);
+        $allRewards = VoucherCategory::active()->where('plus_id', $plus_id)->get();
+        // return $allRewards;
+        $claimed_rewards_arr = array();
+        if(!empty($allRewards)){
+            foreach($allRewards as $reward){
+                $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
+                $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
+
+                $combo_vouchers =[];
+					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
+						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
+						foreach($combo_voucher_list as $index=>$value){
+							$voucher = VoucherCategory::find($value);
+							$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
+						}
+                    }
+                    
+					if(count($combo_vouchers) > 0){
+						foreach($combo_vouchers as $index=>$value){
+							if(!$value){
+								$this->utilities->rollbackVouchers($customer, $combo_vouchers);
+								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
+							}
+						}
+					}
+            }
+        }
+
+        return $claimed_rewards_arr;
         
     }
 
