@@ -146,7 +146,7 @@ return [
                 "offerings_lite" => [
                     "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
-                    'text' => "<b>Pocket friendly</b> version with access to selected gyms",
+                    'text' => "<b>Pocket friendly</b> version with access to selected Gyms & Studios",
                     'button_text' => 'Check Options On OnePass Lite',
                     "onepass_lite" => true,
                     'ratecards' => []
