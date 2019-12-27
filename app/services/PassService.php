@@ -2851,11 +2851,26 @@ class PassService {
         ->where('ratecard_type', $ratecard_type)
         // ->where('campaign.campaign_id', (string)$campaing['_id'])
         ->where('total_available', '>', 0)
-        ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+        ->get(['code', 'description', 'terms']);
 
         $no_code_coupons = Nocouponcodeoffers::active()
         // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        ->where('pass_type', $pass_type)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
         ->get('code', 'description', 'long_desc');
+
+        foreach($no_code_coupons as $key=>&$value){
+            $value['terms'] = !empty($value['long_desc']) ? $value['long_value'] : "";
+            unset($value['long_desc']);
+            is_string($value['terms']) ? $value['terms'] = split("<br>", $value['terms']) : null;
+            $value['complementary'] = true;
+            $value['no_code'] = $value['code'];
+        }
+
+        $coupons = array_merge($coupons, $no_code_coupons);
+
         if(empty($coupons)) {
             return $resp;
         }
