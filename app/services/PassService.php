@@ -2854,7 +2854,7 @@ class PassService {
         ->get(['code', 'description', 'terms']);
 
         $no_code_coupons = Nocouponcodeoffers::active()
-        // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        // ->where('campaign_id', (string)$campaing['_id'])
         ->where('pass_type', $pass_type)
         ->where('start_date', '<=', new \DateTime())
         ->where('end_date', '>', new \DateTime())
