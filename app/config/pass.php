@@ -1008,9 +1008,6 @@ return [
 
         "offers_v2" => [
             "header" => "OFFERS YOU CAN`T REFUSE",
-            "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-            "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
-            "button_text" => "VIEW ALL OFFERS",
             "offer" => [
                 [
                     "icon" => "https://b.fitn.in/onepass/discount_3x.png",
