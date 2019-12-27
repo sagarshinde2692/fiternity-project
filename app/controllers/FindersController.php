@@ -8557,6 +8557,7 @@ class FindersController extends \BaseController {
 	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
 		//$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
+		$orderSummary2['header'] = "";
 		$title =  strtolower($orderSummary2['title']);
 		
 		foreach($services as &$service){
