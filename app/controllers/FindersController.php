@@ -7461,7 +7461,8 @@ class FindersController extends \BaseController {
 				'address_required' => true
 			];
 			if($amt>4000) {
-				$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
+				//$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
+                $retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
 			}
 			return $retObj;
 		}
