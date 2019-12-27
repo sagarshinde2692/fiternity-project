@@ -11449,10 +11449,10 @@ Class Utilities {
                 $restriction_message['max_count'] = $corporate->max_booking_count;
             }
         }
-        else{
-            $restriction_message['max_count'] = '∞';
-            $restriction_message['msg'] = $restriction_message['unlimited'];
-        }
+        // else{
+        //     $restriction_message['max_count'] = '∞';
+        //     $restriction_message['msg'] = $restriction_message['unlimited'];
+        // }
 
         unset($restriction_message['success']);
         unset($finder_response['finder']['onepass_max_booking_count']);
