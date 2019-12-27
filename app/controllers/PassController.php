@@ -293,8 +293,11 @@ class PassController extends \BaseController {
             }
             else {
                 $coupons = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
-                if(!empty($coupons['options'])){
+                if(!empty($coupons['options'])) {
                     $result['onepass_pre']['offers']['coupons'] = $coupons['options'];
+                }
+                else {
+                    unset($result['onepass_pre']['offers']);
                 }
             }
 		}
