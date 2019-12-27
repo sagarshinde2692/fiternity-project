@@ -11105,8 +11105,8 @@ Class Utilities {
         $order_data = !empty($args['order_data']) ? $args['order_data'] : null;
         
         if(!empty($coupon_flags['cashback_100_per']) && !empty($coupon_flags['no_cashback']) && !empty($coupon_flags['refer_cashback_duration_days'])){
-            $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
-            $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
+            // $sp = !empty($pass['price']) ? $pass['price'] : !empty($pass['max_retail_price']) ? $pass['max_retail_price'] : 0;
+            // $cashback_amount =  $sp * ($coupon_flags['cashback_100_per'] / 100);
 
             $days_30_after_start_date = date('jS M, Y', strtotime('+'.$coupon_flags['refer_cashback_duration_days'].' days', strtotime($order_data['start_date'])));
         }
