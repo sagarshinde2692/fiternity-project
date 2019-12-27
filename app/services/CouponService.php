@@ -34,17 +34,19 @@ Class CouponService {
         if(empty($coupon_data)){
             return false;
         }
-        
+        $other_vendor_coupons =  array("campaign.vendor_coupon"=>"1","status" => "1","campaign.campaign_id" => "$campaign_id");
+        $other_vendor_coupons_data = $couponObj->getActiveVendorCoupon($other_vendor_coupons);
+
         $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);
         
         $temp_coupon = array();
         if($request_from == "app"){
-            return $this->couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder);
+            return $this->couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data);
         }
-        return $this->couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder);
+        return $this->couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data);
     }
 
-    private function couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder){
+    private function couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data){
         $originalRateCard =  array();
         $isCouponAppliedFlag= false;
         foreach($coupon_data as $cval){
@@ -74,10 +76,16 @@ Class CouponService {
                 $this->appliedCouponData[] =  $temp_coupon;
                 unset($temp_coupon);
             }
-            
-            
-            
         }
+
+        foreach($other_vendor_coupons_data as $ovcval) {
+            $this->appliedCouponData[] = array(
+                'coupon_code' => $ovcval['code'],
+                 'desc' => $ovcval['description'],
+                 'long_desc' => $ovcval['description'],
+             );
+        }
+
         foreach($noCouponOffersData as $nco_val){
             $this->appliedCouponData[] = array(
                'coupon_code' => $nco_val['code'],
@@ -91,7 +99,7 @@ Class CouponService {
         return $this->appliedCouponData;
     }
 
-    private function couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder){
+    private function couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data){
         $offers = array("offers" => array(
                 "headers" => "Available Coupons",
                 "text" => "View Offers",
@@ -125,6 +133,13 @@ Class CouponService {
          }
         }
         
+        foreach($other_vendor_coupons_data as $ovcval) {
+            $offers['offers']['options'][] = array(
+                'code' => $ovcval['code'],
+                 'description' => $ovcval['description'],
+                 'terms' => array($ovcval['description']),
+             );
+        }
         
         foreach($noCouponOffersData as $nco_val){
             $offers['offers']['options'][] = array(
