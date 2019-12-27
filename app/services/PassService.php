@@ -21,6 +21,7 @@ use Finder;
 use stdClass;
 use Input;
 use Service;
+use Nocouponcodeoffers;
 class PassService {
     protected $utilities;
 
