@@ -154,7 +154,7 @@ class PassService {
                 'header' => $pass['duration_text'],
                 'subheader' => $passSubHeader,
                 // 'text' => (!empty($pass['pass_type']) && $pass['pass_type']=='red')?'All Access':'Limitless Validity',
-                'text' => 'All Access',
+                // 'text' => 'All Access',
                 'remarks' => (!empty($pass['type']) && $pass['type'] == 'subscription') ? "" : ucwords($pass['type']),
                 'type' => $pass['type'],
                 'min_start_date' => time(),
