@@ -6775,7 +6775,7 @@ class TransactionController extends \BaseController {
             if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
                 $payment_options['emi'] = [
                     'title' => 'EMI',
-                    'notes' => "Transact online with credit installments"
+                    'subtitle' => "Transact online with credit installments",
                 ];
                 $emiSet = true;
             }
