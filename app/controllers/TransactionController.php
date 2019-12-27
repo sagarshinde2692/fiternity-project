@@ -6768,18 +6768,7 @@ class TransactionController extends \BaseController {
         //             ]
         //     ];
         // }
-        
-        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
-        $emiSet = false;
-        if(!empty($data['emi']) && $data['emi']){
-            if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
-                $payment_options['emi'] = [
-                    'title' => 'EMI',
-                    'subtitle' => "Transact online with credit installments",
-                ];
-                $emiSet = true;
-            }
-        }
+
 
         if(!empty($data['pay_later'])){
             
@@ -6819,7 +6808,8 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(!empty($data['emi']) && $data['emi'] && !$emiSet){
+        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
+        if(!empty($data['emi']) && $data['emi']){
             $payment_modes[] = array(
                 'title' => 'EMI',
                 'subtitle' => 'Transact online with credit installments',
@@ -6829,13 +6819,13 @@ class TransactionController extends \BaseController {
         
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
-                if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                // if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
                     $payment_modes[] = array(
                         'title' => 'Cash Pickup',
                         'subtitle' => 'Schedule cash payment pick up',
                         'value' => 'cod',
                     );
-                }
+                // }
             }
 
             if(!empty($data['part_payment']) && $data['part_payment']){
