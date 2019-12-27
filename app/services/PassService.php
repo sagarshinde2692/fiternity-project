@@ -2690,7 +2690,7 @@ class PassService {
 
         }
 
-        if($cityData){
+        if(!empty($cityData)){
             $data['finder_city'] = $cityData['slug'];
             $data['city_id'] = $cityData['_id'];
             $data['city_name'] = $cityData['slug'];
@@ -2821,7 +2821,9 @@ class PassService {
             "text" => "View Offers",
             "options"=>[]
         ];
-                
+           
+        return $resp;
+        
         $customer_email=null;
         $customer_id=null;
         $customer_phone=null;
