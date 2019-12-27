@@ -6769,6 +6769,18 @@ class TransactionController extends \BaseController {
         //     ];
         // }
         
+        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
+        $emiSet = false;
+        if(!empty($data['emi']) && $data['emi']){
+            if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                $payment_options['emi'] = [
+                    'title' => 'EMI',
+                    'notes' => "Transact online with credit installments"
+                ];
+                $emiSet = true;
+            }
+        }
+
         if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
@@ -6807,25 +6819,12 @@ class TransactionController extends \BaseController {
             }
         }
 
-
-
-        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
-
-        if(!empty($data['emi']) && $data['emi']){
-            if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
-                $payment_options[] = array(
-                    'title' => 'EMI',
-                    'subtitle' => 'Transact online with credit installments',
-                    'value' => 'emi',
-                );
-            }
-            else {
-                $payment_modes[] = array(
-                    'title' => 'EMI',
-                    'subtitle' => 'Transact online with credit installments',
-                    'value' => 'emi',
-                );
-            }
+        if(!empty($data['emi']) && $data['emi'] && !$emiSet){
+            $payment_modes[] = array(
+                'title' => 'EMI',
+                'subtitle' => 'Transact online with credit installments',
+                'value' => 'emi',
+            );
         }
         
         if(!$this->vendor_token){

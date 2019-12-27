@@ -7432,11 +7432,40 @@ class FindersController extends \BaseController {
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
 				}
+				// $membershipPlusDetails = $this->getMembershipPlusDetails($ratecard);
+				// if(!empty($membershipPlusDetails)) {
+					// $ratecard['membership_plus'] = $membershipPlusDetails;
+				// }
 			}
 		}
 
         return $data['finder'];
     }
+
+	/*public function getMembershipPlusDetails($ratecard=null) {
+		if(!empty($ratecard)) {
+			$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
+			$plusId = $plusRatecard['plus_id'];
+
+			$retObj = [
+				'header' => '',
+				'image' => '',
+				'description' => 'Fitternity Plus gives you access to exclusive fitness ',
+				'know_more_text' => 'KNOW MORE',
+				'know_more_url' => ''.$plusId,
+				'price' => ''.$plusRatecard['price'],
+				'special_price' => 'FREE'
+			];
+
+
+			if(!empty($plusId)) {
+				$voucherCategories = VoucherCategory::where('plus_id', $plusId);
+
+			}
+		}
+		return null;
+	}*/
 
     public function getNonValidityBanner(){
 		Log::info('values:::::::', [$this->device_type, $this->app_version]);
