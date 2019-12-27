@@ -6812,20 +6812,31 @@ class TransactionController extends \BaseController {
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
 
         if(!empty($data['emi']) && $data['emi']){
-            $payment_modes[] = array(
-                'title' => 'EMI',
-                'subtitle' => 'Transact online with credit installments',
-                'value' => 'emi',
-            );
+            if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                $payment_options[] = array(
+                    'title' => 'EMI',
+                    'subtitle' => 'Transact online with credit installments',
+                    'value' => 'emi',
+                );
+            }
+            else {
+                $payment_modes[] = array(
+                    'title' => 'EMI',
+                    'subtitle' => 'Transact online with credit installments',
+                    'value' => 'emi',
+                );
+            }
         }
         
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
-                $payment_modes[] = array(
-                    'title' => 'Cash Pickup',
-                    'subtitle' => 'Schedule cash payment pick up',
-                    'value' => 'cod',
-                );
+                if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $payment_modes[] = array(
+                        'title' => 'Cash Pickup',
+                        'subtitle' => 'Schedule cash payment pick up',
+                        'value' => 'cod',
+                    );
+                }
             }
 
             if(!empty($data['part_payment']) && $data['part_payment']){
