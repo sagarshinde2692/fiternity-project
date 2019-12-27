@@ -295,7 +295,7 @@ class PassController extends \BaseController {
                 $result['onepass_pre']['offers'] =$result['onepass_pre']['offers_v2'];
 
                 if(!empty($coupons['options'])) {
-                    $result['onepass_pre']['offers']['offer'][0]['coupons'] = $coupons['options'];
+                    $result['onepass_pre']['offers']['offer'][0]['options'] = $coupons['options'];
                 }
                 else {
                     unset($result['onepass_pre']['offers']['offer'][0]);

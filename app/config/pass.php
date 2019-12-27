@@ -1012,6 +1012,7 @@ return [
                 [
                     "icon" => "https://b.fitn.in/onepass/discount_3x.png",
                     "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
+                    "header" => "Offers For You",
                     "button_text" => "VIEW ALL OFFERS",
                 ],
                 [
