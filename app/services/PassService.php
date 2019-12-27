@@ -2822,20 +2822,18 @@ class PassService {
             "options"=>[]
         ];
            
-        return $resp;
+        // return $resp;
         
         $customer_email=null;
         $customer_id=null;
-        $customer_phone=null;
 
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
-            $customer_email=$decoded->customer->email;
-            $customer_phone = $decoded->customer->contact_no;
+            !empty($decoded->customer->_id) ? $customer_id = (int)$decoded->customer->_id : null;
+            !empty($decoded->customer->email) ? $customer_email=$decoded->customer->email : null;
         }
 
 
@@ -2846,15 +2844,14 @@ class PassService {
         //     return $resp;
         // }
 
-        $coupons = null;
-        // Coupon::active()
-        // ->where('pass_type', $pass_type)
-        // ->where('start_date', '<=', new \DateTime())
-        // ->where('end_date', '>', new \DateTime())
-        // ->where('ratecard_type', $ratecard_type)
+        $coupons = Coupon::active()
+        ->where('pass_type', $pass_type)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
         // ->where('campaign.campaign_id', (string)$campaing['_id'])
-        // ->where('total_available', '>', 0)
-        // ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+        ->where('total_available', '>', 0)
+        ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
 
         if(empty($coupons)) {
             return $resp;
