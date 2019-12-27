@@ -22,6 +22,7 @@ use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
 use App\Services\PassService as PassService;
+use App\Services\PlusService as PlusService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -39,6 +40,7 @@ class TransactionController extends \BaseController {
     protected $fitweb;
     protected $PaytmService;
     protected $passService;
+    protected $plusService;
     
     //protected $GatewayController;
     //protected $paytmConfig;
@@ -55,7 +57,8 @@ class TransactionController extends \BaseController {
         Fitapi $fitapi,
         Fitweb $fitweb,
         PaytmService $PaytmService,
-        PassService $passService
+        PassService $passService,
+        PlusService $plusService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -71,6 +74,7 @@ class TransactionController extends \BaseController {
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
         $this->passService          =   $passService;
+        $this->plusService          =   $plusService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -1779,6 +1783,13 @@ class TransactionController extends \BaseController {
             }
         }
 
+        $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
+        $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
+        $base_amount_int = $amount_customer_int - $convinience_fee_int;
+        if(!empty($base_amount_int) && ($base_amount_int > Config::get('plus.plus_base_price')) ){
+            $plus_arg_data = array('base_amount' => $base_amount_int);
+            $plus_details = $this->plusService->applyPlus($plus_arg_data);
+        }
         
         Log::info("capture response");
         Log::info($resp);
