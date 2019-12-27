@@ -126,8 +126,8 @@ return [
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
-                    'text' => (json_decode('"'."\u2713".'"')."<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools"),
-                    'text_lite' => "<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
+                    'text' => (json_decode('"'."\u2713".'"')."<b>Limitless access</b> to 12,000+ Premium Gyms & Studios"),
+                    'text_lite' => "<b>Limitless access</b> to 12,000+ Premium Gyms & Studios",
                     "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
@@ -146,7 +146,7 @@ return [
                 "offerings_lite" => [
                     "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
                     "border_text" => "LITE",
-                    'text' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
+                    'text' => "<b>Pocket friendly</b> version with access to selected gyms",
                     'button_text' => 'Check Options On OnePass Lite',
                     "onepass_lite" => true,
                     'ratecards' => []
@@ -186,8 +186,8 @@ return [
                 ],
                 'offerings' => [
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
-                    'text_lite' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity.",
+                    'text' => (json_decode('"'."\u2713".'"')."Get limitless validity with Onepass black"),
+                    'text_lite' => "Get <b>limitless validity</b> with Onepass black",
                     "button_text" => "Check Options On OnePass",
                     'ratecards' => []
                 ],
