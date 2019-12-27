@@ -11156,8 +11156,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 50% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
                 $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
@@ -11206,8 +11206,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 50% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
                 $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
@@ -11258,8 +11258,8 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 50% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
+                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
                 $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
