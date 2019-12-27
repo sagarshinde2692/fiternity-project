@@ -269,22 +269,37 @@ class PassController extends \BaseController {
                 $result['onepass_pre']['tnc']['url'] = strtr($result['onepass_pre']['tnc']['url_lite'], ['city_name'=>strtolower($city)]);
             }
             unset($result['onepass_pre']['tnc']['url_lite']);
-            //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
-            Log::info('near by vendors');
+
             if(!empty(count($vendor_near_by['data']))){
                 $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
                 $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
             }
+
+            if(empty(checkAppVersionFromHeader(['ios'=>'5.3.0', 'android'=> "5.34"]))) {
+                unset($result['onepass_pre']['services']);
+                unset($result['onepass_pre']['offers']['button_text']);
+                unset($result['onepass_pre']['passes_header']);
+                unset($result['onepass_pre']['button_text']);
+
+                if(!empty($result['onepass_pre']['offers'])){
+                    $agrs1 = array('city' => $city);
+                    $brandingData = $this->utilities->getPassBranding($agrs1);
+                    if(!empty($brandingData['footer_text'])){
+                        $result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+                    }
+                }
+            }
+            else {
+                $coupons = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
+                if(!empty($coupons['options'])){
+                    $result['onepass_pre']['offers']['coupons'] = $coupons['options'];
+                }
+            }
 		}
 
-        if(!empty($result['onepass_pre']['offers'])){
-            $agrs1 = array('city' => $city);
-			$brandingData = $this->utilities->getPassBranding($agrs1);
-			if(!empty($brandingData['footer_text'])){
-				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
-			}
-        }
+        
 
 		$response = Response::make($result);
 		return $response;

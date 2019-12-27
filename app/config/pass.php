@@ -944,11 +944,12 @@ return [
     
     "before_purchase_tab" => [
         "headerview" =>[
-            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png", //"https://b.fitn.in/onepass/onepss_background_logo.png",
+            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png",
             "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
+        "passes_header" => "CHOOSE WHAT`S BEST FOR YOU",
         "passes" => [
             [
                 "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
@@ -1006,6 +1007,8 @@ return [
             "button_text" => "VIEW ALL OFFERS"
         ],
 
+        "button_text" => "CHECKOUT ALL GYMS AND STUDIOS",
+        
         'faq' => [
             "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
             'header' => 'Frequently Asked Questions',
