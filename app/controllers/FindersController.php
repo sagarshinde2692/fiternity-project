@@ -4966,7 +4966,7 @@ class FindersController extends \BaseController {
                 $data['show_membership_bargain'] = false;
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
-					$this->applyFitsquadSection($data);
+					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				
@@ -7955,8 +7955,7 @@ class FindersController extends \BaseController {
 					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
-				/*
-				//Commented by Akhil on 27-Dec-2019 for Membership Plus
+				
 				$data['checkout_summary'] = [
 					'image' => $thumbsUpImage,
 					'back_image' => $thumbsUpBackImage,
@@ -7970,7 +7969,7 @@ class FindersController extends \BaseController {
 						"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 					],
 					'know_more' => true
-				];*/
+				];
 
 			} else if($finderRewardType==3){
 				$data['fitsquad']['image'] = $fitsquadLogo;
