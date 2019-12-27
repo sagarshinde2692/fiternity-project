@@ -193,7 +193,10 @@ class PassService {
 
             $agrs = array('pass' => $pass, 'city' => $city);
             $brandingData = $utilities->getPassBranding($agrs);
-            unset($passDetails['text']);
+            
+            if(!empty($pass['pass_type']) && $pass['pass_type'] == 'red'){
+                unset($passDetails['text']);
+            }
 
             if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
