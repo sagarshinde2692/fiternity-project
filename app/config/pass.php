@@ -120,14 +120,14 @@ return [
                     ]
                 ],
                 "about_pass" => [
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 1 Month to 1 year."),
                     'button_text' => 'CHECKOUT GYMS and STUDIOS'
                 ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
-                    'text_lite' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 15 days to 1 year.",
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 1 Month to 1 year."),
+                    'text_lite' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 1 Month to 1 year.",
                     "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
@@ -181,13 +181,13 @@ return [
                     ]
                 ],
                 "about_pass" => [
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')."  Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')."  Replace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity."),
                     'button_text' => 'CHECKOUT GYMS and STUDIOS',
                 ],
                 'offerings' => [
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
-                    'text_lite' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity.",
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity."),
+                    'text_lite' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity.",
                     "button_text" => "Check Options On OnePass",
                     'ratecards' => []
                 ],
@@ -241,12 +241,14 @@ return [
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2.Get Flat 50% Off On OnePass Black <br />
-                How Will It Work?<br />
-                1)FLAT 50% off is divided as Flat 25% off + 25% cashback<br />
+                2. Get FLAT 55% off on OnePass Black<br />
+                How does it work?<br />
+                1)The offer is divided as follows:<br />
+                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
+                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
                 2)The cashback credited will be 25% of the MRP<br />
                 3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer<br />
+                4)This offer cannot be clubbed with any other existing offer
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
@@ -334,12 +336,14 @@ return [
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2.Get Flat 50% Off On OnePass Black <br />
-                How Will It Work?<br />
-                1)FLAT 50% off is divided as Flat 25% off + 25% cashback<br />
+                2. Get FLAT 55% off on OnePass Black<br />
+                How does it work?<br />
+                1)The offer is divided as follows:<br />
+                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
+                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
                 2)The cashback credited will be 25% of the MRP<br />
                 3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer<br />
+                4)This offer cannot be clubbed with any other existing offer
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
@@ -426,12 +430,14 @@ return [
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2.Get Flat 50% Off On OnePass Black <br />
-                How Will It Work?<br />
-                1)FLAT 50% off is divided as Flat 25% off + 25% cashback<br />
+                2. Get FLAT 55% off on OnePass Black<br />
+                How does it work?<br />
+                1)The offer is divided as follows:<br />
+                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
+                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
                 2)The cashback credited will be 25% of the MRP<br />
                 3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer<br />
+                4)This offer cannot be clubbed with any other existing offer
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />

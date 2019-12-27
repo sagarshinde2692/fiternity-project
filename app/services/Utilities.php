@@ -11147,12 +11147,12 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
                     }
                 }
@@ -11197,12 +11197,12 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
                     }
                 }
@@ -11249,12 +11249,12 @@ Class Utilities {
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
                             $return_arr['text'] = "Last Chance: FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
                         }
                     }
                 }
