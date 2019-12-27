@@ -1000,9 +1000,10 @@ return [
 
         "offers" => [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
-            "header" => "Exciting OnePass Offers",
+            "header" => "OFFERS YOU CAN`T REFUSE",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
             "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
+            "button_text" => "VIEW ALL OFFERS"
         ],
 
         'faq' => [
@@ -1024,6 +1025,37 @@ return [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
             'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
             'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
+        ],
+
+        "services" => [
+            [
+                "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "name" => "lore ipsum",
+                "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
+                "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
+            ],
+            [
+                "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "name" => "lore ipsum",
+                "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
+                "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
+            ],
+            [
+                "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "name" => "lore ipsum",
+                "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
+                "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
+            ],
+            [
+                "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "name" => "lore ipsum",
+                "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
+                "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
+            ]
         ]
     ],
 
