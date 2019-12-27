@@ -2853,6 +2853,9 @@ class PassService {
         ->where('total_available', '>', 0)
         ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
 
+        $no_code_coupons = Nocouponcodeoffers::active()
+        // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        ->get('code', 'description', 'long_desc');
         if(empty($coupons)) {
             return $resp;
         }
