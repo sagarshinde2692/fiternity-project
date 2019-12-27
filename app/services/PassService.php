@@ -142,7 +142,7 @@ class PassService {
             if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
                 $passList->where('lite', null);
             }
-            
+
             $passList = $passList->orderBy('duration')->get();
         }
         
@@ -2793,7 +2793,7 @@ class PassService {
                     $response['app_passes'][$index]['offerings']['ratecards'][] = $passDetails;
                 }
 
-                if(!empty($pass['pass_type'])){
+                if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                     unset($response['app_passes'][$index]['offerings']['button_text']);
                 }
             }
