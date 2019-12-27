@@ -7451,17 +7451,17 @@ class FindersController extends \BaseController {
 			$plusId = $plusRatecard['plus_id'];
 			$plusDuration = $plusRatecard['plus_duration'];
 			$retObj = [
-				'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.(!empty($plusDuration))?ucwords($plusDuration):''.' Fitternity Plus Membership',
+				'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.(!empty($plusDuration))?ucwords($plusDuration):''.' <b>Fitternity Plus Membership</b>',
 				'image' => '',
 				'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
 				'know_more_text' => 'KNOW MORE',
-				'know_more_url' => ''.$plusId,
+				'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId,
 				'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
 				'special_price' => 'FREE',
 				'address_required' => true
 			];
 			if($amt>4000) {
-				$retObj['tshirt_sizes'] = [];
+				$retObj['tshirt_sizes'] = [ 'S','M','L','XL'];
 			}
 			return $retObj;
 		}
