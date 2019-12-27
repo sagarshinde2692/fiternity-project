@@ -10,6 +10,7 @@ use App\Services\Utilities as Utilities;
 use Ratecard;
 use App\Services\CustomerReward as customerreward;
 use Order;
+use Pass;
 
 
 Class CouponService {
@@ -20,14 +21,14 @@ Class CouponService {
     }
 
     public function addcoupoun($services_ratecard,$vendor_page_without_login= null,$request_from=null,$finder=null){
-        $campaign_data = $this->utilities->getCampaignData();
+        // $campaign_data = $this->utilities->getCampaignData();
 
-        if(empty($campaign_data)){
-            return false;
-        }
+        // if(empty($campaign_data)){
+        //     return false;
+        // }
         $couponObj =  new Coupon();
         $nocouponcodeofferobj =  new Nocouponcodeoffers();
-        $campaign_id = $campaign_data->_id;
+        $campaign_id = Config::get('app.config_campaign_id');//$campaign_data->_id;
         $coupon_condition  =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"1","status" => "1","campaign.campaign_id" => "$campaign_id");
         $coupon_data = $couponObj->getActiveVendorCoupon($coupon_condition);
         if(empty($coupon_data)){
@@ -135,14 +136,21 @@ Class CouponService {
         return array("services_coupon" => $services_coupon,"offers"=> $offers['offers']);
     }
 
-    public function getlistvalidcoupons($type = null,$order_id=null){
-        $campaign_data = $this->utilities->getCampaignData();
+    public function getlistvalidcoupons($type = null,$order_id=null,$pass_id=null){
+        // $campaign_data = $this->utilities->getCampaignData();
+        // if(empty($campaign_data)){
+        //     return false;
+        // }
         $couponObj =  new Coupon();
         $nocouponcodeofferobj =  new Nocouponcodeoffers();
-        $campaign_id = $campaign_data->_id;
+        $campaign_id = Config::get('app.config_campaign_id');//$campaign_data->_id;
         if($type=="pass" && $order_id){
             $order_data =  Order::select("type","pass._id","pass.pass_type")->where("_id",(int)$order_id)->first();
             $coupon_condition  =  array("ratecard_type"=>$order_data->type,"pass_type" => $order_data->pass['pass_type'],
+            "status" => "1","campaign.campaign_id" => "$campaign_id");
+        } else if($type=="pass" && $pass_id){
+            $pass_data = Pass::select("pass_type")->where("pass_id",(int)$pass_id)->first();
+            $coupon_condition  =  array("ratecard_type"=>$type,"pass_type" => $pass_data->pass_type,
             "status" => "1","campaign.campaign_id" => "$campaign_id");
         } else{
         $coupon_condition  =  array("campaign.vendor_coupon"=>"1","status" => "1","campaign.campaign_id" => "$campaign_id");

@@ -5352,19 +5352,21 @@ class HomeController extends BaseController {
         {
             $data = $_GET;
             $type = "vendor";
+            $pass_id= "";
             if(isset($data['pass_id'])){
                 $type = "pass";
+                $pass_id = $data['pass_id'];
             }
             $order_id = (isset($data['order_id']))?$data['order_id']:"";
             if(isset($data['device_type']) && isset($data['app_version'])){
                 if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
-                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id);
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id);
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
                 } else {
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
                 }
             }else{
-                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id);
+                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id);
                 return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
             }
         	try {
