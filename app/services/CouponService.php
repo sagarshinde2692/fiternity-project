@@ -34,7 +34,7 @@ Class CouponService {
         if(empty($coupon_data)){
             return false;
         }
-        $other_vendor_coupons =  array("campaign.vendor_coupon"=>"1","status" => "1","campaign.campaign_id" => "$campaign_id");
+        $other_vendor_coupons =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"0","status" => "1","campaign.campaign_id" => "$campaign_id");
         $other_vendor_coupons_data = $couponObj->getActiveVendorCoupon($other_vendor_coupons);
 
         $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);
