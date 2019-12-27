@@ -1,6 +1,6 @@
 <?php
 
-class Plusratecards extends \Basemodel {
+class Plusratecard extends \Basemodel {
 protected $collection = "plusratecards";
 
 }

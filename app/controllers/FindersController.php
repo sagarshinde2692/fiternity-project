@@ -7432,24 +7432,30 @@ class FindersController extends \BaseController {
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
 				}
-				// $membershipPlusDetails = $this->getMembershipPlusDetails($ratecard);
-				// if(!empty($membershipPlusDetails)) {
-					// $ratecard['membership_plus'] = $membershipPlusDetails;
-				// }
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity'])) {
+					$membershipPlusDetails = $this->getMembershipPlusDetails($ratecard);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+						$ratecard['address_required'] = true;
+						$ratecard['tshirt_size_required'] = true;
+					}
+				}
 			}
 		}
 
         return $data['finder'];
     }
 
-	/*public function getMembershipPlusDetails($ratecard=null) {
+	public function getMembershipPlusDetails($ratecard=null) {
 		if(!empty($ratecard)) {
 			$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
 			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
 			$plusId = $plusRatecard['plus_id'];
-
+			echo "<pre>";
+			print_r($plusRatecard);
+			exit;
 			$retObj = [
-				'header' => '',
+				'header' => "By Purchasing This Membership Through Fitternity You Get Exclusive Access to ",
 				'image' => '',
 				'description' => 'Fitternity Plus gives you access to exclusive fitness ',
 				'know_more_text' => 'KNOW MORE',
@@ -7458,14 +7464,14 @@ class FindersController extends \BaseController {
 				'special_price' => 'FREE'
 			];
 
+			return $retObj;
+			// if(!empty($plusId)) {
+			// 	$voucherCategories = VoucherCategory::where('plus_id', $plusId);
 
-			if(!empty($plusId)) {
-				$voucherCategories = VoucherCategory::where('plus_id', $plusId);
-
-			}
+			// }
 		}
 		return null;
-	}*/
+	}
 
     public function getNonValidityBanner(){
 		Log::info('values:::::::', [$this->device_type, $this->app_version]);
