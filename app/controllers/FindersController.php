@@ -97,6 +97,7 @@ class FindersController extends \BaseController {
 		// Log::info($_SERVER['REQUEST_URI']);        
 
 		$thirdPartySector = Request::header('sector');
+		$siteSource = Request::header('source');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
 
 
@@ -1512,6 +1513,10 @@ class FindersController extends \BaseController {
 
 			$response = Cache::tags('finder_detail')->get($cache_key);
 
+		}
+
+		if(!empty($siteSource) && strtolower($siteSource)=='multifit' && (empty($response['finder']['brand_id']) || !in_array($response['finder']['brand_id'], [88]))){
+			return Response::json("not found", 404);
 		}
 		
 		if(Request::header('Authorization') && Request::header('Authorization') != 'undefined'){
