@@ -281,7 +281,6 @@ class PassController extends \BaseController {
                 unset($result['onepass_pre']['services']);
                 unset($result['onepass_pre']['passes_header']);
                 unset($result['onepass_pre']['checkout_button_text']);
-                unset($result['onepass_pre']['offers_v2']);
 
                 if(!empty($result['onepass_pre']['offers'])){
                     $agrs1 = array('city' => $city);
@@ -302,6 +301,8 @@ class PassController extends \BaseController {
                     unset($result['onepass_pre']['offers'][0]);
                 }
             }
+
+            unset($result['onepass_pre']['offers_v2']);
 		}
 
         
