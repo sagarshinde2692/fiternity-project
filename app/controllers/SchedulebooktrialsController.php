@@ -2188,6 +2188,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['pass_booking'] = $order['pass_booking'];
             }
 
+            if(!empty($order['pass_booking_lite'])) {
+                $booktrialdata['pass_booking_lite'] = $order['pass_booking_lite'];
+            }
+
             if(!empty($order['pass_credits'])) {
                 $booktrialdata['pass_credits'] = $order['pass_credits'];
             }

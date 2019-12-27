@@ -32,7 +32,7 @@ return [
                 ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
-                    'header' => "<b>Limitless Workouts</b> across 12,000+ fitness studios, gyms and swimming pools across India",
+                    'header' => "Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
                     'text' => '(Limited Access)',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
