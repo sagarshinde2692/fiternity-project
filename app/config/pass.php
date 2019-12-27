@@ -32,7 +32,7 @@ return [
                 ],
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
-                    'header' => "Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
+                    'header' => "<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
                     'text' => '(Limited Access)',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
@@ -126,8 +126,8 @@ return [
                 'offerings' => [
                     "border_text" => "RECOMMENDED",
                     "image" => "http://b.fitn.in/passes/onepass-app.png",
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
-                    'text_lite' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 15 days to 1 year.",
+                    'text' => (json_decode('"'."\u2713".'"')."<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools"),
+                    'text_lite' => "<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
                     "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
                     'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
