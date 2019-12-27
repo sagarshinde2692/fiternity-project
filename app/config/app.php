@@ -32,7 +32,7 @@ return array(
 	// 	[ "id" => "123456789123421", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJzdGFnZSIsImlhdCI6MTU3NDMyNDQzM30.gKSY53izgoVmgNBdsaZlTD51RyJGDPr2u4ns2rsQgro", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
 	// ],
 
-	stage
+	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 	'url' => 'http://apistage.fitn.in',
 	'admin_url' => 'http://adminstage.fitn.in',
