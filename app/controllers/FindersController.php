@@ -7433,11 +7433,10 @@ class FindersController extends \BaseController {
 					$ratecard['validity']= 0;
 				}
 				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity'])) {
-					$membershipPlusDetails = $this->getMembershipPlusDetails($ratecard);
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->getMembershipPlusDetails($amt);
 					if(!empty($membershipPlusDetails)) {
 						$ratecard['membership_plus'] = $membershipPlusDetails;
-						$ratecard['address_required'] = true;
-						$ratecard['tshirt_size_required'] = true;
 					}
 				}
 			}
@@ -7446,29 +7445,25 @@ class FindersController extends \BaseController {
         return $data['finder'];
     }
 
-	public function getMembershipPlusDetails($ratecard=null) {
-		if(!empty($ratecard)) {
-			$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+	public function getMembershipPlusDetails($amt=null) {
+		if(!empty($amt)) {
 			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
 			$plusId = $plusRatecard['plus_id'];
-			echo "<pre>";
-			print_r($plusRatecard);
-			exit;
+			$plusDuration = $plusRatecard['plus_duration'];
 			$retObj = [
-				'header' => "By Purchasing This Membership Through Fitternity You Get Exclusive Access to ",
+				'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.(!empty($plusDuration))?ucwords($plusDuration):''.' Fitternity Plus Membership',
 				'image' => '',
-				'description' => 'Fitternity Plus gives you access to exclusive fitness ',
+				'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
 				'know_more_text' => 'KNOW MORE',
 				'know_more_url' => ''.$plusId,
-				'price' => ''.$plusRatecard['price'],
-				'special_price' => 'FREE'
+				'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
+				'special_price' => 'FREE',
+				'address_required' => true
 			];
-
+			if($amt>4000) {
+				$retObj['tshirt_sizes'] = [];
+			}
 			return $retObj;
-			// if(!empty($plusId)) {
-			// 	$voucherCategories = VoucherCategory::where('plus_id', $plusId);
-
-			// }
 		}
 		return null;
 	}
@@ -7959,6 +7954,8 @@ class FindersController extends \BaseController {
 					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
+				/*
+				//Commented by Akhil on 27-Dec-2019 for Membership Plus
 				$data['checkout_summary'] = [
 					'image' => $thumbsUpImage,
 					'back_image' => $thumbsUpBackImage,
@@ -7972,7 +7969,7 @@ class FindersController extends \BaseController {
 						"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 					],
 					'know_more' => true
-				];
+				];*/
 
 			} else if($finderRewardType==3){
 				$data['fitsquad']['image'] = $fitsquadLogo;
