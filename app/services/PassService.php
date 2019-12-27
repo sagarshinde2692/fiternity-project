@@ -142,7 +142,7 @@ class PassService {
             if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]) && empty($include_onepass_lite_web)){
                 $passList->where('lite', null);
             }
-            // $passList->where('lite', null);
+            
             $passList = $passList->orderBy('duration')->get();
         }
         
