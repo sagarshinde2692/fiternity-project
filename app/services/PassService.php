@@ -2701,7 +2701,12 @@ class PassService {
         
         $bookings = bookingsSumOnVendor($customer, $passOrder);
 
-        $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count, 'total_available'=> $max_booking_count]);
+        $message_temp = $messages['service_page']['success'];
+        if(!empty($finder_found)){
+            $message_temp = $messages['finder_page']['success'];
+        }
+
+        $response['data']['msg'] = strtr($message_temp, [ 'left_session'=> $max_booking_count, 'total_available'=> $max_booking_count]);
 
         if(empty($bookings['result'])){
             
@@ -2767,10 +2772,10 @@ class PassService {
             }
 
             if(empty($status)){
-                $response['data']['msg'] = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
+                $response['data']['msg'] = strtr($messages['finder_page']['failed'], ['total_available'=> $max_booking_count]);
             }
             else if(!empty($status) && $max_booking_count != 31){
-                $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
+                $response['data']['msg'] = strtr($messages['finder_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
 
             }
         }

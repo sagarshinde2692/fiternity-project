@@ -11445,9 +11445,13 @@ Class Utilities {
 
             Log::info('corporate ::CVVDFVDFVD', [$corporate]);
             if(!empty($corporate->max_booking_count)){
-                $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $corporate->max_booking_count]);
+                $restriction_message['msg'] = strtr($restriction_message['success_trial'], ['left_session' => $corporate->max_booking_count]);
                 $restriction_message['max_count'] = $corporate->max_booking_count;
             }
+        }
+        else{
+            $restriction_message['max_count'] = '∞';
+            $restriction_message['msg'] = $restriction_message['unlimited'];
         }
 
         unset($restriction_message['success']);

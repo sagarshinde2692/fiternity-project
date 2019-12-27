@@ -1243,7 +1243,10 @@ return [
         'finder_page' => [
             'background_color' => '#0B445D',
             'max_count' => 0,
-            'success' => 'You can only book left_session sessions here via trial OnePass.',
+            'success_trial' => 'You can only book left_session sessions here via trial OnePass.',
+            'success' => 'left_session Sessions available each month with OnePass.',
+            'unlimited' => 'You can book unlimited sessions here with OnePass'      ,
+            'failed' => 'You have exhausted your Session limit here.'      
         ],
     ]
 
