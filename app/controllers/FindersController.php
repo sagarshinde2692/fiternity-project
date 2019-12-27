@@ -8556,17 +8556,17 @@ class FindersController extends \BaseController {
 	
 	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
-		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
+		//$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
 		$title =  strtolower($orderSummary2['title']);
 		
 		foreach($services as &$service){
-			$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
+			//$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				$price = (!empty($rc['special_price'])) ? $rc['special_price'] : $rc['price'];
-				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
-					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+			//	if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
+			//		$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
 					/*
 						// commented by Akhil for new purchase flow on 27-Dec-2019
 
@@ -8585,13 +8585,13 @@ class FindersController extends \BaseController {
 							}
 						}
 					*/
-                }else{
+              /*  }else{
                     $orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' '.$rc['duration'].' '.$rc['duration_type']]));
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
 
-                }
+                }*/
 				$orderSummary['title'] = ucwords($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];

@@ -10292,7 +10292,7 @@ Class Utilities {
 	}
 
     public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name, $finder = null){
-		$orderSummary = Config::get('orderSummary.slot_summary');
+	/*	$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
@@ -10308,12 +10308,12 @@ Class Utilities {
 
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
-		}
+		}*/
 		return $slotsdata;
     }
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
-        $orderSummary = Config::get('orderSummary.slot_summary');
+       /* $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
@@ -10328,17 +10328,17 @@ Class Utilities {
                     }
                 }
             }
-		}
+		}*/
 		return $slotsdata;
     }
     
     public function orderSummaryService($service){
 		Log::info('service name at order summary3', [$service['name']]);
-		$summary= Config::get('orderSummary.service_summary');
+	/*	$summary= Config::get('orderSummary.service_summary');
 		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
         
         $service['order_summary']['header']= $summary['header'];
-        	
+        	*/
 		return $service;
     }
     
