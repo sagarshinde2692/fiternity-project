@@ -279,9 +279,9 @@ class PassController extends \BaseController {
 
             if(empty(checkAppVersionFromHeader(['ios'=>'5.3.0', 'android'=> "5.34"]))) {
                 unset($result['onepass_pre']['services']);
-                unset($result['onepass_pre']['offers']['button_text']);
                 unset($result['onepass_pre']['passes_header']);
-                unset($result['onepass_pre']['button_text']);
+                unset($result['onepass_pre']['checkout_button_text']);
+                unset($result['onepass_pre']['offers_v2']);
 
                 if(!empty($result['onepass_pre']['offers'])){
                     $agrs1 = array('city' => $city);
@@ -293,11 +293,13 @@ class PassController extends \BaseController {
             }
             else {
                 $coupons = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
+                $result['onepass_pre']['offers'] =$result['onepass_pre']['offers_v2'];
+
                 if(!empty($coupons['options'])) {
-                    $result['onepass_pre']['offers']['coupons'] = $coupons['options'];
+                    $result['onepass_pre']['offers'][0]['coupons'] = $coupons['options'];
                 }
                 else {
-                    unset($result['onepass_pre']['offers']);
+                    unset($result['onepass_pre']['offers'][0]);
                 }
             }
 		}

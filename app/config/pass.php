@@ -1004,10 +1004,30 @@ return [
             "header" => "OFFERS YOU CAN`T REFUSE",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
             "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
-            "button_text" => "VIEW ALL OFFERS"
         ],
 
-        "button_text" => "CHECKOUT ALL GYMS AND STUDIOS",
+        "offers_v2" => [
+            "header" => "OFFERS YOU CAN`T REFUSE",
+            "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
+            "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
+            "button_text" => "VIEW ALL OFFERS",
+            "offer" => [
+                [
+                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
+                    "button_text" => "VIEW ALL OFFERS",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "text" => "Have the ease of paying for your OnePass as per your convenience with Interest Free EMI Payment Option",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
+                ]
+            ]
+        ],
+        "checkout_button_text" => "CHECKOUT ALL GYMS AND STUDIOS",
         
         'faq' => [
             "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
