@@ -6472,11 +6472,11 @@ Class Utilities {
         }
 
         if(isset($voucher_category['plus_id'])){
-            $voucher_data['plus_id'] = $voucher_category['plus_id'];
+            $new_voucher->plus_id = $voucher_category['plus_id'];
         }
 
         if(isset($order_data['_id'])){
-            $voucher_data['order_id'] = $order_data['_id'];
+            $new_voucher->order_id = $order_data['_id'];
         }
 
         if(!empty($voucher_category['required_info'])){
