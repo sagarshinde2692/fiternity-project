@@ -946,7 +946,7 @@ return [
         "headerview" =>[
             "header_img" =>  "https://b.fitn.in/passes/onepass-app.png",
             // "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
-            "backgoround_image" => "https://b.fitn.in/onepass/onepass_background.png",
+            "background_image" => "https://b.fitn.in/onepass/onepass_background.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
