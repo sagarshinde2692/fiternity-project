@@ -7797,6 +7797,10 @@ Class Utilities {
             Log::info("asdsad");
         }
         
+        if(!empty($voucher_category['flags']['fitcash_coupon'])){
+            $voucher_data['code']  = $this->generateFitcashCouponCode(['customer'=>$customer, 'coupon_conditions' => $coupon_conditions, 'voucher_category' => $voucher_category, 'order_data' => $order_data_arg]);
+        }
+        
         return $voucher = \LoyaltyVoucher::create($voucher_data);
 
     }
@@ -10541,7 +10545,7 @@ Class Utilities {
     public function rollbackVouchers($customer, $combo_vouchers_list){
         foreach($combo_vouchers_list as $key=>$value){
             if(!empty($value)){
-                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id'];
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id', 'order_id'];
                 
                 try{
                     if($value['diet_plan_order_id']){
@@ -11525,5 +11529,51 @@ Class Utilities {
         $coupon['total_used'] = 0;
         
         return $coupon;
+    }
+
+    public function generateFitcashCouponCode($data){
+        $customer = $data['customer'];
+        $voucher_category = $data['voucher_category'];
+        $coupon_conditions = $data['coupon_conditions'];
+        $order_data = $data['order_data'];
+
+        $fitcashcoupon['amount'] = !empty($coupon_conditions['amount']) ? $coupon_conditions['amount'] : 0;
+        $fitcashcoupon['quantity'] = !empty($coupon_conditions['quantity']) ? $coupon_conditions['quantity'] : 0;
+        $fitcashcoupon['type'] = !empty($coupon_conditions['type']) ? $coupon_conditions['type'] : 'fitcashplus';
+        $fitcashcoupon['valid_till'] = $fitcashcoupon['expiry'] = !empty($coupon_conditions['valid_till_in_months']) ? strtotime('+'.$coupon_conditions['valid_till_in_months'].' months') : strtotime('+2 months');
+        
+        if(!empty($coupon_conditions['order_type'])){
+            $fitcashcoupon['order_type'] = $coupon_conditions['order_type'];
+        }
+
+        $fitcashcoupon['fitternity_plus'] = true;
+
+        $fitcashcoupon['code'] = $this->getFitcashCode($data);
+
+        \Fitcashcoupon::insert($fitcashcoupon);
+        
+        return $fitcashcoupon['code'];
+    }
+
+    public function getFitcashCode($data){
+        $customer = $data['customer'];
+
+        $random_string = $this->generateRandomString();
+        $code = 'fit'.$random_string;
+        if(!empty($customer['name'])){
+            if(strlen($customer['name']) >3 ){
+                $code .= substr($customer['name'],0,3);
+            }
+        }
+        $code .= 'cash';
+        $code = strtolower($code);
+        // print_r($code);
+        // exit();
+        $alreadyExists = \Fitcashcoupon::where('code', $code)->first();
+        if($alreadyExists){
+            return $this->getFitcashCode($data);
+        }
+
+        return $code;
     }
 }

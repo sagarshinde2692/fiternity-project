@@ -53,26 +53,44 @@ class PlusService {
         $claimed_rewards_arr = array();
         if(!empty($allRewards)){
             foreach($allRewards as $reward){
-                $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
-                $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
+                
 
-                $combo_vouchers =[];
-					if(!empty($voucher_category['flags']) && !empty($voucher_category['flags']['combo_vouchers_list'])){
-						$combo_voucher_list =$voucher_category['flags']['combo_vouchers_list'];
-						foreach($combo_voucher_list as $index=>$value){
-							$voucher = VoucherCategory::find($value);
-							$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
-						}
+                if(!empty($reward['flags']) && !empty($reward['flags']['combo_vouchers_list'])){
+
+                    $rollback = false;
+                    $combo_vouchers =[];
+
+					$combo_voucher_list =$reward['flags']['combo_vouchers_list'];
+					foreach($combo_voucher_list as $index=>$value){
+						$voucher = VoucherCategory::find($value);
+						$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher);
                     }
                     
-					if(count($combo_vouchers) > 0){
-						foreach($combo_vouchers as $index=>$value){
-							if(!$value){
-								$this->utilities->rollbackVouchers($customer, $combo_vouchers);
-								return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support (6).'));
-							}
-						}
-					}
+                    if(count($combo_vouchers) > 0){
+                        foreach($combo_vouchers as $index => $value){
+                            if(!$value){
+                                $rollback = true;
+                                $this->utilities->rollbackVouchers($customer, $combo_vouchers);
+                            }
+                        }
+                    }
+
+                    if(empty($rollback)){
+                        Log::info("empty rollback");
+                        
+                        $flags= $reward['flags'];
+						$flags['manual_redemption'] = true;
+                        $reward['flags'] = $flags;
+                        $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
+                        $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
+                        $claimed_rewards_arr[$reward['name']]['combo_vouchers'] = $combo_vouchers;
+                    }
+
+                    continue;
+                }
+                
+                $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
+                $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
             }
         }
 
