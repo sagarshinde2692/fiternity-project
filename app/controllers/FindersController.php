@@ -4989,7 +4989,6 @@ class FindersController extends \BaseController {
 						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
 								$data['finder']['offers']['applied_coupon_text'] = $data['finder']['finder_one_line'];
 						   		$data['finder']['offers']['removed_coupon_text'] = 'Explore all other coupons';
-							   	unset($data['finder']['finder_one_line']);
 						   }
 					   }
 					 }
@@ -5482,7 +5481,7 @@ class FindersController extends \BaseController {
 					unset($finderData['finder']['finder_one_line']);
 				}
 			}
-			$finderData['finder']['finder_one_line']= "";
+			// $finderData['finder']['finder_one_line']= "";
             if(isset($finderData['finder']['services_coupon'])) {
             foreach($finderData['finder']['services'] as $srkey => $srval){
                 foreach($srval['ratecard'] as $ratecardKey => $ratecard){
@@ -5491,13 +5490,16 @@ class FindersController extends \BaseController {
                     }
                 }    
         }
-        if(isset($finderData['finder']['offers']['options'])){
-            foreach($finderData['finder']['offers']['options'] as $val){
-                if(isset($val['is_applicable'])){
-                    $finderData['finder']['finder_one_line']= strtoupper($val['code'])." code is pre-applied on the rate card below. Explore all other coupons on checkout.";
-                }
-            }
-        } 
+		if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0){
+			unset($finderData['finder']['finder_one_line']);
+		}
+        // if(isset($finderData['finder']['offers']['options'])){
+        //     foreach($finderData['finder']['offers']['options'] as $val){
+        //         if(isset($val['is_applicable'])){
+        //             $finderData['finder']['finder_one_line']= strtoupper($val['code'])." code is pre-applied on the rate card below. Explore all other coupons on checkout.";
+        //         }
+        //     }
+        // } 
         unset($finderData['finder']['services_coupon']);
     }
 		}else{
