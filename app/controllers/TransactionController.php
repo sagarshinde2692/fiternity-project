@@ -2536,8 +2536,7 @@ class TransactionController extends \BaseController {
             return Response::json($resp,401);
         }
       
-        // $hash_verified = $this->utilities->verifyOrder($data,$order);
-        $hash_verified = true;
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
         
         Log::info("successCommon ",[$hash_verified]);
         if($data['status'] == 'success' && $hash_verified){
