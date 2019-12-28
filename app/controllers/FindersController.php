@@ -97,6 +97,7 @@ class FindersController extends \BaseController {
 		// Log::info($_SERVER['REQUEST_URI']);        
 
 		$thirdPartySector = Request::header('sector');
+		$siteSource = Request::header('source');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
 
 
@@ -1416,7 +1417,7 @@ class FindersController extends \BaseController {
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift. Use Code: MEM20 | 21-27 Dec";
+							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: DEC20 | 28-30 Dec";
 						}
 						
 						if(!empty($vendor_stripe_line)){
@@ -1512,6 +1513,10 @@ class FindersController extends \BaseController {
 
 			$response = Cache::tags('finder_detail')->get($cache_key);
 
+		}
+
+		if(!empty($siteSource) && strtolower($siteSource)=='multifit' && (empty($response['finder']['brand_id']) || !in_array($response['finder']['brand_id'], [88]))){
+			return Response::json("not found", 404);
 		}
 		
 		if(Request::header('Authorization') && Request::header('Authorization') != 'undefined'){
@@ -3938,9 +3943,9 @@ class FindersController extends \BaseController {
 		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) ){
 
 			if($this->device_type == 'android'){				
-				$line = "FitMas Santa Sale<br><br>21-27 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: MEM20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : X100";
+				$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>28-30 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 			}else{
-				$line = "\nFitMas Santa Sale\n\n21-27 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: MEM20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : X100";
+				$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\n28-30 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 			}
 		}
         
@@ -3954,9 +3959,9 @@ class FindersController extends \BaseController {
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 									if($this->device_type == 'android'){
-										$line = "FitMas Santa Sale<br><br>21-27 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: MEM20";
+										$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>28-30 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
 									}else{
-										$line = "\nFitMas Santa Sale\n\n21-27 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: MEM20";
+										$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\n28-30 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
 									}
 								
 									break;
@@ -5538,7 +5543,7 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-							$ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: X100";				
+							$ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";				
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
                             //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
                             // }
@@ -8547,7 +8552,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift | Use Code: MEM20 \n\n21-27 Dec");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift | Use Code: DEC20 \n\n28-30 Dec");
 						}
 					}
                 }else{
@@ -8822,7 +8827,7 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: X100";
+			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
 			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
 			// }
