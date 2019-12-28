@@ -2887,12 +2887,7 @@ class PassService {
             foreach($coupons as $key=>&$value){
                 $value['code'] = strtoupper($value['code']);
                 $terms = !empty($value['terms']) ?  implode("<br>", $value['terms']) : '';
-                if(!empty($terms)){
-                    $value['terms'] = [$terms];
-                }
-                else{
-                    unset($value['terms']);
-                }
+                $value['terms'] = [$terms];
             }
         }
         $resp['options'] = $coupons;
