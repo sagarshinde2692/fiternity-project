@@ -1791,7 +1791,7 @@ class TransactionController extends \BaseController {
         Log::info("amount_customer_int ::", [$amount_customer_int]);
         Log::info("convinience_fee_int ::", [$convinience_fee_int]);
         Log::info("base_amount_int ::", [$base_amount_int]);
-        if(!empty($base_amount_int)){
+        if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
             Log::info("fitternity plus apply");
             $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
             $plus_details = $this->plusService->applyPlus($plus_arg_data);
