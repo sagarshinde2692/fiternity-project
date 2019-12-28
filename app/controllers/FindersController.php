@@ -7449,7 +7449,7 @@ class FindersController extends \BaseController {
 		if(!empty($amt)) {
 			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
 			$plusId = $plusRatecard['plus_id'];
-			$plusDuration = $plusRatecard['plus_duration'];
+			$plusDuration = $plusRatecard['duration_text'];
 			$retObj = [
 				'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' <b>Fitternity Plus Membership</b>',
 				'image' => 'https://b.fitn.in/global/fitcompressed/onepass-image.png',
