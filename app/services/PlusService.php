@@ -64,6 +64,7 @@ class PlusService {
 					foreach($combo_voucher_list as $index=>$value){
                         $voucher = VoucherCategory::find($value);
                         $voucher['plus_id'] = [$plus_id];
+                        $voucher['milestone'] = $reward['milestone'];
 						$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher, $data);
                     }
                     
