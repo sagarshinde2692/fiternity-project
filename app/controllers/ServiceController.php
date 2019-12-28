@@ -1944,7 +1944,7 @@ class ServiceController extends \BaseController {
 		return Response::json($data,200);
 	}
 	
-	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
+	public function serviceDetailv1($finder_slug, $service_slug, $cache=false){
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
         $date = !empty($_GET['date']) ? $_GET['date'] : null;
@@ -1993,7 +1993,7 @@ class ServiceController extends \BaseController {
 			// }
 			
 			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id','flags', 'pps_description']);
-			
+
 			if(isset($service_details['pps_description']) && $service_details['pps_description'] != ''){
 				$service_details['short_description'] = $service_details['pps_description'];
 			}
@@ -2058,6 +2058,7 @@ class ServiceController extends \BaseController {
 			
 			};
 			
+			$this->utilities->checkForOtherWorkoutServices($finder['_id'], $service_slug, $service_details);
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
             // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
             $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')

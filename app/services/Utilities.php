@@ -11410,4 +11410,24 @@ Class Utilities {
         }
     }
 
+    public function checkForOtherWorkoutServices($finder_id, $service_slug, &$service_details){
+        Log::info('checking service coutnsvbfdkjvbdfbkvdf');
+        $services_count = Service::active()
+        ->where('finder_id', $finder_id)
+        ->where('slug', '!=', $service_slug)
+        ->where('trial' ,'!=', 'disable')
+        ->where('membership' ,'!=', 'disable')
+        ->with(
+            array(
+                'ratecards'=> function($query) {$query->whereIn('type', ['workout session', 'trial']);}
+            )
+        )
+        ->count()
+        ;
+
+        if($services_count > 0){
+            $service_details['other_workout_text'] = "Other Workouts";
+        }
+        return;
+    }
 }
