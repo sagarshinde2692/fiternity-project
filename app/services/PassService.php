@@ -2885,8 +2885,14 @@ class PassService {
 
         if($device=='android' && $app_version == '5.33'){
             foreach($coupons as $key=>&$value){
+                $value['code'] = strtoupper($value['code']);
                 $terms = !empty($value['terms']) ?  implode("<br>", $value['terms']) : '';
-                $value['terms'] = [$terms];
+                if(!empty($terms)){
+                    $value['terms'] = [$terms];
+                }
+                else{
+                    unset($value['terms']);
+                }
             }
         }
         $resp['options'] = $coupons;
