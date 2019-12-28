@@ -65,7 +65,9 @@ Class CouponService {
             if($isCouponAppliedFlag){
                 $temp_coupon['coupon_code'] = $cval['code'];
                 $temp_coupon['desc'] = $cval['description'];
-                $temp_coupon['long_desc'] = $cval['description'];
+                if(isset($cval['long_description']) && !empty($cval['long_description'])){
+                    $temp_coupon['long_desc']= $cval['long_description'];
+                }
                 $temp_coupon['coupon_discount'] = $cval['discount_percent'];
                 if(isset($cval['campaign'][0]['vendor_coupon'])){
                     $temp_coupon['default_view'] = $cval['campaign'][0]['vendor_coupon'];
@@ -79,11 +81,13 @@ Class CouponService {
         }
 
         foreach($other_vendor_coupons_data as $ovcval) {
-            $this->appliedCouponData[] = array(
-                'coupon_code' => $ovcval['code'],
-                 'desc' => $ovcval['description'],
-                 'long_desc' => $ovcval['description'],
-             );
+            $ovtemp_coupon['coupon_code'] = $ovcval['code'];
+            $ovtemp_coupon['desc'] = $ovcval['description'];
+            if(isset($ovcval['long_description']) && !empty($ovcval['long_description'])){
+                $ovtemp_coupon['long_desc']= $ovcval['long_description'];
+            }
+            $this->appliedCouponData[] =  $ovtemp_coupon;
+            unset($ovtemp_coupon);
         }
 
         foreach($noCouponOffersData as $nco_val){
@@ -122,7 +126,21 @@ Class CouponService {
             $temp_coupon["_id"]= $cval['_id'];
             $temp_coupon['code']= $cval['code'];
             $temp_coupon['description']= $cval['description'];
-            $temp_coupon['terms']= array($cval['description']);
+            if(isset($cval['long_description']) && !empty($cval['long_description'])){
+                // foreach($cval['long_description'] as $key => $val){
+                    
+                //     $cval['long_description']= "$val <br>";
+                // }
+                // echo "<pre>";
+                // print_r($cval['long_description']);
+                // exit;
+                // if($this->checkAndroidVersion(['android'=>5.33])){
+                    
+                // }else {
+                // $temp_coupon['terms']= $cval['long_description'];
+                // }
+                $temp_coupon['terms']= $cval['long_description'];
+            }
             $temp_coupon['coupon_discount'] = $cval['discount_percent'];
             $temp_coupon["is_applicable"]= true;
             if(isset($cval['campaign'][0]['hero_coupon']) && $cval['campaign'][0]['hero_coupon']==1 ){
@@ -134,18 +152,21 @@ Class CouponService {
         }
         
         foreach($other_vendor_coupons_data as $ovcval) {
-            $offers['offers']['options'][] = array(
-                'code' => $ovcval['code'],
-                 'description' => $ovcval['description'],
-                 'terms' => array($ovcval['description']),
-             );
+
+            $ovtemp_coupon['code']= $ovcval['code'];
+            $ovtemp_coupon['description']= $ovcval['description'];
+            if(isset($ovcval['long_description']) && !empty($ovcval['long_description'])){
+                $ovtemp_coupon['terms'] = $ovcval['long_description'];
+            }
+            $offers['offers']['options'][] = $ovtemp_coupon;
+            unset($ovtemp_coupon);
         }
         
         foreach($noCouponOffersData as $nco_val){
             $offers['offers']['options'][] = array(
                'code' => $nco_val['code'],
                 'description' => $nco_val['description'],
-                'terms' => array($nco_val['long_desc']),
+                'terms' => $nco_val['long_desc'],
             ); 
         }
         return array("services_coupon" => $services_coupon,"offers"=> $offers['offers']);
@@ -184,6 +205,16 @@ Class CouponService {
             ); 
         }
         return $temp_coupon;
+    }
+
+    public function checkAndroidVersion($data){
+        $app_version = Request::header('App-Version');
+        $device_type = Request::header('Device-Type');
+
+        if($device_type == 'android' && $app_version == $data['android']){
+            return true;
+        }
+        return false;
     }
 }
 
