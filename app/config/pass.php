@@ -945,7 +945,8 @@ return [
     "before_purchase_tab" => [
         "headerview" =>[
             "header_img" =>  "https://b.fitn.in/passes/onepass-app.png",
-            "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            // "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "backgoround_image" => "https://b.fitn.in/onepass/onepass_background.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
@@ -1010,17 +1011,17 @@ return [
             "header" => "OFFERS YOU CAN`T REFUSE",
             "offer" => [
                 [
-                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "icon" => "https://b.fitn.in/onepass/Offers_3x.png",
                     "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
                     "header" => "Offers For You",
                     "button_text" => "VIEW ALL OFFERS",
                 ],
                 [
-                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "icon" => "https://b.fitn.in/onepass/EMI_3x.png",
                     "text" => "Have the ease of paying for your OnePass as per your convenience with Interest Free EMI Payment Option",
                 ],
                 [
-                    "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                    "icon" => "https://b.fitn.in/onepass/Refund_3x.png",
                     "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
                 ]
             ]
@@ -1051,28 +1052,28 @@ return [
         "services" => [
             [
                 "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "icon" => "https://b.fitn.in/onepass/Dumbell-Grey_3x.png",
                 "name" => "lore ipsum",
                 "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
                 "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
             ],
             [
                 "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "icon" => "https://b.fitn.in/onepass/Heart-Grey_3x.png",
                 "name" => "lore ipsum",
                 "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
                 "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
             ],
             [
                 "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "icon" => "https://b.fitn.in/onepass/Boxing-Grey_3x.png",
                 "name" => "lore ipsum",
                 "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
                 "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
             ],
             [
                 "image" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
-                "icon" => "https://b.fitn.in/onepass/discount_3x.png",
+                "icon" => "https://b.fitn.in/onepass/Jewel-Grey_3x.png",
                 "name" => "lore ipsum",
                 "title" => "lore ipsum lore ipsum lore ipsum lore ipsum",
                 "text" => "lore ipsum lore ipsum lore ipsum lore ipsum v lore ipsum lore ipsum lore ipsum",
