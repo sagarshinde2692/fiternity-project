@@ -7456,7 +7456,7 @@ class FindersController extends \BaseController {
 					'image' => 'https://b.fitn.in/global/fitcompressed/onepass-image.png',
 					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
 					'know_more_text' => 'KNOW MORE',
-					'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId,
+					'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId.'?mobile_app=true',
 					'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
 					'special_price' => 'FREE',
 					'address_required' => true,
