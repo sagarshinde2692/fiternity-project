@@ -278,7 +278,6 @@ class PassController extends \BaseController {
             }
 
             if(empty(checkAppVersionFromHeader(['ios'=>'5.3', 'android'=> "5.34"]))) {
-                unset($result['onepass_pre']['services']);
                 unset($result['onepass_pre']['passes_header']);
                 unset($result['onepass_pre']['checkout_button_text']);
 
@@ -304,6 +303,7 @@ class PassController extends \BaseController {
             }
 
             unset($result['onepass_pre']['offers_v2']);
+            unset($result['onepass_pre']['services']);
 		}
 
         
