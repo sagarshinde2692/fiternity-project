@@ -35,8 +35,8 @@ class PlusService {
 
     public function plusRatecardData($data){
         Log::info("plusRatecardData");
-        $plus = Plusratecards::active()->where('min', '<=', $data['base_amount'])->where('max', '>=', $data['base_amount'])->first()->toArray();
-        return (!empty($plus)) ? $plus : null;
+        $plus = Plusratecards::active()->where('min', '<=', $data['base_amount'])->where('max', '>=', $data['base_amount'])->first();
+        return (!empty($plus)) ? $plus->toArray() : null;
     }
 
     public function createPlusRewards($data){
