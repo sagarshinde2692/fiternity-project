@@ -7432,7 +7432,7 @@ class FindersController extends \BaseController {
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
 				}
-				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity'])) {
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
 					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
 					$membershipPlusDetails = $this->getMembershipPlusDetails($amt);
 					if(!empty($membershipPlusDetails)) {
