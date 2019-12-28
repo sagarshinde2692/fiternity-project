@@ -274,11 +274,11 @@ class PassService {
         }
     
         if(!empty($red_pass_coupons['options'])){
-            !empty($include_onepass_lite_web) ? $this->formatCouponsFroWeb($red_pass_coupons): null;
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($red_pass_coupons): null;
             $response['passes'][0]['coupons'] = $red_pass_coupons;
         }
         if(!empty($black_pass_coupons['options'])){
-            !empty($include_onepass_lite_web) ? $this->formatCouponsFroWeb($black_pass_coupons): null;
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($black_pass_coupons): null;
             $response['passes'][1]['coupons'] = $black_pass_coupons;
         }
 
@@ -2897,7 +2897,7 @@ class PassService {
             
     }
 
-    public function formatCouponsFroWeb(&$coupns){
+    public function formatCouponsForWeb(&$coupns){
         foreach($coupns['options'] as &$value){
             $value['coupon_code'] = $value['code'];
             $value['desc'] = $value['description'];
