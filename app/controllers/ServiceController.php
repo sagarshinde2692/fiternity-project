@@ -1944,7 +1944,7 @@ class ServiceController extends \BaseController {
 		return Response::json($data,200);
 	}
 	
-	public function serviceDetailv1($finder_slug, $service_slug, $cache=false){
+	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
         $date = !empty($_GET['date']) ? $_GET['date'] : null;
