@@ -7458,7 +7458,10 @@ class FindersController extends \BaseController {
 				'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId,
 				'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
 				'special_price' => 'FREE',
-				'address_required' => true
+				'address_required' => true,
+				'amount' => $plusRatecard['price'],
+				'plusDuration' => $plusDuration,
+				'address_required' => true,
 			];
 			if($amt>4000) {
 				//$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
