@@ -7448,26 +7448,28 @@ class FindersController extends \BaseController {
 	public function getMembershipPlusDetails($amt=null) {
 		if(!empty($amt)) {
 			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
-			$plusId = $plusRatecard['plus_id'];
-			$plusDuration = $plusRatecard['duration_text'];
-			$retObj = [
-				'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' <b>Fitternity Plus Membership</b>',
-				'image' => 'https://b.fitn.in/global/fitcompressed/onepass-image.png',
-				'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
-				'know_more_text' => 'KNOW MORE',
-				'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId,
-				'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
-				'special_price' => 'FREE',
-				'address_required' => true,
-				'amount' => $plusRatecard['price'],
-				'plusDuration' => $plusDuration,
-				'address_required' => true,
-			];
-			if($amt>4000) {
-				//$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
-                $retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
+			if(!empty($plusRatecard)) {
+				$plusId = $plusRatecard['plus_id'];
+				$plusDuration = $plusRatecard['duration_text'];
+				$retObj = [
+					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' <b>Fitternity Plus Membership</b>',
+					'image' => 'https://b.fitn.in/global/fitcompressed/onepass-image.png',
+					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
+					'know_more_text' => 'KNOW MORE',
+					'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId,
+					'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
+					'special_price' => 'FREE',
+					'address_required' => true,
+					'amount' => $plusRatecard['price'],
+					'plusDuration' => $plusDuration,
+					'address_required' => true,
+				];
+				if($amt>4000) {
+					//$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
+					$retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
+				}
+				return $retObj;
 			}
-			return $retObj;
 		}
 		return null;
 	}
