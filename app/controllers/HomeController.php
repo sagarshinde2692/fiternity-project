@@ -5357,10 +5357,11 @@ class HomeController extends BaseController {
                 $type = "pass";
                 $pass_id = $data['pass_id'];
             }
+            $ratecard_id = (isset($data['ratecard_id']))?$data['ratecard_id']:"";
             $order_id = (isset($data['order_id']))?$data['order_id']:"";
             if(isset($data['device_type']) && isset($data['app_version'])){
                 if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
-                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id);
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
                 } else {
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
