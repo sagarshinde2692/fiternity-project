@@ -11410,22 +11410,37 @@ Class Utilities {
         }
     }
 
-    public function checkForOtherWorkoutServices($finder_id, $service_slug, &$service_details){
+    public function checkForOtherWorkoutServices($finder_id, &$service_details){
         Log::info('checking service coutnsvbfdkjvbdfbkvdf');
-        $services_count = Service::active()
+        $services_ids = Service::active()
         ->where('finder_id', $finder_id)
-        ->where('slug', '!=', $service_slug)
+        ->where('_id', '!=', $service_details['_id'])
         ->where('trial' ,'!=', 'disable')
-        ->where('membership' ,'!=', 'disable')
-        ->with(
-            array(
-                'ratecards'=> function($query) {$query->whereIn('type', ['workout session', 'trial']);}
-            )
-        )
-        ->count()
+        // ->where('membership' ,'!=', 'disable')
+        ->lists('_id')
         ;
 
-        if($services_count > 0){
+        $services_count = Ratecard::active()
+        ->where('finder_id', $finder_id)
+        ->whereIn('service_id', $services_ids)
+        ->whereIn('type', ['workout session', 'trial'])
+        ->where('direct_payment_enable', "1")
+        ->get(['type', 'price', '_id'])
+        ;
+
+        $ratecard = [];
+        foreach($services_count as $key=>$value){
+            array_push($value['_id']);
+            if($value['type']=='trial' && $value['price'] ==0){
+                $index = array_search($ratecard, $value['_id']);
+                if($index >=0 ){
+                    unset($ratecard[$index]);
+                    $ratecard = array_value($ratecard);
+                }
+            }
+        }
+        
+        if(count($ratecard) > 0){
             $service_details['other_workout_text'] = "Other Workouts";
         }
         return;

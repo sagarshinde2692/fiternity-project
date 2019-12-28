@@ -2058,7 +2058,7 @@ class ServiceController extends \BaseController {
 			
 			};
 			
-			$this->utilities->checkForOtherWorkoutServices($finder['_id'], $service_slug, $service_details);
+			$this->utilities->checkForOtherWorkoutServices($finder['_id'], $service_details);
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
             // $ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
             $offer = Offer::where('hidden', false)->where('ratecard_id', $workout_session_ratecard['_id'])->orderBy('_id', 'desc')
