@@ -106,7 +106,7 @@ Class CouponService {
     private function couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data){
         $offers = array("offers" => array(
                 "headers" => "Available Coupons",
-                "text" => "View Offers",
+                "text" => "View All Offers",
             )
         );
         $services_coupon = array();

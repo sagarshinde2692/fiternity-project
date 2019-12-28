@@ -4986,6 +4986,11 @@ class FindersController extends \BaseController {
 		   
 					   if(isset($coupon_data['offers']) && !empty($coupon_data['offers'])){
 						   $data['finder']['offers'] = $coupon_data['offers'];
+						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
+								$data['finder']['offers']['applied_coupon_text'] = $data['finder']['finder_one_line'];
+						   		$data['finder']['offers']['removed_coupon_text'] = 'Explore all other coupons';
+							   	unset($data['finder']['finder_one_line']);
+						   }
 					   }
 					 }
 				   }
