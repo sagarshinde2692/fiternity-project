@@ -62,7 +62,8 @@ class PlusService {
 
 					$combo_voucher_list =$reward['flags']['combo_vouchers_list'];
 					foreach($combo_voucher_list as $index=>$value){
-						$voucher = VoucherCategory::find($value);
+                        $voucher = VoucherCategory::find($value);
+                        $voucher['plus_id'] = [$plus_id];
 						$combo_vouchers[$value] = $this->utilities->assignVoucher($customer, $voucher, $data);
                     }
                     
