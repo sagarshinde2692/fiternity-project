@@ -51,6 +51,8 @@ class PlusService {
         $allRewards = VoucherCategory::active()->where('plus_id', $plus_id)->get();
         // return $allRewards;
         $claimed_rewards_arr = array();
+
+        $voucher_not_claimed = array();
         if(!empty($allRewards)){
             foreach($allRewards as $reward){
                 
@@ -73,6 +75,7 @@ class PlusService {
                             if(!$value){
                                 $rollback = true;
                                 $this->utilities->rollbackVouchers($customer, $combo_vouchers);
+                                array_push($voucher_not_claimed, $reward['_id']);
                             }
                         }
                     }
@@ -86,6 +89,10 @@ class PlusService {
                         $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
                         $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
                         $claimed_rewards_arr[$reward['name']]['combo_vouchers'] = $combo_vouchers;
+
+                        if(empty($claimed_reward)){
+                            array_push($voucher_not_claimed, $reward['_id']);
+                        }
                     }
 
                     continue;
@@ -93,6 +100,10 @@ class PlusService {
                 
                 $claimed_reward = $this->utilities->assignVoucher($customer, $reward, $data);
                 $claimed_rewards_arr[$reward['name']] = !empty($claimed_reward) ? $claimed_reward : array();
+            }
+
+            if(!empty($voucher_not_claimed)){
+                \Order::where('_id',$data['_id'])->update('plus.voucher_not_sent', $voucher_not_claimed);
             }
         }
 
