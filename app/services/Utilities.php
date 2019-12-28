@@ -11435,7 +11435,7 @@ Class Utilities {
                 $index = array_search($value['_id'], $ratecard);
                 if($index >=0 ){
                     unset($ratecard[$index]);
-                    $ratecard = array_value($ratecard);
+                    $ratecard = array_values($ratecard);
                 }
             }
         }
