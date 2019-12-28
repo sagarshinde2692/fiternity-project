@@ -11430,7 +11430,7 @@ Class Utilities {
 
         $ratecard = [];
         foreach($services_count as $key=>$value){
-            array_push($value['_id']);
+            array_push($ratecard ,$value['_id']);
             if($value['type']=='trial' && $value['price'] ==0){
                 $index = array_search($ratecard, $value['_id']);
                 if($index >=0 ){
