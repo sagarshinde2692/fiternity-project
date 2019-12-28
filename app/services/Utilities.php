@@ -10292,7 +10292,7 @@ Class Utilities {
 	}
 
     public function orderSummaryWorkoutSessionSlots($slotsdata, $service_name, $vendor_name, $finder = null){
-	/*	$orderSummary = Config::get('orderSummary.slot_summary');
+		$orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		//Log::info('order summary ::::::', [$orderSummary]);
@@ -10308,7 +10308,7 @@ Class Utilities {
 
                     $slot['order_summary']['header'] = $orderSummary['header'];
                 }
-		}*/
+		}
 		return $slotsdata;
     }
     
