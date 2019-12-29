@@ -5351,6 +5351,8 @@ class HomeController extends BaseController {
         public function listValidCoupons()
         {
             $data = $_GET;
+            $deviceType=Request::header("Device-Type");
+            $appVersion=Request::header("App-Version");
             $type = "vendor";
             $pass_id= "";
             if(isset($data['pass_id'])){
@@ -5359,7 +5361,7 @@ class HomeController extends BaseController {
             }
             $ratecard_id = (isset($data['ratecard_id']))?$data['ratecard_id']:"";
             $order_id = (isset($data['order_id']))?$data['order_id']:"";
-            if(isset($data['device_type']) && isset($data['app_version'])){
+            if(!empty($deviceType) && !empty($appVersion)){
                 if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
                     $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];

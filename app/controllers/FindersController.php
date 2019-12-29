@@ -5409,7 +5409,7 @@ class FindersController extends \BaseController {
 			
 			// commented on 9th August - Akhil
             if(!empty($customer_id)){
-                $this->addCreditPoints($finderData['finder']['services'], $customer_id, $allowSession['allow_session', $allowSession['max_amount']]);
+                $this->addCreditPoints($finderData['finder']['services'], $customer_id, $allowSession['allow_session'], $allowSession['max_amount']);
             }
             //adding static data for hanman fitness
             // if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
@@ -5485,25 +5485,18 @@ class FindersController extends \BaseController {
 			}
 			// $finderData['finder']['finder_one_line']= "";
             if(isset($finderData['finder']['services_coupon'])) {
-            foreach($finderData['finder']['services'] as $srkey => $srval){
-                foreach($srval['ratecard'] as $ratecardKey => $ratecard){
-                    if(isset($finderData['finder']['services_coupon'][$ratecard['_id']])) {
-                      $finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecard['_id']]['coupons'];      
-                    }
-                }    
-        }
-		if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0){
-			unset($finderData['finder']['finder_one_line']);
-		}
-        // if(isset($finderData['finder']['offers']['options'])){
-        //     foreach($finderData['finder']['offers']['options'] as $val){
-        //         if(isset($val['is_applicable'])){
-        //             $finderData['finder']['finder_one_line']= strtoupper($val['code'])." code is pre-applied on the rate card below. Explore all other coupons on checkout.";
-        //         }
-        //     }
-        // } 
-        unset($finderData['finder']['services_coupon']);
-    }
+				foreach($finderData['finder']['services'] as $srkey => $srval){
+					foreach($srval['ratecard'] as $ratecardKey => $ratecard){
+						if(isset($finderData['finder']['services_coupon'][$ratecard['_id']])) {
+							$finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecard['_id']]['coupons'];      
+						}
+					}    
+				}
+				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0){
+					unset($finderData['finder']['finder_one_line']);
+				}
+				unset($finderData['finder']['services_coupon']);
+			}
 		}else{
 
 			$finderData['status'] = 404;
