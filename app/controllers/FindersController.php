@@ -5404,17 +5404,19 @@ class FindersController extends \BaseController {
             // 	$finderData['finder']['pay_per_session'] = false;
             // }
     
-            // commented on 9th August - Akhil
+            $allowSession = false;
+            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+			
+			// commented on 9th August - Akhil
             if(!empty($customer_id)){
-                $this->addCreditPoints($finderData['finder']['services'], $customer_id);
+                $this->addCreditPoints($finderData['finder']['services'], $customer_id, $allowSession['allow_session', $allowSession['max_amount']]);
             }
             //adding static data for hanman fitness
             // if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
             // 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
             // }
             //Log::info('finder',[$finderData['finder']]);
-            $allowSession = false;
-            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+            
             foreach($finderData['finder']['services'] as &$service){
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
@@ -8697,7 +8699,7 @@ class FindersController extends \BaseController {
 	}
 
 
-	public function addCreditPoints(&$value, $customer_id){
+	public function addCreditPoints(&$value, $customer_id, $allowSession=false, $allowMaxAmount=1000){
 		
 		if(!empty($customer_id)){
 			foreach($value as &$service){
@@ -8705,7 +8707,8 @@ class FindersController extends \BaseController {
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							// $creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	
@@ -8717,7 +8720,8 @@ class FindersController extends \BaseController {
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							// $creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	
