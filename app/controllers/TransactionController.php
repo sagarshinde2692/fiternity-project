@@ -5085,6 +5085,8 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
         $brand_id                        =    (!empty($finder['brand_id'])) ? $finder['brand_id'] : 0;
+        $photos                        =    (!empty($finder['photos']) && count($finder['photos'])>0) ? $finder['photos'] : null;
+        $coverimage                        =    (!empty($finder['coverimage'])) ? $finder['coverimage'] : null;
         
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -5112,6 +5114,8 @@ class TransactionController extends \BaseController {
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
+        $data['photos'] = $photos;
+        $data['coverimage'] = $coverimage;
 
         if(!empty($brand_id)){
             $data['brand_id'] = $brand_id;
@@ -8057,15 +8061,18 @@ class TransactionController extends \BaseController {
                     'header' => $data['finder_name'],
                     'subheader' => ucwords($ratecard['type']),
                     'description' => $data['service_name'],
-                    'special_price' => "₹ ".number_format($data['actual_amount']),
+                    'special_price' => '₹ '.number_format($data['actual_amount']),
+                    'image' => '',
                 ];
                 if($data['ratecard_original_price']>$data['actual_amount']) {
-                    $memDets['price'] = "₹ ".number_format($data['ratecard_original_price']);
+                    $memDets['price'] = '₹ '.number_format($data['ratecard_original_price']);
+                }
+                if(!empty($data['coverimage'])) {
+                    $memDets['image'] = 'https://b.fitn.in/f/c/'.($data['coverimage']);
                 }
                 array_push($orderDetails, $memDets);
                 $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
                 if(!empty($membershipPlusDetails)) {
-                    $membershipPlusExists = true;
                     array_push($orderDetails, [
                         'header' => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
                         'description' => (!empty($membershipPlusDetails['header']))?$membershipPlusDetails['header']:null,
@@ -8073,7 +8080,8 @@ class TransactionController extends \BaseController {
                         'special_price' => (!empty($membershipPlusDetails['special_price']))?$membershipPlusDetails['special_price']:null,
                         'know_more_text' => (!empty($membershipPlusDetails['know_more_text']))?$membershipPlusDetails['know_more_text']:null,
                         'know_more_url' => (!empty($membershipPlusDetails['know_more_url']))?$membershipPlusDetails['know_more_url']:null,
-                        'image' => (!empty($membershipPlusDetails['image']))?$membershipPlusDetails['image']:null
+                        'image' => (!empty($membershipPlusDetails['image']))?$membershipPlusDetails['image']:null,
+                        'fitternity_plus' => (!empty($membershipPlusDetails['fitternity_plus']))?$membershipPlusDetails['fitternity_plus']:null
                     ]);
                 }
                 $result['order_details'] = $orderDetails;

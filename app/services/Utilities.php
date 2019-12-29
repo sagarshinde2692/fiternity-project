@@ -11433,6 +11433,7 @@ Class Utilities {
 					'amount' => $plusRatecard['price'],
 					'duration' => ucwords($plusDuration),
 					'address_required' => true,
+					'fitternity_plus' => true,
 				];
 				if($amt>4000) {
 					$retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
