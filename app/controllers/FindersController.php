@@ -7434,7 +7434,7 @@ class FindersController extends \BaseController {
 				}
 				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
 					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
-					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					$membershipPlusDetails = $this->getMembershipPlusDetails($amt);
 					if(!empty($membershipPlusDetails)) {
 						$ratecard['membership_plus'] = $membershipPlusDetails;
 					}
