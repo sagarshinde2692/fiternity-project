@@ -8076,6 +8076,7 @@ class TransactionController extends \BaseController {
                     array_push($orderDetails, [
                         'header' => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
                         'description' => (!empty($membershipPlusDetails['header']))?$membershipPlusDetails['header']:null,
+                        'duration' => (!empty($membershipPlusDetails['duration']))?$membershipPlusDetails['duration']:null,
                         'price' => (!empty($membershipPlusDetails['price']))?$membershipPlusDetails['price']:null,
                         'special_price' => (!empty($membershipPlusDetails['special_price']))?$membershipPlusDetails['special_price']:null,
                         'know_more_text' => (!empty($membershipPlusDetails['know_more_text']))?$membershipPlusDetails['know_more_text']:null,
