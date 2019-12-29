@@ -7434,7 +7434,7 @@ class FindersController extends \BaseController {
 				}
 				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
 					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
-					$membershipPlusDetails = $this->getMembershipPlusDetails($amt);
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
 					if(!empty($membershipPlusDetails)) {
 						$ratecard['membership_plus'] = $membershipPlusDetails;
 					}
@@ -7444,37 +7444,6 @@ class FindersController extends \BaseController {
 
         return $data['finder'];
     }
-
-	public function getMembershipPlusDetails($amt=null) {
-		if(!empty($amt)) {
-			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
-			if(!empty($plusRatecard)) {
-				$plusId = $plusRatecard['plus_id'];
-				$plusDuration = $plusRatecard['duration_text'];
-				$retObj = [
-					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' <b>Fitternity Plus Membership</b>',
-					'image' => 'https://b.fitn.in/global/fitcompressed/onepass-image.png',
-					'title' => 'Fitternity Plus',
-					'address_header' => 'Reward delivery details',
-					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
-					'know_more_text' => 'KNOW MORE',
-					'know_more_url' => 'https://www.fitternity.com/membership-plus/'.$plusId.'?mobile_app=true',
-					'price' => $this->utilities->getRupeeForm($plusRatecard['price']),
-					'special_price' => 'FREE',
-					'address_required' => true,
-					'amount' => $plusRatecard['price'],
-					'plusDuration' => $plusDuration,
-					'address_required' => true,
-				];
-				if($amt>4000) {
-					//$retObj['tshirt_sizes'] = [ 'S', 'M', 'L', 'XL' ];
-					$retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
-				}
-				return $retObj;
-			}
-		}
-		return null;
-	}
 
     public function getNonValidityBanner(){
 		Log::info('values:::::::', [$this->device_type, $this->app_version]);

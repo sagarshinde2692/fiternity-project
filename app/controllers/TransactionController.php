@@ -7442,6 +7442,8 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
         $headerSource = Request::header('Source');
+        $deviceType = Request::header('Device-Type');
+        $appVersion = Request::header('App-Version');
         if(!empty($headerSource) && $headerSource=='multifit'){
             $data['multifit'] = true;
         }
@@ -8046,12 +8048,54 @@ class TransactionController extends \BaseController {
             }
             $result['order_details'] = array_values($result['order_details']);
 
+            $nonAppCheck = empty($deviceType) || !in_array(strtolower($deviceType), ['android', 'ios']);
+            $nonTPCheck = empty($headerSource);
+            $membershipPlusDetails = null;
+            if($nonAppCheck && $nonTPCheck && !empty($ratecard['type']) && in_array($ratecard['type'], ['membership', 'extended validity'])) {
+                $orderDetails = [];
+                $memDets = [
+                    'header' => $data['finder_name'],
+                    'subheader' => ucwords($ratecard['type']),
+                    'description' => $data['service_name'],
+                    'special_price' => "₹ ".number_format($data['actual_amount']),
+                ];
+                if($data['ratecard_original_price']>$data['actual_amount']) {
+                    $memDets['price'] = "₹ ".number_format($data['ratecard_original_price']);
+                }
+                array_push($orderDetails, $memDets);
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    $membershipPlusExists = true;
+                    array_push($orderDetails, [
+                        'header' => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        'description' => (!empty($membershipPlusDetails['header']))?$membershipPlusDetails['header']:null,
+                        'price' => (!empty($membershipPlusDetails['price']))?$membershipPlusDetails['price']:null,
+                        'special_price' => (!empty($membershipPlusDetails['special_price']))?$membershipPlusDetails['special_price']:null,
+                        'know_more_text' => (!empty($membershipPlusDetails['know_more_text']))?$membershipPlusDetails['know_more_text']:null,
+                        'know_more_url' => (!empty($membershipPlusDetails['know_more_url']))?$membershipPlusDetails['know_more_url']:null,
+                        'image' => (!empty($membershipPlusDetails['image']))?$membershipPlusDetails['image']:null
+                    ]);
+                }
+                $result['order_details'] = $orderDetails;
+            }
             if($data['you_save'] > 0 && (empty($data['type']) || $data['type'] != 'workout session')){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
                     'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
+            }
+            if(!$nonAppCheck) {
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $result['payment_details']['amount_summary'], 1, 0, [$fpItem] );
+                }
             }
 
         }elseif(isset($ticket_id)){
