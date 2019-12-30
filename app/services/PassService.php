@@ -2884,6 +2884,10 @@ class PassService {
         $couponService = new CouponService();
         $couponlist = $couponService->getActiveCouponsByType(Config::get('app.config_campaign_id'), 'pass');
         $offers = $couponService->getActiveNoCouponOffersByType(Config::get('app.config_campaign_id'), 'pass');
+        foreach($offers as $key=>&$value){
+            $value['complementary'] = true;
+            $value['no_code'] = $value['code'];
+        }
         
         $allOffers = array_merge($couponlist, $offers);
 
