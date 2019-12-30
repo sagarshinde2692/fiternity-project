@@ -265,20 +265,22 @@ class PassService {
         $red_pass_coupons = null;
         $black_pass_coupons = null;
 
-        if(empty($device) || in_array($device, ['web', 'website'])) {
-            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
-            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
-        }
-        else {
-            if(empty($pass_type) && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
+        if(empty($source) || !in_array(strtolower($source), ['sodexo', 'thelabellife', 'generic', 'sbig'])) {
+            if(empty($device) || in_array($device, ['web', 'website'])) {
                 $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
                 $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
             }
-            else if(!empty($pass_type) && $pass_type=='red' && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
-                $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
-            }
-            else if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
-                $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+            else {
+                if(empty($pass_type) && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
+                    $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+                    $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+                }
+                else if(!empty($pass_type) && $pass_type=='red' && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
+                    $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+                }
+                else if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
+                    $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+                }
             }
         }
     
