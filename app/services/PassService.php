@@ -949,7 +949,7 @@ class PassService {
                     )
                 )
             ) {
-            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
+            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'max_amount' => $upper_amount ];
             }
         }
         
