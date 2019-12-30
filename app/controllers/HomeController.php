@@ -5377,7 +5377,7 @@ class HomeController extends BaseController {
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
                 }
             }else{
-                if(empty($source) || !in_array($source, ['sodexo', 'thelabellife', 'generic', 'sbig', 'corporate'])){
+                if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic', 'sbig', 'corporate'])){
                     $coupons = [];
                 }
                 else {
