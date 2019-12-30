@@ -8,16 +8,16 @@ use Config;
 use Input;
 use App\Services\Utilities as Utilities;
 use Ratecard;
-use App\Services\CustomerReward as customerreward;
+use App\Services\CustomerReward as CouponReward;
 use Order;
 use Pass;
 use Zend\Validator\InArray;
 
 Class CouponService {
     protected $appliedCouponData =  array();
-    public function __construct(CustomerReward $customerreward, Utilities $utilities ) {
-        $this->customerreward = $customerreward;
-        $this->utilities = $utilities;
+    public function __construct() {
+        $this->customerreward = new CouponReward();
+        $this->utilities = new Utilities();
     }
 
     public function addcoupoun($services_ratecard,$vendor_page_without_login= null,$request_from=null,$finder=null){

@@ -3,6 +3,7 @@
 use Log;
 use Pass;
 use App\Services\RazorpayService as RazorpayService;
+use App\Services\CouponService as CouponService;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Mailers\CustomerMailer as CustomerMailer;
@@ -2849,52 +2850,60 @@ class PassService {
         //     return $resp;
         // }
 
-        $coupons = Coupon::active()
-        ->where('pass_type', $pass_type)
-        ->where('start_date', '<=', new \DateTime())
-        ->where('end_date', '>', new \DateTime())
-        ->where('ratecard_type', $ratecard_type)
+        // $coupons = Coupon::active()
+        // ->where('start_date', '<=', new \MongoDate())
+        // ->where('end_date', '>', new \MongoDate())
+        // ->where('ratecard_type', $ratecard_type)
+        // ->where('campaign.campaign_id', Config::get('app.config_campaign_id'))
+        // ->where('total_available', '>', 0)
+        // ->get(['code', 'description', 'long_description'])->toArray();
+
+        // $no_code_coupons = Nocouponcodeoffers::active()
         // ->where('campaign.campaign_id', (string)$campaing['_id'])
-        ->where('total_available', '>', 0)
-        ->get(['code', 'description', 'long_desc'])->toArray();
+        // ->where('start_date', '<=', new \MongoDate())
+        // ->where('end_date', '>', new \MongoDate())
+        // ->where('ratecard_type', Config::get('app.config_campaign_id'))
+        // ->get(['code', 'description', 'long_description'])->toArray();
 
-        $no_code_coupons = Nocouponcodeoffers::active()
-        // ->where('campaign_id', (string)$campaing['_id'])
-        ->where('pass_type', $pass_type)
-        ->where('start_date', '<=', new \DateTime())
-        ->where('end_date', '>', new \DateTime())
-        ->where('ratecard_type', $ratecard_type)
-        ->get(['code', 'description', 'long_desc'])->toArray();
+        // foreach($no_code_coupons as $key=>&$value){
+        //     $value['complementary'] = true;
+        //     $value['no_code'] = $value['code'];
+        // }
 
-        foreach($no_code_coupons as $key=>&$value){
-            $value['complementary'] = true;
-            $value['no_code'] = $value['code'];
+        // $coupons = array_merge($coupons, $no_code_coupons);
+
+        // foreach($coupons as &$value){
+        //     $value['terms'] = !empty($value['long_desc']) ? $value['long_desc'] : [];
+        //     unset($value['long_desc']);
+        // }
+
+        // if(empty($coupons)) {
+        //     return $resp;
+        // }
+        
+        $couponService = new CouponService();
+        $couponlist = $couponService->getActiveCouponsByType(Config::get('app.config_campaign_id'), 'pass');
+        $offers = $couponService->getActiveNoCouponOffersByType(Config::get('app.config_campaign_id'), 'pass');
+        
+        $allOffers = array_merge($couponlist, $offers);
+
+        if(!in_array($device, ['ios', 'android'])) {
+            $couponlist = $this->utilities->removeMobileCodes($allOffers);
         }
 
-        $coupons = array_merge($coupons, $no_code_coupons);
-
-        foreach($coupons as &$value){
-            $value['terms'] = !empty($value['long_desc']) ? $value['long_desc'] : [];
+        foreach($allOffers as &$value){
+            $value['terms'] = !empty($value['long_description']) ? $value['long_description'] : [];
             unset($value['long_desc']);
         }
 
-        if(empty($coupons)) {
-            return $resp;
-        }
-        
-        
-        if(!in_array($device, ['ios', 'android'])) {
-            $coupons = $this->utilities->removeMobileCodes($coupons);
-        }
-
         if($device=='android' && $app_version == '5.33'){
-            foreach($coupons as $key=>&$value){
+            foreach($allOffers as $key=>&$value){
                 $value['code'] = strtoupper($value['code']);
                 $terms = !empty($value['terms']) ?  implode("<br>", $value['terms']) : '';
                 $value['terms'] = [$terms];
             }
         }
-        $resp['options'] = $coupons;
+        $resp['options'] = $allOffers;
         return $resp;
         
     }
