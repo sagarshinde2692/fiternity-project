@@ -78,9 +78,11 @@ Class CouponService {
             }
             if($isCouponAppliedFlag) {
                 $temp_coupon['coupon_code'] = strtoupper($cval['code']);
+                $temp_coupon['code'] = strtoupper($cval['code']);
                 $temp_coupon['desc'] = $cval['description'];
                 if(isset($cval['long_description']) && !empty($cval['long_description'])) {
                     $temp_coupon['long_desc']= $cval['long_description'];
+                    $temp_coupon['long_description']= $cval['long_description'];
                 }
                 $temp_coupon['coupon_discount'] = $cval['discount_percent'];
                 if(isset($cval['campaign'][0]['vendor_coupon'])) {
@@ -96,6 +98,7 @@ Class CouponService {
 
         foreach($other_vendor_coupons_data as $ovcval) {
             $ovtemp_coupon['coupon_code'] = strtoupper($ovcval['code']);
+            $ovtemp_coupon['code'] = strtoupper($ovcval['code']);
             $ovtemp_coupon['desc'] = $ovcval['description'];
             if(isset($ovcval['long_description']) && !empty($ovcval['long_description'])){
                 $ovtemp_coupon['long_desc']= $ovcval['long_description'];
@@ -106,9 +109,11 @@ Class CouponService {
 
         foreach($noCouponOffersData as $nco_val){
             $this->appliedCouponData[] = array(
-               'coupon_code' => strtoupper($nco_val['code']),
+                'coupon_code' => strtoupper($nco_val['code']),
+                'code' => strtoupper($nco_val['code']),
                 'desc' => $nco_val['description'],
                 'long_desc' => $nco_val['long_description'],
+                'long_description' => $nco_val['long_description'],
             ); 
         }
         if($isCouponAppliedFlag){
