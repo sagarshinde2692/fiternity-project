@@ -5520,7 +5520,7 @@ class FindersController extends \BaseController {
 						}
 					}    
 				}
-				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0){
+				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0 && checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
 					unset($finderData['finder']['finder_one_line']);
 				}
 				unset($finderData['finder']['services_coupon']);
