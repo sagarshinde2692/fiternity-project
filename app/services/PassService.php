@@ -132,7 +132,12 @@ class PassService {
                         ->whereIn('duration', [90,180,360])
                         ->where('cities', 'mumbai')
                         ->orderBy('duration')->get()->toArray();
-                        $passList = array_merge($passList, $credRedPassList);
+                        if(!empty($passList) && !empty($credRedPassList)){
+                            $passList = array_merge($passList, $credRedPassList);
+                        }
+                        else{
+                            $passList = !empty($passList) ? $passList : (!empty($credRedPassList) ? $credRedPassList : []);
+                        }
                     }
                 }
                 if(empty($passList) || count($passList)<1) {
