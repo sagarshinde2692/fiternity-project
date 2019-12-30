@@ -26,18 +26,29 @@ Class CouponService {
         // if(empty($campaign_data)){
         //     return false;
         // }
-        $couponObj =  new Coupon();
-        $nocouponcodeofferobj =  new Nocouponcodeoffers();
+        // $couponObj =  new Coupon();
+        // $nocouponcodeofferobj =  new Nocouponcodeoffers();
         $campaign_id = Config::get('app.config_campaign_id');//$campaign_data->_id;
-        $coupon_condition  =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"1","status" => "1","campaign.campaign_id" => "$campaign_id");
-        $coupon_data = $couponObj->getActiveVendorCoupon($coupon_condition);
-        if(empty($coupon_data)){
+        // $coupon_condition  =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"1","status" => "1","campaign.campaign_id" => "$campaign_id");
+        // $coupon_data = $couponObj->getActiveVendorCoupon($coupon_condition);
+        $vendor_type =  "vendor_page";
+        $all_coupon_data = $this->getActiveCouponsByType($campaign_id,$vendor_type);
+        if(!empty($all_coupon_data) && count($all_coupon_data)>0) {
+            $coupon_data[] = $all_coupon_data[0];
+            unset($all_coupon_data[0]);
+        }
+        //unsetting the hero coupon array from all coupons data
+        if(empty($coupon_data) && !isset($coupon_data[0]['campaign'][0]['hero_coupon'])){
+            return false;
+        } else if($coupon_data[0]['campaign'][0]['hero_coupon'] != "1"){
             return false;
         }
-        $other_vendor_coupons =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"0","status" => "1","campaign.campaign_id" => "$campaign_id");
-        $other_vendor_coupons_data = $couponObj->getActiveVendorCoupon($other_vendor_coupons);
+        // $other_vendor_coupons =  array("campaign.vendor_coupon"=>"1","campaign.hero_coupon" =>"0","status" => "1","campaign.campaign_id" => "$campaign_id");
+        // $other_vendor_coupons_data = $couponObj->getActiveVendorCoupon($other_vendor_coupons);
+        $other_vendor_coupons_data = $all_coupon_data;
 
-        $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);
+        // $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);
+        $noCouponOffersData = $this->getActiveNoCouponOffersByType($campaign_id,$vendor_type);
         
         $temp_coupon = array();
         if($request_from == "app"){
@@ -50,26 +61,28 @@ Class CouponService {
         $originalRateCard =  array();
         $isCouponAppliedFlag= false;
         foreach($coupon_data as $cval){
-            
-            foreach($services_ratecard as $srkey => $srval){
-                    foreach($srval['serviceratecard'] as $ratecard){
+            foreach($services_ratecard as $srkey => $srval) {
+                foreach($srval['serviceratecard'] as $ratecard) {
+                    $response="";
+                    if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity'])){
                         $response=  $this->customerreward->verifyCouponFinderDetail($ratecard, $cval['code'],null, null, null, null, null, null, null, null, $corporate_discount_coupon = true,$vendor_page_without_login, $cval, $finder, $srval);
                         if(!isset($response['error_message'])) {
                             $isCouponAppliedFlag = true;
                             $temp_coupon['price'][] = array($ratecard['_id'] => $response['data']['final_amount']);
                         }
-                        $discount_price = ($ratecard['special_price'] > 0)?$ratecard['special_price']:$ratecard['price'];
-                        $originalRateCard['price'][] = array($ratecard['_id'] => $discount_price);
-                    } 
+                    }
+                    $discount_price = ($ratecard['special_price'] > 0)?$ratecard['special_price']:$ratecard['price'];
+                    $originalRateCard['price'][] = array($ratecard['_id'] => $discount_price);
+                } 
             }
-            if($isCouponAppliedFlag){
-                $temp_coupon['coupon_code'] = $cval['code'];
+            if($isCouponAppliedFlag) {
+                $temp_coupon['coupon_code'] = strtoupper($cval['code']);
                 $temp_coupon['desc'] = $cval['description'];
-                if(isset($cval['long_description']) && !empty($cval['long_description'])){
+                if(isset($cval['long_description']) && !empty($cval['long_description'])) {
                     $temp_coupon['long_desc']= $cval['long_description'];
                 }
                 $temp_coupon['coupon_discount'] = $cval['discount_percent'];
-                if(isset($cval['campaign'][0]['vendor_coupon'])){
+                if(isset($cval['campaign'][0]['vendor_coupon'])) {
                     $temp_coupon['default_view'] = $cval['campaign'][0]['vendor_coupon'];
                 }
                 if(isset($cval['campaign'][0]['hero_coupon']) && $cval['campaign'][0]['hero_coupon']==1 ){
@@ -81,7 +94,7 @@ Class CouponService {
         }
 
         foreach($other_vendor_coupons_data as $ovcval) {
-            $ovtemp_coupon['coupon_code'] = $ovcval['code'];
+            $ovtemp_coupon['coupon_code'] = strtoupper($ovcval['code']);
             $ovtemp_coupon['desc'] = $ovcval['description'];
             if(isset($ovcval['long_description']) && !empty($ovcval['long_description'])){
                 $ovtemp_coupon['long_desc']= $ovcval['long_description'];
@@ -92,9 +105,9 @@ Class CouponService {
 
         foreach($noCouponOffersData as $nco_val){
             $this->appliedCouponData[] = array(
-               'coupon_code' => $nco_val['code'],
+               'coupon_code' => strtoupper($nco_val['code']),
                 'desc' => $nco_val['description'],
-                'long_desc' => $nco_val['long_desc'],
+                'long_desc' => $nco_val['long_description'],
             ); 
         }
         if($isCouponAppliedFlag){
@@ -115,11 +128,13 @@ Class CouponService {
             
             foreach($services_ratecard as $srkey => $srval){
                     foreach($srval['ratecard'] as $ratecardKey => $ratecard){
+                     if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity'])){
                         $response=  $this->customerreward->verifyCouponFinderDetail($ratecard, $cval['code'],null, null, null, null, null, null, null, null, $corporate_discount_coupon = true,$vendor_page_without_login, $cval, $finder, $srval);
                         if(!isset($response['error_message'])) {
                           $isCouponAppliedFlag = true;
                           $services_coupon[$ratecard['_id']]['coupons'][$cval['_id']] =  $response['data']['final_amount'];
-                        }    
+                        }
+                     }    
                     }    
             }
             if($isCouponAppliedFlag){
@@ -137,7 +152,7 @@ Class CouponService {
             }
             $temp_coupon['coupon_discount'] = $cval['discount_percent'];
             $temp_coupon["is_applicable"]= true;
-            if(isset($cval['campaign'][0]['hero_coupon']) && $cval['campaign'][0]['hero_coupon']==1 ){
+            if(isset($cval['campaign'][0]['hero_coupon']) && $cval['campaign'][0]['hero_coupon']=='1' ){
                 $temp_coupon['default_selected'] = $cval['campaign'][0]['hero_coupon'];
             }
             $offers['offers']['options'][] = $temp_coupon;
@@ -165,13 +180,13 @@ Class CouponService {
         foreach($noCouponOffersData as $nco_val){
             $ncotemp_coupon['code']= $nco_val['code'];
             $ncotemp_coupon['description']= $nco_val['description'];
-            if(isset($nco_val['long_desc']) && !empty($nco_val['long_desc'])){
+            if(isset($nco_val['long_description']) && !empty($nco_val['long_description'])){
                 if($this->checkAndroidVersion(['android'=>5.33])){
-                    foreach($nco_val['long_desc'] as $ldkey => $val){
+                    foreach($nco_val['long_description'] as $ldkey => $val){
                         $ncotemp_coupon['terms'][$ldkey]= "$val <br>";
                     }
                 }else {
-                $ncotemp_coupon['terms']= $nco_val['long_desc'];
+                $ncotemp_coupon['terms']= $nco_val['long_description'];
                 }
             }
             $offers['offers']['options'][] = $ncotemp_coupon;
@@ -189,12 +204,13 @@ Class CouponService {
             'status' => '1',
             'campaign.campaign_id' => $campaignId.'',
         ];
-        $projection = ['_id' => 0, 'code' => ['$toUpper' => '$code'], 'description' => 1, 'long_description' => 1, 'is_applicable' => ['$literal' => true]];
+        if($type!='vendor_page') {
+            $projection = ['_id' => 0, 'code' => ['$toUpper' => '$code'], 'description' => 1, 'long_description' => 1, 'is_applicable' => ['$literal' => true],'campaign'=>1,'discount_percent'=>1];
+        }
         if($type=='pass') {
-            $matchClause['$or'] = [
-                ['campaign.vendor_coupon' => ['$eq' => '1']],
-                ['campaign.pps_coupon' => ['$eq' => '1']]
-            ];
+            $matchClause['ratecard_type'] = 'pass';
+            $matchClause['type'] = 'pass';
+            array_push($aggregate, ['$match' => $matchClause]);
         }
 		else {
             if($type=='vendor_page') {
@@ -234,11 +250,14 @@ Class CouponService {
             ];
             $facet = [
                 'hero_coupons' => [
-                    ['$match' => $vendorHeroCoupon],
-                    ['$project' => $projection]
+                    ['$match' => $vendorHeroCoupon]
                 ]
             ];
-            $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon], ['$project' => $projection]];
+            if(!empty($projection)) {
+                array_push($facet['hero_coupons'], ['$project' => $projection]);
+                $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon], ['$project' => $projection]];
+            }
+            // $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon]];
             if($type=='pps_coupon') {
                 $facet['hero_coupons'][0]['$match'] = $ppsHeroCoupon;
                 $facet['other_coupons'][0]['$match'] = $nonPPSHeroCoupon;
@@ -249,9 +268,16 @@ Class CouponService {
 		$coupons = Coupon::raw(function($collection) use ($aggregate) {
 			return $collection->aggregate($aggregate);
 		});
-		$coupons = $coupons['result'];
-		$finalArray = $coupons[0]['hero_coupons'];
-		$finalArray = array_merge($finalArray, $coupons[0]['other_coupons']);
+        $coupons = $coupons['result'];
+        if($type=='pass') {
+            $finalArray = $coupons;
+        }
+        else {
+            $finalArray = $coupons[0]['hero_coupons'];
+            if(!empty($coupons[0]['other_coupons'])) {
+                $finalArray = array_merge($finalArray, $coupons[0]['other_coupons']);
+            }
+        }
 		return $finalArray;
 	}
     public function getActiveNoCouponOffersByType($campaignId, $type){
@@ -261,6 +287,12 @@ Class CouponService {
         }
         if($type=='vendor_page') {
             $type = ['pps', 'membership'];
+        }
+        if(in_array($type,['workout session', 'trial'])) {
+            $type = ['pps'];
+        }
+        if($type=='pass') {
+            $type = ['pass'];
         }
         else if(in_array($type, ['membership', 'memberships', 'extended validity', 'extended_validity'])){
             $type = ['membership'];
@@ -294,30 +326,16 @@ Class CouponService {
         $campaign_id = Config::get('app.config_campaign_id');
         if($type=="pass") {
             $data['type'] = 'pass';
-            // if($order_id) {
-            //     $data =  Order::select("type","pass._id","pass.pass_type")->where("_id",(int)$order_id)->first();
-            //     $coupon_condition  =  array("ratecard_type"=>$order_data->type,"pass_type" => $order_data->pass['pass_type'], "status" => "1","campaign.campaign_id" => "$campaign_id");
-            // } else if($pass_id) {
-            //     $data = Pass::select("pass_type")->where("pass_id",(int)$pass_id)->first();    
-            //     $coupon_condition  =  array("ratecard_type"=>$type,"pass_type" => $pass_data->pass_type, "status" => "1","campaign.campaign_id" => "$campaign_id");
-            // }
-            // $coupon_data = $couponObj->getActiveVendorCoupon($coupon_condition);
         }
         else if(!empty($ratecard_id)){
             $data = Ratecard::select("type")->where('_id',(int)$ratecard_id)->first();
         }
-        $coupon_data = $this->getActiveCouponsByType($campaign_id, [$data['type']]);
+        $coupon_data = $this->getActiveCouponsByType($campaign_id, $data['type']);
         
         // $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);
         $noCouponOffersData = $this->getActiveNoCouponOffersByType($campaign_id, $data['type']);
         // $temp_coupon = $coupon_data;
         $finalArray = array_merge($coupon_data, $noCouponOffersData);
-        // foreach($noCouponOffersData as $nco_val){
-        //     $temp_coupon[] = array(
-        //         'code' => strtoupper($nco_val['code']),
-        //         'description' => $nco_val['description'],
-        //     ); 
-        // }
         return $finalArray;
     }
 

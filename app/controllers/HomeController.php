@@ -5369,7 +5369,7 @@ class HomeController extends BaseController {
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
                 }
             }else{
-                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id);
+                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
                 return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
             }
         	try {
