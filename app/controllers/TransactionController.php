@@ -7090,8 +7090,8 @@ class TransactionController extends \BaseController {
 
         $corporate_source = !empty($data['corporate_source']) ? $data['corporate_source'] :null;
         $source = !empty($data['source']) ? $data['source'] :null;
-        
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $first_session_free, $corporate_source, $source); 
+
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id, $amount_without_fitcash, $customer_email, $pass, $first_session_free, null, $corporate_source, $source); 
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
