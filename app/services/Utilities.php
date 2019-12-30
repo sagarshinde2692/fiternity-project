@@ -11418,8 +11418,8 @@ Class Utilities {
 				$plusId = $plusRatecard['plus_id'];
 				$plusDuration = $plusRatecard['duration_text'];
 				$retObj = [
-					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' <b>Fitternity Plus Membership</b>',
-					'image' => 'https://b.fitn.in/membership-plus/fplus-logo.png',
+					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' Fitternity Plus Membership',
+					'image' => 'https://b.fitn.in/membership-plus/app-fplus-logo.png',
 					'title' => 'Fitternity Plus',
 					'address_header' => 'Reward delivery details',
 					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
