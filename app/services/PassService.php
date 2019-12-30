@@ -122,7 +122,18 @@ class PassService {
                 // $passList = $passList->where('corporate', $source)->orderBy('duration')->get();
                 $passList = null;
                 if(!empty($corporateSource)) {
-                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $corporateSource)->orderBy('duration')->get();
+                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $corporateSource)->orderBy('duration')->get()->toArray();
+                    if($corporateSource == 'cred'){
+                        $credRedPassList = Pass::active()
+                        ->whereIn('show_on_front', [null, true])
+                        ->where('corporate', 'exists', false)
+                        ->where('pass_category', '!=', 'local')
+                        ->where('pass_type', 'red')
+                        ->whereIn('duration', [90,180,360])
+                        ->where('cities', 'mumbai')
+                        ->orderBy('duration')->get()->toArray();
+                        $passList = array_merge($passList, $credRedPassList);
+                    }
                 }
                 if(empty($passList) || count($passList)<1) {
                     $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $source)->orderBy('duration')->get();
@@ -198,7 +209,7 @@ class PassService {
                 $passDetails['text'] = $brandingData['text'];
             }
 
-            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic'])) {
+            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic']) && !empty($pass['total_sessions'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
             }
             else if(!empty($source) && in_array($source, ['sbig'])) {
