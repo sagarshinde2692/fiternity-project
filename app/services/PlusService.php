@@ -111,4 +111,12 @@ class PlusService {
         
     }
 
+    public function getMembershipSuccessData($order, $booking_details_data){
+        $str = "";
+        if(!empty($order['plus'])){
+            $str = "With your ".$booking_details_data["finder_name_location"]['value']." membership you get ".$order['plus']['duration_text']." of Fitternity Plus. You will also receive an email regarding all your Fitternity Plus privileges.";
+        }
+        return $str;
+    }
+
 }

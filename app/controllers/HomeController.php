@@ -9,6 +9,7 @@ use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\RelianceService as RelianceService;
+use App\Services\PlusService as PlusService;
 
 class HomeController extends BaseController {
 
@@ -17,15 +18,16 @@ class HomeController extends BaseController {
     protected $debug = false;
     protected $client;
     protected $utilities;
-    
+    protected $plusService;
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService, PlusService $plusService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
+        $this->plusService = $plusService;
         $this->initClient();
 
         $this->vendor_token = false;
@@ -1963,6 +1965,10 @@ class HomeController extends BaseController {
                     // }
                 }
 
+                if(!empty($item['plus'])){
+                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
+                    $subline .= $getPlusSuccessMsg;
+                }
             }
 
             if( isset($item['type']) &&  in_array($item['type'],["booktrials","workout-session"])){
