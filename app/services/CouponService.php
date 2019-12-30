@@ -205,7 +205,7 @@ Class CouponService {
             'campaign.campaign_id' => $campaignId.'',
         ];
         if($type!='vendor_page') {
-            $projection = ['_id' => 0, 'code' => ['$toUpper' => '$code'], 'description' => 1, 'long_description' => 1, 'is_applicable' => ['$literal' => true],'campaign'=>1,'discount_percent'=>1];
+            $projection = ['_id' => 0, 'code' => ['$toUpper' => '$code'], 'description' => 1, 'long_description' => 1, 'isApplicable' => ['$literal' => true]];
         }
         if($type=='pass') {
             $matchClause['ratecard_type'] = 'pass';
