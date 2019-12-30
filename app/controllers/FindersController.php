@@ -5505,7 +5505,7 @@ class FindersController extends \BaseController {
 				}
 			}
 
-        	if(checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])){
+        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
             
 				$finderData['finder']['photos_url'] = Config::get('app.url')."/finderdetailphoto/app/".$tslug;
 				unset($finderData['finder']['photos']);
@@ -5520,7 +5520,7 @@ class FindersController extends \BaseController {
 						}
 					}    
 				}
-				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0 && checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0 && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])){
 					unset($finderData['finder']['finder_one_line']);
 				}
 				unset($finderData['finder']['services_coupon']);
