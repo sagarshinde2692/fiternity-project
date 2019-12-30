@@ -475,7 +475,9 @@ class PassService {
                     $customerreward = new CustomerReward();
                     $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : null;
                     $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass);
+                    $customer_source = !empty($data['customer_source']) ? $data['customer_source'] : null;
+                    $corporate_source = !empty($data['corporate_source']) ? $data['corporate_source'] : null;
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass, null, null, $corporate_source, $customer_source);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);

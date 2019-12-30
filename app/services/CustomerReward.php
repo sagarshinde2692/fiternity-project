@@ -1752,7 +1752,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false, $corporate_source=null, $source=null){
+    public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false, $corporate_source=null, $customer_source=null){
 
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
@@ -2483,7 +2483,7 @@ Class CustomerReward {
                     $header = array('source'=>'multifit');
                 }
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id, 'corporate_source' => $corporate_source, 'source'=> $source];
+                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id, 'corporate_source' => $corporate_source, 'customer_source'=> $customer_source];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
