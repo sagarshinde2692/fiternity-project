@@ -139,7 +139,7 @@ Class CouponService {
             }
             if($isCouponAppliedFlag){
             $temp_coupon["_id"]= $cval['_id'];
-            $temp_coupon['code']= $cval['code'];
+            $temp_coupon['code']= strtoupper($cval['code']);
             $temp_coupon['description']= $cval['description'];
             if(isset($cval['long_description']) && !empty($cval['long_description'])){
                 if($this->checkAndroidVersion(['android'=>5.33])){
@@ -162,7 +162,7 @@ Class CouponService {
         
         foreach($other_vendor_coupons_data as $ovcval) {
 
-            $ovtemp_coupon['code']= $ovcval['code'];
+            $ovtemp_coupon['code']= strtoupper($ovcval['code']);
             $ovtemp_coupon['description']= $ovcval['description'];
             if(isset($ovcval['long_description']) && !empty($ovcval['long_description'])){
                 if($this->checkAndroidVersion(['android'=>5.33])){
@@ -178,7 +178,7 @@ Class CouponService {
         }
         
         foreach($noCouponOffersData as $nco_val){
-            $ncotemp_coupon['code']= $nco_val['code'];
+            $ncotemp_coupon['code']= strtoupper($nco_val['code']);
             $ncotemp_coupon['description']= $nco_val['description'];
             if(isset($nco_val['long_description']) && !empty($nco_val['long_description'])){
                 if($this->checkAndroidVersion(['android'=>5.33])){
