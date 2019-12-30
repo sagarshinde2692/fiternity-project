@@ -5505,7 +5505,7 @@ class FindersController extends \BaseController {
 				}
 			}
 
-        	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+        	if(checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])){
             
 				$finderData['finder']['photos_url'] = Config::get('app.url')."/finderdetailphoto/app/".$tslug;
 				unset($finderData['finder']['photos']);
