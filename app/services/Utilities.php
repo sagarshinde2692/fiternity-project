@@ -11410,4 +11410,20 @@ Class Utilities {
         }
     }
 
+	public function addDiscountFlags(&$ratecard, $service, $finder){
+		
+		if(isset($ratecard['flags']['disc_value']) && isset($ratecard['flags']['disc_type']) && !empty($service['flags']['campaign_discount_disabled'])){
+			unset($ratecard['flags']['disc_value']);
+			unset($ratecard['flags']['disc_type']);
+			return;
+		}
+
+		if((!isset($ratecard['flags']['disc_value']) || !isset($ratecard['flags']['disc_type'])) && isset($finder['flags']['disc_long']['type']) && isset($finder['flags']['disc_long']['value'])){
+			$ratecard['flags']['disc_value'] = $finder['flags']['disc_long']['value'];
+			$ratecard['flags']['disc_type'] = $finder['flags']['disc_long']['type'];
+			return;
+		}
+
+	}
+
 }

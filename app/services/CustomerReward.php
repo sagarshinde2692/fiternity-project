@@ -2482,22 +2482,29 @@ Class CustomerReward {
                 if(!empty(Request::header('Source')) && Request::header('Source') == 'multifit'){
                     $header = array('source'=>'multifit');
                 }
-                
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
+
+				if(!is_array($ratecard)){
+					$ratecard = $ratecard->toArray();
+				}
+
+				$utilities->addDiscountFlags($ratecard, $service, $finder);
+				
+                $condtions_data = $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
                     $and_condition = true;
                         
                     foreach($coupon['and_conditions'] as $condition){
-                        if(!empty($condition['key']) && !empty($condition['operator']) && !empty($condition['values'])){
+                        if(!empty($condition['key']) && !empty($condition['operator']) && isset($condition['values'])){
                             // print_r($condition['key']);
                             $embedded_value = $this->getEmbeddedValue($data , $condition['key']);
                             if($condition['operator'] == 'in'){
-                                if(empty($embedded_value)){
+                                if(is_null($embedded_value)){
                                     $and_condition = false;
                                     break;
                                 }
+								
                                 if(!empty($condition['values'][0]['valid_till'])){
                         
                                     $values = array_column($condition['values'], 'value');
@@ -2536,6 +2543,12 @@ Class CustomerReward {
                                     $and_condition = false;
                                     break;
 
+                                }
+                            }else if($condition['operator'] == 'gte'){
+                                
+                                if(is_null($embedded_value) || $embedded_value < $condition['values']){
+                                    $and_condition = false;
+                                    break;
                                 }
                             }
                         }
@@ -3041,7 +3054,7 @@ Class CustomerReward {
                         $discount_max_overridable = false;
                         Log::info("conditinsss:::");
                         foreach($y['conditions'] as $yc){
-                            if(!empty($yc['key']) && !empty($yc['operator']) && !empty($yc['values'])){
+                            if(!empty($yc['key']) && !empty($yc['operator']) && isset($yc['values'])){
                                 
                                 if (strpos($yc['key'], 'transaction') !== false) {
                                     Log::info('transaction');
@@ -3221,6 +3234,15 @@ Class CustomerReward {
                     if(!empty($coupon_selected['final_amount'])){
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
+
+					if(!empty($condtions_data)){
+						$values_to_compile = ['discount_percent', 'discount_max'];
+						foreach($values_to_compile as $value){
+							if(is_string($coupon[$value])){
+								$coupon[$value] = $this->getEmbeddedValue($condtions_data, $coupon[$value]);
+							}
+						}
+					}
                 }
             }
 
