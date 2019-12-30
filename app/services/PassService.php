@@ -2925,9 +2925,9 @@ class PassService {
             $value['coupon_code'] = $value['code'];
             $value['desc'] = $value['description'];
             $value['long_desc'] = $value['terms'];
-            unset($value['code']);
-            unset($value['description']);
-            unset($value['terms']);
+            // unset($value['code']);
+            // unset($value['description']);
+            // unset($value['terms']);
             unset($value['_id']);
         }
     }
