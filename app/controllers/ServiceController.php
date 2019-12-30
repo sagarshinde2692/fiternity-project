@@ -1576,8 +1576,7 @@ class ServiceController extends \BaseController {
 
 			if(in_array($type, ["workoutsessionschedules", "trialschedules"]) &&  !empty($data['schedules']) && in_array($this->device_type, ['android', 'ios'])){	
 				foreach($data['schedules'] as &$schedule){
-					// $schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title'], $finder);
-					// $schedule['slots'] = null;
+					$schedule['slots'] = $this->utilities->orderSummaryWorkoutSessionSlots($schedule['slots'], $schedule['service_name'], $finder['title'], $finder);
 
 					isset($profile_completed) ? $this->addDisableBooking($schedule, $profile_completed, $allowSession): null;
 				}
