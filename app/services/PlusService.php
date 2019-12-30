@@ -118,7 +118,7 @@ class PlusService {
         // return $order['finder_name'];
 
         if(!empty($order['plus'])){
-            $str = "<br><br>With your ".$booking_details_data["finder_name_location"]['value']." membership you get ".$order['plus']['duration_text']." of Fitternity Plus. You will also receive an email regarding all your Fitternity Plus privileges.";
+            $str = "<br><br>With your <b>".$booking_details_data["finder_name_location"]['value']."</b> membership you get <b>".$order['plus']['duration_text']." of Fitternity Plus</b>. You will also receive an email regarding all your Fitternity Plus privileges.";
         }
         return $str;
     }
