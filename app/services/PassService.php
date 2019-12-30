@@ -264,21 +264,23 @@ class PassService {
         $red_pass_coupons = null;
         $black_pass_coupons = null;
 
-        if(empty($pass_type)){
+        if(empty($pass_type) && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
             $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
             $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
         }
-        else if(!empty($pass_type) && $pass_type=='red'){
+        else if(!empty($pass_type) && $pass_type=='red' && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
             $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
         }
-        else {
+        else if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
             $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
         }
     
         if(!empty($red_pass_coupons['options'])){
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($red_pass_coupons): null;
             $response['passes'][0]['coupons'] = $red_pass_coupons;
         }
         if(!empty($black_pass_coupons['options'])){
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($black_pass_coupons): null;
             $response['passes'][1]['coupons'] = $black_pass_coupons;
         }
 
@@ -2825,20 +2827,18 @@ class PassService {
             "options"=>[]
         ];
            
-        return $resp;
+        // return $resp;
         
         $customer_email=null;
         $customer_id=null;
-        $customer_phone=null;
 
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
-
+        $app_version = Request::header('App-Version');
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
-            $customer_email=$decoded->customer->email;
-            $customer_phone = $decoded->customer->contact_no;
+            !empty($decoded->customer->_id) ? $customer_id = (int)$decoded->customer->_id : null;
+            !empty($decoded->customer->email) ? $customer_email=$decoded->customer->email : null;
         }
 
 
@@ -2849,27 +2849,65 @@ class PassService {
         //     return $resp;
         // }
 
-        $coupons = null;
-        // Coupon::active()
-        // ->where('pass_type', $pass_type)
-        // ->where('start_date', '<=', new \DateTime())
-        // ->where('end_date', '>', new \DateTime())
-        // ->where('ratecard_type', $ratecard_type)
+        $coupons = Coupon::active()
+        ->where('pass_type', $pass_type)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
         // ->where('campaign.campaign_id', (string)$campaing['_id'])
-        // ->where('total_available', '>', 0)
-        // ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+        ->where('total_available', '>', 0)
+        ->get(['code', 'description', 'long_desc'])->toArray();
+
+        $no_code_coupons = Nocouponcodeoffers::active()
+        // ->where('campaign_id', (string)$campaing['_id'])
+        ->where('pass_type', $pass_type)
+        ->where('start_date', '<=', new \DateTime())
+        ->where('end_date', '>', new \DateTime())
+        ->where('ratecard_type', $ratecard_type)
+        ->get(['code', 'description', 'long_desc'])->toArray();
+
+        foreach($no_code_coupons as $key=>&$value){
+            $value['complementary'] = true;
+            $value['no_code'] = $value['code'];
+        }
+
+        $coupons = array_merge($coupons, $no_code_coupons);
+
+        foreach($coupons as &$value){
+            $value['terms'] = !empty($value['long_desc']) ? $value['long_desc'] : [];
+            unset($value['long_desc']);
+        }
 
         if(empty($coupons)) {
             return $resp;
         }
         
-        $coupons=$coupons->toArray();
         
         if(!in_array($device, ['ios', 'android'])) {
             $coupons = $this->utilities->removeMobileCodes($coupons);
         }
+
+        if($device=='android' && $app_version == '5.33'){
+            foreach($coupons as $key=>&$value){
+                $value['code'] = strtoupper($value['code']);
+                $terms = !empty($value['terms']) ?  implode("<br>", $value['terms']) : '';
+                $value['terms'] = [$terms];
+            }
+        }
         $resp['options'] = $coupons;
         return $resp;
-            
+        
+    }
+
+    public function formatCouponsForWeb(&$coupns){
+        foreach($coupns['options'] as &$value){
+            $value['coupon_code'] = $value['code'];
+            $value['desc'] = $value['description'];
+            $value['long_desc'] = $value['terms'];
+            unset($value['code']);
+            unset($value['description']);
+            unset($value['terms']);
+            unset($value['_id']);
+        }
     }
 }
