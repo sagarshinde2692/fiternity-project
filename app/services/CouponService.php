@@ -54,7 +54,8 @@ Class CouponService {
         if($request_from == "app"){
             return $this->couponAppliedForApp($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data);
         }
-        return $this->couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data);
+        $test = $this->couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data);
+        return $test;
     }
 
     private function couponAppliedForWeb($coupon_data,$services_ratecard,$noCouponOffersData,$vendor_page_without_login,$finder,$other_vendor_coupons_data){
