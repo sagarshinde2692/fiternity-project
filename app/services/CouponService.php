@@ -211,6 +211,9 @@ Class CouponService {
             $matchClause['ratecard_type'] = 'pass';
             $matchClause['type'] = 'pass';
             array_push($aggregate, ['$match' => $matchClause]);
+            if(!empty($projection)) {
+                array_push($aggregate, ['$project' => $projection]);
+            }
         }
 		else {
             if($type=='vendor_page') {
