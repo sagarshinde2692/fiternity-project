@@ -334,22 +334,22 @@ Class CouponService {
         else if(!empty($ratecard_id)){
             $data = Ratecard::select("type")->where('_id',(int)$ratecard_id)->first();
         }
-        $passSource = null;
-        if(!empty($pass_id)) {
-            $temp = Pass::where('pass_id', $pass_id)->first();
-            if(!empty($temp['corporate'])){
-                $passSource = $temp['corporate'];
-            }
-        }
-        else if(!empty($order_id)) {
-            $temp = Order::where('_id', $order_id)->first();
-            if(!empty($temp['pass']['corporate'])) {
-                $passSource = $temp['pass']['corporate'];
-            }
-        }
-        if(!empty($passSource) && in_array($passSource, ['sodexo', 'thelabellife', 'generic', 'sbig'])) {
-            return [];
-        }
+        // $passSource = null;
+        // if(!empty($pass_id)) {
+        //     $temp = Pass::where('pass_id', $pass_id)->first();
+        //     if(!empty($temp['corporate'])){
+        //         $passSource = $temp['corporate'];
+        //     }
+        // }
+        // else if(!empty($order_id)) {
+        //     $temp = Order::where('_id', $order_id)->first();
+        //     if(!empty($temp['pass']['corporate'])) {
+        //         $passSource = $temp['pass']['corporate'];
+        //     }
+        // }
+        // if(!empty($passSource) && in_array($passSource, ['sodexo', 'thelabellife', 'generic', 'sbig'])) {
+        //     return [];
+        // }
         $coupon_data = $this->getActiveCouponsByType($campaign_id, $data['type']);
         
         // $noCouponOffersData = $nocouponcodeofferobj->getActiveVendorNoCouponOffer($campaign_id);

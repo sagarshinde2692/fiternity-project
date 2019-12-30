@@ -5360,6 +5360,7 @@ class HomeController extends BaseController {
             $data = $_GET;
             $deviceType=Request::header("Device-Type");
             $appVersion=Request::header("App-Version");
+            $source=Request::header("Source");
             $type = "vendor";
             $pass_id= "";
             if(isset($data['pass_id'])){
@@ -5376,7 +5377,12 @@ class HomeController extends BaseController {
                     return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
                 }
             }else{
-                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                if(empty($source) || !in_array($source, ['sodexo', 'thelabellife', 'generic', 'sbig' 'corporate'])){
+                    $coupons = [];
+                }
+                else {
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                }
                 return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
             }
         	try {
