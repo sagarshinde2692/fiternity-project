@@ -1026,7 +1026,7 @@ class PassService {
             Log::info('allow session uppper amount', [$upper_amount]);
             if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount];
             }
             else {
                 // below 1001
@@ -1036,7 +1036,7 @@ class PassService {
             }
         }
         
-        return [ 'allow_session' => false, 'order_id' => $passOrder['_id']];
+        return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'max_amount' => $upper_amount];
     }
 
     public function getCreditsApplicable($amount, $customerId) {

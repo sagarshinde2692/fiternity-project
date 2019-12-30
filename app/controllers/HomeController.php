@@ -9,7 +9,7 @@ use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\RelianceService as RelianceService;
-
+use App\Services\CouponService as CouponService;
 class HomeController extends BaseController {
 
 
@@ -20,14 +20,14 @@ class HomeController extends BaseController {
     
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService,CouponService $couponService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
         $this->initClient();
-
+        $this->couponService = $couponService;
         $this->vendor_token = false;
         $this->relianceService = $relianceService;
         $vendor_token = Request::header('Authorization-Vendor');
@@ -5357,7 +5357,28 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
-        	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+            $data = $_GET;
+            $deviceType=Request::header("Device-Type");
+            $appVersion=Request::header("App-Version");
+            $type = "vendor";
+            $pass_id= "";
+            if(isset($data['pass_id'])){
+                $type = "pass";
+                $pass_id = $data['pass_id'];
+            }
+            $ratecard_id = (isset($data['ratecard_id']))?$data['ratecard_id']:"";
+            $order_id = (isset($data['order_id']))?$data['order_id']:"";
+            if(!empty($deviceType) && !empty($appVersion)){
+                if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+                } else {
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+                }
+            }else{
+                $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+            }
         	try {
                 $data = $_GET;
                 Log::info($_GET);
