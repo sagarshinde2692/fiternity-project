@@ -1935,6 +1935,13 @@ class HomeController extends BaseController {
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been blocked/reserved. Activate your membership with an activation code (given by ".$booking_details_data["finder_name_location"]['value'].") on making the payment at the gym/studio.";
                 }
 
+                if(!empty($item['plus'])){
+                    
+                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
+                    // return $getPlusSuccessMsg;
+                    $subline .= $getPlusSuccessMsg;
+                }
+
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
                     if(!isset($item['extended_validity'])){
                         $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
@@ -1965,10 +1972,6 @@ class HomeController extends BaseController {
                     // }
                 }
 
-                if(!empty($item['plus'])){
-                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
-                    $subline .= $getPlusSuccessMsg;
-                }
             }
 
             if( isset($item['type']) &&  in_array($item['type'],["booktrials","workout-session"])){
