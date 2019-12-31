@@ -65,7 +65,7 @@ Class CouponService {
             foreach($services_ratecard as $srkey => $srval) {
                 foreach($srval['serviceratecard'] as $ratecard) {
                     $response="";
-                    if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity'])){
+                    if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity', 'studio_extended_validity'])){
                         $response=  $this->customerreward->verifyCouponFinderDetail($ratecard, $cval['code'],null, null, null, null, null, null, null, null, $corporate_discount_coupon = true,$vendor_page_without_login, $cval, $finder, $srval);
                         if(!isset($response['error_message'])) {
                             $isCouponAppliedFlag = true;
