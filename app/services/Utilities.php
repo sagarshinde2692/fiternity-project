@@ -11473,7 +11473,7 @@ Class Utilities {
 					'address_header' => 'Reward delivery details',
 					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
 					'know_more_text' => 'KNOW MORE',
-					'know_more_url' => Config::get('app.website').'/fitternity-plus/'.$plusId.'?mobile_app=true',
+					'know_more_url' => Config::get('app.website').'/fitternity-plus/'.'?mobile_app=true',
 					'price' => $this->getRupeeForm($plusRatecard['price']),
 					'price_rs' => "Rs. ".$plusRatecard['price'],
 					'special_price' => 'FREE',
