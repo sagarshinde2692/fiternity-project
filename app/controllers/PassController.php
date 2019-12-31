@@ -306,7 +306,6 @@ class PassController extends \BaseController {
             }
 
             unset($result['onepass_pre']['offers_v2']);
-            unset($result['onepass_pre']['services']);
 		}
 
         
