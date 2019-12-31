@@ -3235,14 +3235,7 @@ Class CustomerReward {
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
 
-					if(!empty($condtions_data)){
-						$values_to_compile = ['discount_percent', 'discount_max'];
-						foreach($values_to_compile as $value){
-							if(is_string($coupon[$value])){
-								$coupon[$value] = $this->getEmbeddedValue($condtions_data, $coupon[$value]);
-							}
-						}
-					}
+                    $this->compileCoupon($condtions_data, $coupon);
                 }
             }
 
@@ -3540,8 +3533,10 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
+
+				$utilities->addDiscountFlags($ratecard, $service, $finder);
                 
-                $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
+                $condtions_data = $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
                
                 if(isset($coupon['and_conditions']) && is_array($coupon['and_conditions'])){
                 
@@ -4081,6 +4076,8 @@ Class CustomerReward {
                     if(!empty($coupon_selected['final_amount'])){
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
+
+					$this->compileCoupon($condtions_data, $coupon);
                 }
             }
 
@@ -4127,7 +4124,21 @@ Class CustomerReward {
     
     }
 
-
+    /**
+     * @param array $condtions_data
+     * @param array $coupon
+     */
+    public function compileCoupon(array $condtions_data, &$coupon)
+    {
+        if (!empty($condtions_data)) {
+            $values_to_compile = ['discount_percent', 'discount_max'];
+            foreach ($values_to_compile as $value) {
+                if (is_string($coupon[$value])) {
+                    $coupon[$value] = $this->getEmbeddedValue($condtions_data, $coupon[$value]);
+                }
+            }
+        }
+    }
 
 
 }
