@@ -1418,7 +1418,7 @@ class FindersController extends \BaseController {
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: DEC20 | Offer Ends Today";
+							$vendor_stripe_line = "FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: NE2020 | Offer Expires Soon";
 						}
 						
 						if(!empty($vendor_stripe_line)){
@@ -2599,10 +2599,20 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		
 		if(!empty($reviewdata['service_id'])){
 			$service = Service::find($reviewdata['service_id'], ['slug']);
@@ -3956,9 +3966,9 @@ class FindersController extends \BaseController {
 		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) ){
 
 			if($this->device_type == 'android'){				
-				$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>Offer Ends Today<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+				$line = "FitMania: No Excuses 2020<br><br>Offer Expires Soon<br><br>- On Memberships: FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020<br><br>- On Pay-Per-Session: 50% Instant Cashback, Use Code: CASH OR FLAT 20% Off, Use Code: OFF20";
 			}else{
-				$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nOffer Ends Today\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+				$line = "\nFitMania: No Excuses 2020\n\nOffer Expires Soon\n\n- On Memberships: FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 \n\n- On Pay-Per-Session: 50% Instant Cashback, Use Code: CASH OR FLAT 20% Off, Use Code: OFF20";
 			}
 		}
         
@@ -3972,9 +3982,9 @@ class FindersController extends \BaseController {
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 									if($this->device_type == 'android'){
-										$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>Offer Ends Today<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
+										$line = "FitMania: No Excuses 2020<br><br>Offer Expires Soon<br><br>- On Memberships: FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020";
 									}else{
-										$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nOffer Ends Today\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
+										$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nOffer Expires Soon\n\n- On Memberships: FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020";
 									}
 								
 									break;
@@ -4142,6 +4152,12 @@ class FindersController extends \BaseController {
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
 			$cache_name = "finder_detail_ios_5_1_6";
 		}
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.2.85'){
+			$cache_name = "finder_detail_ios_5_2_9";
+		}
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.2.90'){
+			$cache_name = "finder_detail_ios_5_3";
+		}
         
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
 			$cache_name = "finder_detail_android_5_1_8";
@@ -4153,6 +4169,10 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.32'){
 			$cache_name = "finder_detail_android_5_3_3";
+		}
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.33'){
+			$cache_name = "finder_detail_android_5_3_4";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
@@ -4808,7 +4828,18 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
-						$data['finder']  = $this->applyNonValidity($data, 'app');
+						$purchaseFlowApp = ((isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.3') || (isset($_GET['device_type']) && $_GET['device_type'] == 'android' && $_GET['app_version'] >= '5.34'));
+
+						$data['finder'] = $this->applyNonValidity($data, 'app', $purchaseFlowApp);
+
+						if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] == '5.3') {
+							foreach($data['finder']['services'] as &$service){
+								foreach($service['ratecard'] as &$ratecard){
+									$ratecard['order_summary'] = [ 'header' => '' ];
+								}
+							}
+						}
+
                         $this->insertWSNonValidtiy($data, 'app');
                     }
                     
@@ -4984,7 +5015,7 @@ class FindersController extends \BaseController {
                 $data['show_membership_bargain'] = false;
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
-					$this->applyFitsquadSection($data);
+					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
@@ -5006,6 +5037,7 @@ class FindersController extends \BaseController {
 						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
 								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].' is applied on all the rates below. Please note that all prices are inclusive of GST.';
 						   		$data['finder']['offers']['removed_coupon_text'] = '';
+								unset($data['finder']['finder_one_line']);
 						   }
 					   }
 					 }
@@ -5615,7 +5647,7 @@ class FindersController extends \BaseController {
 							continue;
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-							$ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";				
+							$ratecard['remarks'] = "50% Instant Cashback On Booking Workout Sessions, Use Code: CASH | FLAT 20% Off, Use Code: OFF20";				
                             // if(!empty($finder['flags']['monsoon_campaign_pps']) && ($ratecard['price'] == 73 || $ratecard['special_price'] == 73)){
                             //     $ratecard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
                             // }
@@ -7244,7 +7276,7 @@ class FindersController extends \BaseController {
         return $finders;
 	}
 
-    public function applyNonValidity($data, $source = 'web'){
+    public function applyNonValidity($data, $source = 'web', $purchaseFlowApp=false){
         
         $extended_services = [];
         $ratecard_key = 'ratecard';
@@ -7492,7 +7524,9 @@ class FindersController extends \BaseController {
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']);
+		if(!$purchaseFlowApp) {
+			$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']); //order summary removed for membership plus
+		}
 		//updating duration name for extended validity ratecards
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
@@ -7508,6 +7542,13 @@ class FindersController extends \BaseController {
 					$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
+				}
+				if($purchaseFlowApp && in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
 				}
 			}
 		}
@@ -8001,6 +8042,7 @@ class FindersController extends \BaseController {
 					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
+				
 				$data['checkout_summary'] = [
 					'image' => $thumbsUpImage,
 					'back_image' => $thumbsUpBackImage,
@@ -8429,6 +8471,13 @@ class FindersController extends \BaseController {
                         $membership_ratecards = true;
                     }
                 }
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
+				}
             }
 
             if(empty($membership_ratecards)){
@@ -8624,7 +8673,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift | Use Code: DEC20 \n\nOffer Ends Today");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 \n\nOffer Expires Soon");
 						}
 					}
                 }else{
@@ -8901,7 +8950,7 @@ class FindersController extends \BaseController {
 
 	public function addRemarkToraecardweb(&$rateCard, $finderservice, $finder){
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
-			$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CB100";
+			$rateCard['remarks'] = "50% Instant Cashback On Booking Workout Sessions, Use Code: CASH | FLAT 20% Off, Use Code: OFF20";
 			// if(!empty($finder['flags']['monsoon_campaign_pps']) && ($rateCard['price'] == 73 || $rateCard['special_price'] == 73)){
 			// 	$rateCard['remarks'] = "100% Instant Cashback On Booking Workout Sessions, Use Code: CASH100";
 			// }
