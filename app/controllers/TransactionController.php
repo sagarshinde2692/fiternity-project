@@ -1607,7 +1607,13 @@ class TransactionController extends \BaseController {
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
 
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+                $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
+                $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
+                $base_amount_int = $amount_customer_int - $convinience_fee_int;
+
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($base_amount_int);
+
+                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type, $membershipPlusDetails);
     
             }
             
@@ -6357,7 +6363,7 @@ class TransactionController extends \BaseController {
         return $booking_details;
     }
 
-    function getPaymentDetails($data,$payment_mode_type){
+    function getPaymentDetails($data,$payment_mode_type, $membershipPlusDetails = null){
 
         $jwt_token = Request::header('Authorization');
 
@@ -6395,6 +6401,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Session Pack Amount',
                         'value' => 'Rs. '.$data['ratecard_amount']
                     ); 
+                }
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $amount_summary, 1, 0, [$fpItem] );
                 }
             }
             // $amount_summary[] = array(
