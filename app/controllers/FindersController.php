@@ -4827,7 +4827,7 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
-						$purchaseFlowApp = ((isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] > '5.3') || (isset($_GET['device_type']) && $_GET['device_type'] == 'android' && $_GET['app_version'] >= '5.34'));
+						$purchaseFlowApp = ((isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.3') || (isset($_GET['device_type']) && $_GET['device_type'] == 'android' && $_GET['app_version'] >= '5.34'));
 
 						$data['finder'] = $this->applyNonValidity($data, 'app', $purchaseFlowApp);
 
