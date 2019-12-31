@@ -2792,10 +2792,10 @@ Class CustomerReward {
 
             if(($ratecard || $pass) && !empty($coupon['discount_max_overridable']) && is_array($coupon['discount_max_overridable'])){
                 
-				if(empty($finder) && !empty($ratecard['finder_id'])){
+				if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
                 }
-                if(empty($service) && !empty($ratecard['service_id'])){
+                if(empty($service)){
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
                 
@@ -3236,7 +3236,11 @@ Class CustomerReward {
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
 
-                    $this->compileCoupon($condtions_data, $coupon);
+                    if(!empty($condtions_data)){
+
+						$this->compileCoupon($condtions_data, $coupon);
+					
+					}
                 }
             }
 
@@ -4079,7 +4083,11 @@ Class CustomerReward {
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
 
-					$this->compileCoupon($condtions_data, $coupon);
+					if(!empty($condtions_data)){
+
+						$this->compileCoupon($condtions_data, $coupon);
+					
+					}
                 }
             }
 
