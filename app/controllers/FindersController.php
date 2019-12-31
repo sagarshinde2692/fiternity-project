@@ -4054,7 +4054,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
