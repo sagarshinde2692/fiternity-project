@@ -339,6 +339,10 @@ Class CouponService {
         else if(!empty($ratecard_id)){
             $data = Ratecard::select("type")->where('_id',(int)$ratecard_id)->first();
         }
+        else if(!empty($order_id)){
+            $data = Order::select("type", "pass")->where('_id',(int)$order_id)->first();
+            
+        }
         // $passSource = null;
         // if(!empty($pass_id)) {
         //     $temp = Pass::where('pass_id', $pass_id)->first();
