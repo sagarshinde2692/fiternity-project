@@ -1606,7 +1606,7 @@ class TransactionController extends \BaseController {
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
-                $membershipPlusApp = !empty($_GET['device_type']) && (in_array($_GET['device_type'], ['android', 'ios']) && !checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+                $membershipPlusApp = !empty($_GET['device_type']) && (in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
                 if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
                     $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
                     $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
@@ -1795,7 +1795,7 @@ class TransactionController extends \BaseController {
             $source = Request::header('source');
         }
         
-        $membershipPlusApp = (!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && !checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+        $membershipPlusApp = (!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
 
         if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
             //apply fitternity plus
