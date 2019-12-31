@@ -1525,7 +1525,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['cashback_percentage']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -6517,7 +6517,7 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['cashback_percentage']))){
 
                 if($payment_mode_type != 'pay_later'){
 
@@ -7803,7 +7803,7 @@ class TransactionController extends \BaseController {
                                 
                                 $data['you_save'] += $data['corporate_coupon_discount'];
                                 
-                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per']))){
+                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per'])) || (!empty($coupon['flags']['cashback_percentage']))){
                                     $result['payment_details']['amount_summary'][] = [
                                         'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
                                         'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : "100% Cashback"
