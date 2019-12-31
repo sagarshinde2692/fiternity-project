@@ -10,6 +10,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\RelianceService as RelianceService;
 use App\Services\CouponService as CouponService;
+use App\Services\PlusService as PlusService;
+
 class HomeController extends BaseController {
 
 
@@ -17,15 +19,16 @@ class HomeController extends BaseController {
     protected $debug = false;
     protected $client;
     protected $utilities;
-    
+    protected $plusService;
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService,CouponService $couponService) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService,CouponService $couponService, PlusService $plusService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
+        $this->plusService = $plusService;
         $this->initClient();
         $this->couponService = $couponService;
         $this->vendor_token = false;
@@ -1931,6 +1934,13 @@ class HomeController extends BaseController {
                 Log::info("item ---" . $item['payment_mode']);
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'at the studio'){
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been blocked/reserved. Activate your membership with an activation code (given by ".$booking_details_data["finder_name_location"]['value'].") on making the payment at the gym/studio.";
+                }
+
+                if(!empty($item['plus'])){
+                    
+                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
+                    // return $getPlusSuccessMsg;
+                    $subline .= $getPlusSuccessMsg;
                 }
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){

@@ -22,6 +22,7 @@ use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
 use App\Services\PassService as PassService;
+use App\Services\PlusService as PlusService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -39,6 +40,7 @@ class TransactionController extends \BaseController {
     protected $fitweb;
     protected $PaytmService;
     protected $passService;
+    protected $plusService;
     
     //protected $GatewayController;
     //protected $paytmConfig;
@@ -55,7 +57,8 @@ class TransactionController extends \BaseController {
         Fitapi $fitapi,
         Fitweb $fitweb,
         PaytmService $PaytmService,
-        PassService $passService
+        PassService $passService,
+        PlusService $plusService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -71,6 +74,7 @@ class TransactionController extends \BaseController {
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
         $this->passService          =   $passService;
+        $this->plusService          =   $plusService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -1779,6 +1783,22 @@ class TransactionController extends \BaseController {
             }
         }
 
+        //apply fitternity plus
+        Log::info("fitternity plus started");
+        $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
+        $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
+        $base_amount_int = $amount_customer_int - $convinience_fee_int;
+        Log::info("amount_customer_int ::", [$amount_customer_int]);
+        Log::info("convinience_fee_int ::", [$convinience_fee_int]);
+        Log::info("base_amount_int ::", [$base_amount_int]);
+        if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
+            Log::info("fitternity plus apply");
+            $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
+            $plus_details = $this->plusService->applyPlus($plus_arg_data);
+            if(!empty($plus_details)){
+                $order->update(["plus" => $plus_details]);
+            }
+        }
         
         Log::info("capture response");
         Log::info($resp);
@@ -10003,6 +10023,10 @@ class TransactionController extends \BaseController {
             Log::info("updatePpsRepeat");
             $this->updatePpsRepeat($data);
         }
+
+        if(!empty($data['plus'])){
+            $this->plusService->createPlusRewards($data);
+        }
         
         $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
 
@@ -10348,5 +10372,10 @@ class TransactionController extends \BaseController {
         return $purchasesummary_remark;
     }
 
+    public function createPlusRewards(){
+        $order_id = 422205;
+        $data = Order::where('_id', $order_id)->first()->toArray();
+        return $this->plusService->createPlusRewards($data);
+    }
 }
 

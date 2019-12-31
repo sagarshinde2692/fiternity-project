@@ -5163,6 +5163,10 @@ class CustomerController extends \BaseController {
 					$walletData['flags'] = $fitcashcode['flags'];
 				}
 
+				if(!empty($fitcashcode['order_type'])){
+					$walletData['order_type'] = $fitcashcode['order_type'];
+				}
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
