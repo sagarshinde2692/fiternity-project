@@ -6523,7 +6523,7 @@ class TransactionController extends \BaseController {
 
                     $amount_summary[] = array(
                         'field' => 'Coupon Discount',
-                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : (!empty($data['coupon_flags']['cashback_percentage'])) ? $data['coupon_flags']['cashback_percentage'] : "100% Cashback"
+                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : ((!empty($data['coupon_flags']['cashback_percentage'])) ? $data['coupon_flags']['cashback_percentage']."% Cashback" : "100% Cashback")
                     );
                     
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
@@ -7806,7 +7806,7 @@ class TransactionController extends \BaseController {
                                 if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per'])) || (!empty($coupon['flags']['cashback_percentage']))){
                                     $result['payment_details']['amount_summary'][] = [
                                         'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
-                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : (!empty($coupon['flags']['cashback_percentage'])) ? $coupon['flags']['cashback_percentage'] : "100% Cashback"
+                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : ((!empty($data['coupon_flags']['cashback_percentage'])) ? $data['coupon_flags']['cashback_percentage']."% Cashback" : "100% Cashback")
                                     ];
                                 }else{
                                     $result['payment_details']['amount_summary'][] = [
