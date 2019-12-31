@@ -2453,10 +2453,10 @@ Class CustomerReward {
             }
             if(($ratecard || $pass) && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
-                if(empty($finder)){
+                if(empty($finder) && !empty($ratecard['finder_id'])){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
                 }
-                if(empty($service)){
+                if(empty($service) && !empty($ratecard['service_id'])){
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
                 
@@ -2791,10 +2791,10 @@ Class CustomerReward {
 
             if(($ratecard || $pass) && !empty($coupon['discount_max_overridable']) && is_array($coupon['discount_max_overridable'])){
                 
-                if(empty($finder)){
+				if(empty($finder) && !empty($ratecard['finder_id'])){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
                 }
-                if(empty($service)){
+                if(empty($service) && !empty($ratecard['service_id'])){
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
                 
