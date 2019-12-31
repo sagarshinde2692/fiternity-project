@@ -5455,9 +5455,29 @@ class FindersController extends \BaseController {
                         
                         $_allowSession = false;
                         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
-                            if(!empty($allowSession['allow_session']) && $allowSession['allow_session'] && ($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])) {
+							if(
+								!empty($allowSession['allow_session']) && $allowSession['allow_session'] 
+								&& 
+								(
+									(
+										($price< $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finderData['finder'])) 
+										&& 
+										(!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])
+										&& 
+										empty($allowSession['onepass_lite'])
+									)
+									||
+									(
+										!empty($allowSession['onepass_lite'])
+										&&
+										!empty($service['flags']['lite_classpass_available']) 
+										&& 
+										$service['flags']['lite_classpass_available']
+									)
+								)
+							) {
                                 $_allowSession = $allowSession['allow_session'];
-                            }
+							}
                         }
                         if($_allowSession){
                             unset($ratecard['button_color']);
@@ -5470,8 +5490,8 @@ class FindersController extends \BaseController {
     
                             unset($finderData['fit_ex']);
     
-                            $ratecard['price'] = $ratecard['special_price'] = "0";
-                            $ratecard['start_price_text'] = Config::get('app.onepass_free_string');
+                            $ratecard['price'] = $ratecard['special_price'] = "0";                            
+                            $ratecard['start_price_text'] = !empty($allowSession['onepass_lite']) ? Config::get('app.onepass_lite_free_string') : Config::get('app.onepass_free_string');
                             $ratecard['skip_share_detail'] = true;
                         }
                     }
