@@ -1606,15 +1606,17 @@ class TransactionController extends \BaseController {
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
-
-                $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
-                $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
-                $base_amount_int = $amount_customer_int - $convinience_fee_int;
-
-                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($base_amount_int);
-
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type, $membershipPlusDetails);
-    
+                $nonMembershipPlusApp = !empty($_GET['device_type']) && (in_array($_GET['device_type'], ['android', 'ios']) && !checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+                if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $nonMembershipPlusApp) {
+                    $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
+                    $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
+                    $base_amount_int = $amount_customer_int - $convinience_fee_int;
+                    $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($base_amount_int);
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type, $membershipPlusDetails);
+                }
+                else {
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+                }
             }
             
             $resp['data']['payment_details'] = $payment_details;
@@ -1789,20 +1791,28 @@ class TransactionController extends \BaseController {
             }
         }
 
-        //apply fitternity plus
-        Log::info("fitternity plus started");
-        $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
-        $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
-        $base_amount_int = $amount_customer_int - $convinience_fee_int;
-        Log::info("amount_customer_int ::", [$amount_customer_int]);
-        Log::info("convinience_fee_int ::", [$convinience_fee_int]);
-        Log::info("base_amount_int ::", [$base_amount_int]);
-        if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
-            Log::info("fitternity plus apply");
-            $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
-            $plus_details = $this->plusService->applyPlus($plus_arg_data);
-            if(!empty($plus_details)){
-                $order->update(["plus" => $plus_details]);
+        if(!empty(Request::header('source'))){
+            $source = Request::header('source');
+        }
+        
+        $nonMembershipPlusApp = (!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && !checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+
+        if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $nonMembershipPlusApp) {
+            //apply fitternity plus
+            Log::info("fitternity plus started");
+            $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
+            $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
+            $base_amount_int = $amount_customer_int - $convinience_fee_int;
+            Log::info("amount_customer_int ::", [$amount_customer_int]);
+            Log::info("convinience_fee_int ::", [$convinience_fee_int]);
+            Log::info("base_amount_int ::", [$base_amount_int]);
+            if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
+                Log::info("fitternity plus apply");
+                $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
+                $plus_details = $this->plusService->applyPlus($plus_arg_data);
+                if(!empty($plus_details)){
+                    $order->update(["plus" => $plus_details]);
+                }
             }
         }
         
@@ -8129,7 +8139,7 @@ class TransactionController extends \BaseController {
                     'amount' => $data['you_save']
                 ];
             }
-            if(!$nonAppCheck) {
+            if(!$nonAppCheck && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])) {
                 $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
                 if(!empty($membershipPlusDetails)) {
                     $fpItem = [
