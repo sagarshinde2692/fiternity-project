@@ -3245,7 +3245,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null, $servicecategory_id=null){
 
-        $inoperational_dates = ['2019-10-27', '2019-10-28'];
+        $inoperational_dates = ['2020-01-01'];
         $partially_inoperational_dates = ['2019-10-26'];
 
         if( in_array($date, $inoperational_dates) ){
