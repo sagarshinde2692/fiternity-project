@@ -11583,6 +11583,9 @@ Class Utilities {
 
         $fitcashcoupon['code'] = $this->getFitcashCode($data);
 
+        $fitcashcoupon['created_at'] = new MongoDate();
+        $fitcashcoupon['updated_at'] = new MongoDate();
+
         \Fitcashcoupon::insert($fitcashcoupon);
         
         return $fitcashcoupon['code'];
