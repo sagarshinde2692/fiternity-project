@@ -4983,7 +4983,7 @@ class FindersController extends \BaseController {
                 $data['show_membership_bargain'] = false;
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
-					$this->applyFitsquadSection($data);
+					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
@@ -7487,6 +7487,13 @@ class FindersController extends \BaseController {
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
 				}
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
+				}
 			}
 		}
 
@@ -7979,6 +7986,7 @@ class FindersController extends \BaseController {
 					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
+				
 				$data['checkout_summary'] = [
 					'image' => $thumbsUpImage,
 					'back_image' => $thumbsUpBackImage,
@@ -8407,6 +8415,13 @@ class FindersController extends \BaseController {
                         $membership_ratecards = true;
                     }
                 }
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
+				}
             }
 
             if(empty($membership_ratecards)){
@@ -8579,18 +8594,21 @@ class FindersController extends \BaseController {
 	
 	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
-		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
+		//$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
+		$orderSummary2['header'] = "";
 		$title =  strtolower($orderSummary2['title']);
 		
 		foreach($services as &$service){
-			$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
+			//$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				$price = (!empty($rc['special_price'])) ? $rc['special_price'] : $rc['price'];
+				
+				/* commented by Akhil for new purchase flow on 27-Dec-2019
+
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
-					
 					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
 						if($price >= 8000){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships \n\nUse Code: FITME15");
@@ -8610,8 +8628,9 @@ class FindersController extends \BaseController {
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
-
                 }
+				*/
+
 				$orderSummary['title'] = ucwords($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];

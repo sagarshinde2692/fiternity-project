@@ -51,6 +51,7 @@ use Capture;
 
 use Booktrial;
 use CampaignNotification;
+use Plusratecard;
 
 Class Utilities {
 
@@ -10313,7 +10314,7 @@ Class Utilities {
     }
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
-        $orderSummary = Config::get('orderSummary.slot_summary');
+       /* $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
@@ -10328,17 +10329,17 @@ Class Utilities {
                     }
                 }
             }
-		}
+		}*/
 		return $slotsdata;
     }
     
     public function orderSummaryService($service){
 		Log::info('service name at order summary3', [$service['name']]);
-		$summary= Config::get('orderSummary.service_summary');
+	/*	$summary= Config::get('orderSummary.service_summary');
 		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
         
         $service['order_summary']['header']= $summary['header'];
-        	
+        	*/
 		return $service;
     }
     
@@ -11409,5 +11410,38 @@ Class Utilities {
             $result['popup_data'] = $response_data;
         }
     }
+
+    public function getMembershipPlusDetails($amt=null) {
+		if(!empty($amt)) {
+			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
+			if(!empty($plusRatecard)) {
+				$plusId = $plusRatecard['plus_id'];
+				$plusDuration = $plusRatecard['duration_text'];
+				$retObj = [
+					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' Fitternity Plus Membership',
+					'image' => 'https://b.fitn.in/membership-plus/app-fplus-logo.png',
+					'title' => 'Fitternity Plus',
+					'address_header' => 'Reward delivery details',
+					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
+					'know_more_text' => 'KNOW MORE',
+					'know_more_url' => Config::get('app.website').'/membership-plus/'.$plusId.'?mobile_app=true',
+					'price' => $this->getRupeeForm($plusRatecard['price']),
+					'price_rs' => "Rs. ".$plusRatecard['price'],
+					'special_price' => 'FREE',
+					'special_price_rs' => 'FREE',
+					'address_required' => true,
+					'amount' => $plusRatecard['price'],
+					'duration' => ucwords($plusDuration),
+					'address_required' => true,
+					'fitternity_plus' => true,
+				];
+				if($amt>4000) {
+					$retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
+				}
+				return $retObj;
+			}
+		}
+		return null;
+	}
 
 }
