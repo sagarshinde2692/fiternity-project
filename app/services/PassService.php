@@ -2914,6 +2914,11 @@ class PassService {
             $couponlist = $this->utilities->removeMobileCodes($allOffers);
         }
 
+        foreach($allOffers as &$value){
+            $value['terms'] = !empty($value['long_description']) ? $value['long_description'] : [];
+            unset($value['long_desc']);
+        }
+
         if($device=='android' && $app_version == '5.33'){
             foreach($allOffers as $key=>&$value){
                 $value['code'] = strtoupper($value['code']);
@@ -2921,12 +2926,6 @@ class PassService {
                 $value['terms'] = [$terms];
             }
         }
-
-        foreach($allOffers as &$value){
-            $value['terms'] = !empty($value['long_description']) ? $value['long_description'] : [];
-            unset($value['long_desc']);
-        }
-
         $resp['options'] = $allOffers;
         return $resp;
         
@@ -2937,9 +2936,9 @@ class PassService {
             $value['coupon_code'] = $value['code'];
             $value['desc'] = $value['description'];
             $value['long_desc'] = $value['terms'];
-            unset($value['code']);
-            unset($value['description']);
-            unset($value['terms']);
+            // unset($value['code']);
+            // unset($value['description']);
+            // unset($value['terms']);
             unset($value['_id']);
         }
     }
