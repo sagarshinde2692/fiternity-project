@@ -228,31 +228,26 @@ return [
     "terms"=>[
         "red"=>[
             "<ul>
-                <li><b>FitMania: No Excuses 2020<br />
-                India’s Largest Fitness Sale Is Back<br />
+                <b>FitMania: No Excuses 2020</b><br />
                 <br />
-                Last Chance - Best Deal Of 2019</b></li><br />
-                <br />
-                A.Code: ONE5X Is Applicable As Follows:<br />
-                1.Get FLAT 55% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
                 <br />
                 How does it work?<br />
-                1) FLAT 55% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
-                2) FLAT 55% off is divided into FLAT 30% instant discount and 25% cashback <br />
-                3) FLAT 30% is capped at upto INR 5000<br />
-                4) Discount (using code: ONE5X) varies across different duration of OnePass Red and OnePass Lite<br />
-                5) This offer cannot be clubbed with any other existing offer<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2. Get FLAT 55% off on OnePass Black<br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
                 How does it work?<br />
-                1)The offer is divided as follows:<br />
-                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
-                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
                 2)The cashback credited will be 25% of the MRP<br />
-                3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
@@ -261,35 +256,41 @@ return [
                 2) The FitCash received can be utilized only to buy a OnePass<br />
                 3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
                 4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
-                <br />
                         - 45% on 1 Month OnePass Red and OnePass Lite<br />
                         - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
                         - 30% on OnePass Black<br />
                 5) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
-                C. Get FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - DEC20<br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
                 1) Rates are already discounted upto 50%<br />
-                2) FLAT 20% off from Fitternity is applicable as follows:<br />
-                    a) At select gyms & studios, 20% off is applicable without any cap on the discount value<br />
-                    b) On certain gyms & studios,20% off discount value is upto INR 2000<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
                 3) This offer cannot be clubbed with any other existing offer<br />
                 <br />
-                D. On Pay-Per-Session: Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100<br />
-                1) Code: CB100 gives the user instant cashback of upto INR 250<br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
                 2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
                 3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
                 4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
                 <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
                 E. Exclusive PayPal Cashback Offer (No code required)<br />
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
                 2) Min purchase value should be INR 50<br />
                 3) Offer is applicable on new users only<br />
                 4) Instant cashback will be credited in the users PayPal wallet<br />
                 5) This offer is applicable along with Fitternity's promotional offers<br />
-                6) Instant Cashback received expires within 60 days<br />
-                <br />
-                <li>Note: All promotional offers from Fitternity will expire on 30th December 2019</li>
+                6) Instant Cashback received expires within 60 days<br />            
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -323,31 +324,26 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li><b>FitMania: No Excuses 2020<br />
-                India’s Largest Fitness Sale Is Back<br />
+                <b>FitMania: No Excuses 2020</b><br />
                 <br />
-                Last Chance - Best Deal Of 2019</b></li><br />
-                <br />
-                A.Code: ONE5X Is Applicable As Follows:<br />
-                1.Get FLAT 55% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
                 <br />
                 How does it work?<br />
-                1) FLAT 55% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
-                2) FLAT 55% off is divided into FLAT 30% instant discount and 25% cashback <br />
-                3) FLAT 30% is capped at upto INR 5000<br />
-                4) Discount (using code: ONE5X) varies across different duration of OnePass Red and OnePass Lite<br />
-                5) This offer cannot be clubbed with any other existing offer<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2. Get FLAT 55% off on OnePass Black<br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
                 How does it work?<br />
-                1)The offer is divided as follows:<br />
-                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
-                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
                 2)The cashback credited will be 25% of the MRP<br />
-                3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
@@ -356,35 +352,41 @@ return [
                 2) The FitCash received can be utilized only to buy a OnePass<br />
                 3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
                 4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
-                <br />
                         - 45% on 1 Month OnePass Red and OnePass Lite<br />
                         - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
                         - 30% on OnePass Black<br />
                 5) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
-                C. Get FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - DEC20<br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
                 1) Rates are already discounted upto 50%<br />
-                2) FLAT 20% off from Fitternity is applicable as follows:<br />
-                    a) At select gyms & studios, 20% off is applicable without any cap on the discount value<br />
-                    b) On certain gyms & studios,20% off discount value is upto INR 2000<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
                 3) This offer cannot be clubbed with any other existing offer<br />
                 <br />
-                D. On Pay-Per-Session: Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100<br />
-                1) Code: CB100 gives the user instant cashback of upto INR 250<br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
                 2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
                 3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
                 4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
                 <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
                 E. Exclusive PayPal Cashback Offer (No code required)<br />
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
                 2) Min purchase value should be INR 50<br />
                 3) Offer is applicable on new users only<br />
                 4) Instant cashback will be credited in the users PayPal wallet<br />
                 5) This offer is applicable along with Fitternity's promotional offers<br />
-                6) Instant Cashback received expires within 60 days<br />
-                <br />
-                <li>Note: All promotional offers from Fitternity will expire on 30th December 2019</li>
+                6) Instant Cashback received expires within 60 days<br /> 
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -417,31 +419,26 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li><b>FitMania: No Excuses 2020<br />
-                India’s Largest Fitness Sale Is Back<br />
+                <b>FitMania: No Excuses 2020</b><br />
                 <br />
-                Last Chance - Best Deal Of 2019</b></li><br />
-                <br />
-                A.Code: ONE5X Is Applicable As Follows:<br />
-                1.Get FLAT 55% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
                 <br />
                 How does it work?<br />
-                1) FLAT 55% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
-                2) FLAT 55% off is divided into FLAT 30% instant discount and 25% cashback <br />
-                3) FLAT 30% is capped at upto INR 5000<br />
-                4) Discount (using code: ONE5X) varies across different duration of OnePass Red and OnePass Lite<br />
-                5) This offer cannot be clubbed with any other existing offer<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
                 <br />
-                2. Get FLAT 55% off on OnePass Black<br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
                 How does it work?<br />
-                1)The offer is divided as follows:<br />
-                a. On OnePass Black 15-30 sessions: Flat 20% off + 25% cashback<br />
-                b. On OnePass Black 60-100 sessions: Flat 30% off + 25% cashback<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
                 2)The cashback credited will be 25% of the MRP<br />
-                3)Discount (using code: ONE5X) varies across different duration of OnePass Black<br />
-                4)This offer cannot be clubbed with any other existing offer
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
                 B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
@@ -450,35 +447,41 @@ return [
                 2) The FitCash received can be utilized only to buy a OnePass<br />
                 3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
                 4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
-                <br />
                         - 45% on 1 Month OnePass Red and OnePass Lite<br />
                         - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
                         - 30% on OnePass Black<br />
                 5) This offer cannot be clubbed with any other existing offer<br />
                 <br />
                 <br />
-                C. Get FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - DEC20<br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
                 1) Rates are already discounted upto 50%<br />
-                2) FLAT 20% off from Fitternity is applicable as follows:<br />
-                    a) At select gyms & studios, 20% off is applicable without any cap on the discount value<br />
-                    b) On certain gyms & studios,20% off discount value is upto INR 2000<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
                 3) This offer cannot be clubbed with any other existing offer<br />
                 <br />
-                D. On Pay-Per-Session: Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CB100<br />
-                1) Code: CB100 gives the user instant cashback of upto INR 250<br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
                 2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
                 3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
                 4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
                 <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
                 E. Exclusive PayPal Cashback Offer (No code required)<br />
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
                 2) Min purchase value should be INR 50<br />
                 3) Offer is applicable on new users only<br />
                 4) Instant cashback will be credited in the users PayPal wallet<br />
                 5) This offer is applicable along with Fitternity's promotional offers<br />
                 6) Instant Cashback received expires within 60 days<br />
-                <br />
-                <li>Note: All promotional offers from Fitternity will expire on 30th December 2019</li>
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>

@@ -3235,6 +3235,7 @@ Class CustomerReward {
                     if(!empty($coupon_selected['final_amount'])){
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
+					
 
                     if(!empty($condtions_data)){
 
@@ -4082,7 +4083,6 @@ Class CustomerReward {
                     if(!empty($coupon_selected['final_amount'])){
                         $coupon['final_amount'] = $coupon_selected['final_amount'];
                     }
-
 					if(!empty($condtions_data)){
 
 						$this->compileCoupon($condtions_data, $coupon);
