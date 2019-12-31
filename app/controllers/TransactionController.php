@@ -22,6 +22,7 @@ use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
 use App\Services\PassService as PassService;
+use App\Services\PlusService as PlusService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -39,6 +40,7 @@ class TransactionController extends \BaseController {
     protected $fitweb;
     protected $PaytmService;
     protected $passService;
+    protected $plusService;
     
     //protected $GatewayController;
     //protected $paytmConfig;
@@ -55,7 +57,8 @@ class TransactionController extends \BaseController {
         Fitapi $fitapi,
         Fitweb $fitweb,
         PaytmService $PaytmService,
-        PassService $passService
+        PassService $passService,
+        PlusService $plusService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -71,6 +74,7 @@ class TransactionController extends \BaseController {
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
         $this->passService          =   $passService;
+        $this->plusService          =   $plusService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -1607,9 +1611,17 @@ class TransactionController extends \BaseController {
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
-
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-    
+                $membershipPlusApp = !empty($_GET['device_type']) && (in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+                if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
+                    $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
+                    $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
+                    $base_amount_int = $amount_customer_int - $convinience_fee_int;
+                    $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($base_amount_int);
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type, $membershipPlusDetails);
+                }
+                else {
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+                }
             }
             
             $resp['data']['payment_details'] = $payment_details;
@@ -1784,6 +1796,30 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(!empty(Request::header('source'))){
+            $source = Request::header('source');
+        }
+        
+        $membershipPlusApp = (!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+
+        if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
+            //apply fitternity plus
+            Log::info("fitternity plus started");
+            $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
+            $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
+            $base_amount_int = $amount_customer_int - $convinience_fee_int;
+            Log::info("amount_customer_int ::", [$amount_customer_int]);
+            Log::info("convinience_fee_int ::", [$convinience_fee_int]);
+            Log::info("base_amount_int ::", [$base_amount_int]);
+            if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
+                Log::info("fitternity plus apply");
+                $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
+                $plus_details = $this->plusService->applyPlus($plus_arg_data);
+                if(!empty($plus_details)){
+                    $order->update(["plus" => $plus_details]);
+                }
+            }
+        }
         
         Log::info("capture response");
         Log::info($resp);
@@ -5090,6 +5126,8 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
         $brand_id                        =    (!empty($finder['brand_id'])) ? $finder['brand_id'] : 0;
+        $photos                        =    (!empty($finder['photos']) && count($finder['photos'])>0) ? $finder['photos'] : null;
+        $coverimage                        =    (!empty($finder['coverimage'])) ? $finder['coverimage'] : null;
         
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -5117,6 +5155,8 @@ class TransactionController extends \BaseController {
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
+        $data['photos'] = $photos;
+        $data['coverimage'] = $coverimage;
 
         if(!empty($brand_id)){
             $data['brand_id'] = $brand_id;
@@ -6338,7 +6378,7 @@ class TransactionController extends \BaseController {
         return $booking_details;
     }
 
-    function getPaymentDetails($data,$payment_mode_type){
+    function getPaymentDetails($data,$payment_mode_type, $membershipPlusDetails = null){
 
         $jwt_token = Request::header('Authorization');
 
@@ -6376,6 +6416,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Session Pack Amount',
                         'value' => 'Rs. '.$data['ratecard_amount']
                     ); 
+                }
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $amount_summary, 1, 0, [$fpItem] );
                 }
             }
             // $amount_summary[] = array(
@@ -6773,7 +6822,8 @@ class TransactionController extends \BaseController {
         //             ]
         //     ];
         // }
-        
+
+
         if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
@@ -6812,10 +6862,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-
-
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
-
         if(!empty($data['emi']) && $data['emi']){
             $payment_modes[] = array(
                 'title' => 'EMI',
@@ -6826,11 +6873,13 @@ class TransactionController extends \BaseController {
         
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
-                $payment_modes[] = array(
-                    'title' => 'Cash Pickup',
-                    'subtitle' => 'Schedule cash payment pick up',
-                    'value' => 'cod',
-                );
+                // if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $payment_modes[] = array(
+                        'title' => 'Cash Pickup',
+                        'subtitle' => 'Schedule cash payment pick up',
+                        'value' => 'cod',
+                    );
+                // }
             }
 
             if(!empty($data['part_payment']) && $data['part_payment']){
@@ -7447,6 +7496,8 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
         $headerSource = Request::header('Source');
+        $deviceType = Request::header('Device-Type');
+        $appVersion = Request::header('App-Version');
         if(!empty($headerSource) && $headerSource=='multifit'){
             $data['multifit'] = true;
         }
@@ -8051,12 +8102,59 @@ class TransactionController extends \BaseController {
             }
             $result['order_details'] = array_values($result['order_details']);
 
+            $nonAppCheck = empty($deviceType) || !in_array(strtolower($deviceType), ['android', 'ios']);
+            $nonTPCheck = empty($headerSource);
+            $membershipPlusDetails = null;
+            if($nonAppCheck && $nonTPCheck && !empty($ratecard['type']) && in_array($ratecard['type'], ['membership', 'extended validity'])) {
+                $orderDetails = [];
+                $memDets = [
+                    'header' => $data['finder_name'],
+                    'subheader' => ucwords($ratecard['type']),
+                    'description' => $data['service_name'],
+                    'special_price' => '₹ '.number_format($data['actual_amount']),
+                    'image' => '',
+                ];
+                if($data['ratecard_original_price']>$data['actual_amount']) {
+                    $memDets['price'] = '₹ '.number_format($data['ratecard_original_price']);
+                }
+                if(!empty($data['coverimage'])) {
+                    $memDets['image'] = 'https://b.fitn.in/f/c/'.($data['coverimage']);
+                }
+                array_push($orderDetails, $memDets);
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    array_push($orderDetails, [
+                        'header' => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        'description' => (!empty($membershipPlusDetails['header']))?$membershipPlusDetails['header']:null,
+                        'duration' => (!empty($membershipPlusDetails['duration']))?$membershipPlusDetails['duration']:null,
+                        'price' => (!empty($membershipPlusDetails['price']))?$membershipPlusDetails['price']:null,
+                        'special_price' => (!empty($membershipPlusDetails['special_price']))?$membershipPlusDetails['special_price']:null,
+                        'know_more_text' => (!empty($membershipPlusDetails['know_more_text']))?$membershipPlusDetails['know_more_text']:null,
+                        'know_more_url' => (!empty($membershipPlusDetails['know_more_url']))?$membershipPlusDetails['know_more_url']:null,
+                        'image' => (!empty($membershipPlusDetails['image']))?$membershipPlusDetails['image']:null,
+                        'fitternity_plus' => (!empty($membershipPlusDetails['fitternity_plus']))?$membershipPlusDetails['fitternity_plus']:null
+                    ]);
+                }
+                $result['order_details'] = $orderDetails;
+            }
             if($data['you_save'] > 0 && (empty($data['type']) || $data['type'] != 'workout session')){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
                     'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
+            }
+            if(!$nonAppCheck && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])) {
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $result['payment_details']['amount_summary'], 1, 0, [$fpItem] );
+                }
             }
 
         }elseif(isset($ticket_id)){
@@ -9955,6 +10053,10 @@ class TransactionController extends \BaseController {
             Log::info("updatePpsRepeat");
             $this->updatePpsRepeat($data);
         }
+
+        if(!empty($data['plus'])){
+            $this->plusService->createPlusRewards($data);
+        }
         
         $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
 
@@ -10374,5 +10476,10 @@ class TransactionController extends \BaseController {
         return $subvention_amt;
     }
 
+    public function createPlusRewards(){
+        $order_id = 422205;
+        $data = Order::where('_id', $order_id)->first()->toArray();
+        return $this->plusService->createPlusRewards($data);
+    }
 }
 

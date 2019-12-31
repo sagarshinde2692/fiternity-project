@@ -65,7 +65,7 @@ Class CouponService {
             foreach($services_ratecard as $srkey => $srval) {
                 foreach($srval['serviceratecard'] as $ratecard) {
                     $response="";
-                    if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity'])){
+                    if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'extended_validity', 'studio_extended_validity'])){
                         $response=  $this->customerreward->verifyCouponFinderDetail($ratecard, $cval['code'],null, null, null, null, null, null, null, null, $corporate_discount_coupon = true,$vendor_page_without_login, $cval, $finder, $srval);
                         if(!isset($response['error_message'])) {
                             $isCouponAppliedFlag = true;
@@ -210,6 +210,7 @@ Class CouponService {
             'status' => '1',
             'campaign.campaign_id' => $campaignId.'',
         ];
+        $isVendorPage = $type=='vendor_page';
         if($type!='vendor_page') {
             $projection = ['_id' => 0, 'code' => ['$toUpper' => '$code'], 'description' => 1, 'long_description' => 1, 'isApplicable' => ['$literal' => true]];
         }
@@ -234,8 +235,8 @@ Class CouponService {
 
             if($vendorPageAllCoupons) {
                 $matchClause['$or'] = [
-                    ['campaign.vendor_coupon' => ['$eq' => '1']],
-                    ['campaign.pps_coupon' => ['$eq' => '1']]
+                    ['campaign.vendor_coupon' => '1'],
+                    ['campaign.pps_coupon' => '1']
                 ];
             }
             else {
@@ -257,20 +258,27 @@ Class CouponService {
             $nonVendorHeroCoupon = [
                 'campaign.hero_coupon' => ['$ne' => '1']
             ];
+            
             $facet = [
                 'hero_coupons' => [
                     ['$match' => $vendorHeroCoupon]
                 ]
             ];
-            if(!empty($projection)) {
-                array_push($facet['hero_coupons'], ['$project' => $projection]);
-                $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon], ['$project' => $projection]];
+            if(!empty($projection) || $isVendorPage) {
+                if($isVendorPage) {
+                    $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon]];
+                }
+                else {
+                    array_push($facet['hero_coupons'], ['$project' => $projection]);
+                    $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon], ['$project' => $projection]];
+                }
             }
             // $facet['other_coupons'] = [['$match' => $nonVendorHeroCoupon]];
             if($type=='pps_coupon') {
                 $facet['hero_coupons'][0]['$match'] = $ppsHeroCoupon;
                 $facet['other_coupons'][0]['$match'] = $nonPPSHeroCoupon;
             }
+            
             array_push($aggregate,['$facet' => $facet]);
         }
         // return $aggregate;

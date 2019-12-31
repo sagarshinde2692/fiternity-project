@@ -2599,10 +2599,20 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_5_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$finder->location_id);
 		$this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$category->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$finder->location_id);
+		$this->cacheapi->flushTagKey('finder_detail_android_5_3_4',$finder->slug.'-'.$category->slug.'-'.$finder->location_id);
 		
 		if(!empty($reviewdata['service_id'])){
 			$service = Service::find($reviewdata['service_id'], ['slug']);
@@ -4142,6 +4152,12 @@ class FindersController extends \BaseController {
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.1.5'){
 			$cache_name = "finder_detail_ios_5_1_6";
 		}
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.2.85'){
+			$cache_name = "finder_detail_ios_5_2_9";
+		}
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.2.90'){
+			$cache_name = "finder_detail_ios_5_3";
+		}
         
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.17'){
 			$cache_name = "finder_detail_android_5_1_8";
@@ -4153,6 +4169,10 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.32'){
 			$cache_name = "finder_detail_android_5_3_3";
+		}
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '5.33'){
+			$cache_name = "finder_detail_android_5_3_4";
 		}
 		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
@@ -4808,7 +4828,18 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
                     if((isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && $_GET['app_version'] >= '5.18') || (isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.1.5')){
-						$data['finder']  = $this->applyNonValidity($data, 'app');
+						$purchaseFlowApp = ((isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] >= '5.3') || (isset($_GET['device_type']) && $_GET['device_type'] == 'android' && $_GET['app_version'] >= '5.34'));
+
+						$data['finder'] = $this->applyNonValidity($data, 'app', $purchaseFlowApp);
+
+						if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && $_GET['app_version'] == '5.3') {
+							foreach($data['finder']['services'] as &$service){
+								foreach($service['ratecard'] as &$ratecard){
+									$ratecard['order_summary'] = [ 'header' => '' ];
+								}
+							}
+						}
+
                         $this->insertWSNonValidtiy($data, 'app');
                     }
                     
@@ -4984,7 +5015,7 @@ class FindersController extends \BaseController {
                 $data['show_membership_bargain'] = false;
 				$data['finder']['city_name'] = strtolower($finderarr["city"]["name"]);
 				if($this->utilities->isIntegratedVendor($data['finder'])){
-					$this->applyFitsquadSection($data);
+					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
 				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
@@ -5006,6 +5037,7 @@ class FindersController extends \BaseController {
 						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
 								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].' is applied on all the rates below. Please note that all prices are inclusive of GST.';
 						   		$data['finder']['offers']['removed_coupon_text'] = '';
+								unset($data['finder']['finder_one_line']);
 						   }
 					   }
 					 }
@@ -7224,7 +7256,7 @@ class FindersController extends \BaseController {
         return $finders;
 	}
 
-    public function applyNonValidity($data, $source = 'web'){
+    public function applyNonValidity($data, $source = 'web', $purchaseFlowApp=false){
         
         $extended_services = [];
         $ratecard_key = 'ratecard';
@@ -7472,7 +7504,9 @@ class FindersController extends \BaseController {
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']);
+		if(!$purchaseFlowApp) {
+			$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']); //order summary removed for membership plus
+		}
 		//updating duration name for extended validity ratecards
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
@@ -7488,6 +7522,13 @@ class FindersController extends \BaseController {
 					$ratecard['validity_type_copy'] = $ratecard['validity_type'];
 					unset($ratecard['validity_type'] );
 					$ratecard['validity']= 0;
+				}
+				if($purchaseFlowApp && in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
 				}
 			}
 		}
@@ -7981,6 +8022,7 @@ class FindersController extends \BaseController {
 					"image" => 'https://b.fitn.in/external-vouchers1/new_grid_images/new_grid_fitsqua.jpg'
 				];
 
+				
 				$data['checkout_summary'] = [
 					'image' => $thumbsUpImage,
 					'back_image' => $thumbsUpBackImage,
@@ -8409,6 +8451,13 @@ class FindersController extends \BaseController {
                         $membership_ratecards = true;
                     }
                 }
+				if(in_array($ratecard['type'], ['membership', 'memberships', 'extended validity', 'studio_extended_validity'])) {
+					$amt = (!empty($ratecard['special_price']))?$ratecard['special_price']:$ratecard['price'];
+					$membershipPlusDetails = $this->utilities->getMembershipPlusDetails($amt);
+					if(!empty($membershipPlusDetails)) {
+						$ratecard['membership_plus'] = $membershipPlusDetails;
+					}
+				}
             }
 
             if(empty($membership_ratecards)){
