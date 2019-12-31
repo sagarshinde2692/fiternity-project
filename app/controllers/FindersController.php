@@ -7470,7 +7470,7 @@ class FindersController extends \BaseController {
 			$service = $this->addingRemarkToDuplicate($service, 'app');
 		}
 
-		$data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']);
+		// $data['finder']['services'] = $this->orderSummary($data['finder']['services'], $data['finder']['title'],$data['finder']); //order summary removed for membership plus
 		//updating duration name for extended validity ratecards
 		foreach($data['finder']['services'] as &$service){
 			foreach($service[$ratecard_key] as $key1=>&$ratecard){
@@ -8594,21 +8594,18 @@ class FindersController extends \BaseController {
 	
 	public function orderSummary($services, $finder_name, $finder=null){
         $orderSummary2 = Config::get('orderSummary.order_summary');
-		//$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
-		$orderSummary2['header'] = "";
+		$orderSummary2['header'] = strtr($orderSummary2['header'], ['vendor_name'=>$finder_name]);
 		$title =  strtolower($orderSummary2['title']);
 		
 		foreach($services as &$service){
-			//$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
+			$orderSummary2['header'] = strtr($orderSummary2['header'], ['service_name'=>$service['service_name']]);
 			foreach($service['ratecard'] as &$rc){
 				$orderSummary = $orderSummary2;
 				//Log::info('ratecard details:::::::::',[$rc['validity'], $rc['validity_type'], $rc['duration'], $rc['duration_type']]);
 				$price = (!empty($rc['special_price'])) ? $rc['special_price'] : $rc['price'];
-				
-				/* commented by Akhil for new purchase flow on 27-Dec-2019
-
 				if(in_array($rc['type'], ['membership', 'extended validity', 'studio_extended_validity'])){
 					$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ]));
+					
 					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
 						if($price >= 8000){
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships \n\nUse Code: FITME15");
@@ -8628,9 +8625,8 @@ class FindersController extends \BaseController {
                     // if(!empty($finder['flags']['monsoon_campaign_pps'])){
 					// 	$orderSummary['header'] = $orderSummary['header']." ".ucwords("\n\n Festive Fitness Fiesta \n\n Use Magic Code: MODAK For Surprise Additional Discounts Upto 75%");
                     // }
-                }
-				*/
 
+                }
 				$orderSummary['title'] = ucwords($title);
 				$rc['order_summary'] = $orderSummary;
 				$remark_data=[];

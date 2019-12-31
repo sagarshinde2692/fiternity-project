@@ -10314,7 +10314,7 @@ Class Utilities {
     }
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
-       /* $orderSummary = Config::get('orderSummary.slot_summary');
+       $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
@@ -10329,17 +10329,16 @@ Class Utilities {
                     }
                 }
             }
-		}*/
+		}
 		return $slotsdata;
     }
     
     public function orderSummaryService($service){
 		Log::info('service name at order summary3', [$service['name']]);
-	/*	$summary= Config::get('orderSummary.service_summary');
+	    $summary= Config::get('orderSummary.service_summary');
 		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
         
         $service['order_summary']['header']= $summary['header'];
-        	*/
 		return $service;
     }
     
@@ -11424,7 +11423,7 @@ Class Utilities {
 					'address_header' => 'Reward delivery details',
 					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
 					'know_more_text' => 'KNOW MORE',
-					'know_more_url' => Config::get('app.website').'/membership-plus/'.$plusId.'?mobile_app=true',
+					'know_more_url' => Config::get('app.website').'/fitternity-plus/'.$plusId.'?mobile_app=true',
 					'price' => $this->getRupeeForm($plusRatecard['price']),
 					'price_rs' => "Rs. ".$plusRatecard['price'],
 					'special_price' => 'FREE',
