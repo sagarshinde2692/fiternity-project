@@ -5036,6 +5036,7 @@ class FindersController extends \BaseController {
 						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
 								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].' is applied on all the rates below. Please note that all prices are inclusive of GST.';
 						   		$data['finder']['offers']['removed_coupon_text'] = '';
+								unset($data['finder']['finder_one_line']);
 						   }
 					   }
 					 }
