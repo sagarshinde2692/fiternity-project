@@ -3,6 +3,7 @@
 use Log;
 use Pass;
 use App\Services\RazorpayService as RazorpayService;
+use App\Services\CouponService as CouponService;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Mailers\CustomerMailer as CustomerMailer;
@@ -264,21 +265,31 @@ class PassService {
         $red_pass_coupons = null;
         $black_pass_coupons = null;
 
-        if(empty($pass_type)){
-            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
-            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
-        }
-        else if(!empty($pass_type) && $pass_type=='red'){
-            $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
-        }
-        else {
-            $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+        if(empty($source) || !in_array(strtolower($source), ['sodexo', 'thelabellife', 'generic', 'sbig'])) {
+            if(empty($device) || in_array($device, ['web', 'website'])) {
+                $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+                $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+            }
+            else {
+                if(empty($pass_type) && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
+                    $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+                    $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+                }
+                else if(!empty($pass_type) && $pass_type=='red' && (!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web))){
+                    $red_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'red');
+                }
+                else if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"])) || !empty($include_onepass_lite_web)){
+                    $black_pass_coupons = $this->listValidCouponsOfOnePass('pass', 'black');
+                }
+            }
         }
     
         if(!empty($red_pass_coupons['options'])){
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($red_pass_coupons): null;
             $response['passes'][0]['coupons'] = $red_pass_coupons;
         }
         if(!empty($black_pass_coupons['options'])){
+            !empty($include_onepass_lite_web) ? $this->formatCouponsForWeb($black_pass_coupons): null;
             $response['passes'][1]['coupons'] = $black_pass_coupons;
         }
 
@@ -946,7 +957,7 @@ class PassService {
                     )
                 )
             ) {
-            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
+            return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'max_amount' => $upper_amount ];
             }
         }
         
@@ -1026,7 +1037,7 @@ class PassService {
             Log::info('allow session uppper amount', [$upper_amount]);
             if (($amount>= $upper_amount && (empty($finder['flags']['forced_on_onepass']) || !($finder['flags']['forced_on_onepass']))) || !$canBook) {
                 // over 1000
-                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding];
+                return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount];
             }
             else {
                 // below 1001
@@ -1036,7 +1047,7 @@ class PassService {
             }
         }
         
-        return [ 'allow_session' => false, 'order_id' => $passOrder['_id']];
+        return [ 'allow_session' => false, 'order_id' => $passOrder['_id'], 'max_amount' => $upper_amount];
     }
 
     public function getCreditsApplicable($amount, $customerId) {
@@ -2825,20 +2836,18 @@ class PassService {
             "options"=>[]
         ];
            
-        return $resp;
+        // return $resp;
         
         $customer_email=null;
         $customer_id=null;
-        $customer_phone=null;
 
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
-
+        $app_version = Request::header('App-Version');
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
-            $customer_email=$decoded->customer->email;
-            $customer_phone = $decoded->customer->contact_no;
+            !empty($decoded->customer->_id) ? $customer_id = (int)$decoded->customer->_id : null;
+            !empty($decoded->customer->email) ? $customer_email=$decoded->customer->email : null;
         }
 
 
@@ -2849,27 +2858,77 @@ class PassService {
         //     return $resp;
         // }
 
-        $coupons = null;
-        // Coupon::active()
-        // ->where('pass_type', $pass_type)
-        // ->where('start_date', '<=', new \DateTime())
-        // ->where('end_date', '>', new \DateTime())
+        // $coupons = Coupon::active()
+        // ->where('start_date', '<=', new \MongoDate())
+        // ->where('end_date', '>', new \MongoDate())
         // ->where('ratecard_type', $ratecard_type)
-        // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        // ->where('campaign.campaign_id', Config::get('app.config_campaign_id'))
         // ->where('total_available', '>', 0)
-        // ->get(['code', 'description', 'terms', 'complementary', 'no_code']);
+        // ->get(['code', 'description', 'long_description'])->toArray();
 
-        if(empty($coupons)) {
-            return $resp;
+        // $no_code_coupons = Nocouponcodeoffers::active()
+        // ->where('campaign.campaign_id', (string)$campaing['_id'])
+        // ->where('start_date', '<=', new \MongoDate())
+        // ->where('end_date', '>', new \MongoDate())
+        // ->where('ratecard_type', Config::get('app.config_campaign_id'))
+        // ->get(['code', 'description', 'long_description'])->toArray();
+
+        // foreach($no_code_coupons as $key=>&$value){
+        //     $value['complementary'] = true;
+        //     $value['no_code'] = $value['code'];
+        // }
+
+        // $coupons = array_merge($coupons, $no_code_coupons);
+
+        // foreach($coupons as &$value){
+        //     $value['terms'] = !empty($value['long_desc']) ? $value['long_desc'] : [];
+        //     unset($value['long_desc']);
+        // }
+
+        // if(empty($coupons)) {
+        //     return $resp;
+        // }
+        
+        $couponService = new CouponService();
+        $couponlist = $couponService->getActiveCouponsByType(Config::get('app.config_campaign_id'), 'pass');
+        $offers = $couponService->getActiveNoCouponOffersByType(Config::get('app.config_campaign_id'), 'pass');
+        foreach($offers as $key=>&$value){
+            $value['complementary'] = true;
+            $value['no_code'] = $value['code'];
         }
         
-        $coupons=$coupons->toArray();
-        
+        $allOffers = array_merge($couponlist, $offers);
+
         if(!in_array($device, ['ios', 'android'])) {
-            $coupons = $this->utilities->removeMobileCodes($coupons);
+            $couponlist = $this->utilities->removeMobileCodes($allOffers);
         }
-        $resp['options'] = $coupons;
+
+        foreach($allOffers as &$value){
+            $value['terms'] = !empty($value['long_description']) ? $value['long_description'] : [];
+            unset($value['long_desc']);
+        }
+
+        if($device=='android' && $app_version == '5.33'){
+            foreach($allOffers as $key=>&$value){
+                $value['code'] = strtoupper($value['code']);
+                $terms = !empty($value['terms']) ?  implode("<br>", $value['terms']) : '';
+                $value['terms'] = [$terms];
+            }
+        }
+        $resp['options'] = $allOffers;
         return $resp;
-            
+        
+    }
+
+    public function formatCouponsForWeb(&$coupns){
+        foreach($coupns['options'] as &$value){
+            $value['coupon_code'] = $value['code'];
+            $value['desc'] = $value['description'];
+            $value['long_desc'] = $value['terms'];
+            // unset($value['code']);
+            // unset($value['description']);
+            // unset($value['terms']);
+            unset($value['_id']);
+        }
     }
 }

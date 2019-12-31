@@ -11,6 +11,7 @@ use App\Services\Cacheapi as Cacheapi;
 use App\Services\Cron as Cron;
 use App\Services\Utilities as Utilities;
 use App\Services\PassService as PassService;
+use App\Services\CouponService as CouponService;
 
 class FindersController extends \BaseController {
 
@@ -26,7 +27,7 @@ class FindersController extends \BaseController {
 	protected $findermailer;
 	protected $cacheapi;
 
-	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities, PassService $passService) {
+	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities, PassService $passService, CouponService $couponService) {
 
 		parent::__construct();
 		$this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
@@ -40,7 +41,7 @@ class FindersController extends \BaseController {
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
 		$this->utilities 						= $utilities;
 		$this->passService 						= $passService;
-
+		$this->couponService                    = $couponService;
 		$this->vendor_token = false;
 
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1417,7 +1418,7 @@ class FindersController extends \BaseController {
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: DEC20 | 28-30 Dec";
+							$vendor_stripe_line = "FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: DEC20 | Offer Ends Today";
 						}
 						
 						if(!empty($vendor_stripe_line)){
@@ -1495,7 +1496,18 @@ class FindersController extends \BaseController {
 
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
-
+				if(empty($response['finder']['flags']['state']) || !in_array($response['finder']['flags']['state'], ['closed', 'temporarily_shut']) && $response['finder']['membership'] != "disable"){ 
+					if(!in_array($response['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($response['finder']['flags']['monsoon_flash_discount_disabled']))  && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+					  $vendor_page_without_login = false;
+					  if(empty($jwt_token)){
+						  $vendor_page_without_login = true;
+					  }
+					  $coupon_data = $this->couponService->addcoupoun($response['finder']['services'],$vendor_page_without_login,$request_from = "web",$response['finder']);
+					  if(!empty($coupon_data)) {
+						  $response['finder']['coupons'] = $coupon_data;
+					  }
+			  }
+		  }	
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
 
@@ -3943,9 +3955,9 @@ class FindersController extends \BaseController {
 		}else if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) ){
 
 			if($this->device_type == 'android'){				
-				$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>28-30 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+				$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>Offer Ends Today<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20<br><br>- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 			}else{
-				$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\n28-30 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
+				$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nOffer Ends Today\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 \n\n- On Pay-Per-Session: 100% Instant Cashback On Booking Workout Sessions, Use Code : CB100";
 			}
 		}
         
@@ -3959,9 +3971,9 @@ class FindersController extends \BaseController {
 								$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 								if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($price < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass($data['finder']))){
 									if($this->device_type == 'android'){
-										$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>28-30 Dec<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
+										$line = "FitMania: No Excuses 2020<br><br>Last Chance - Best Deal Of 2019<br><br>Offer Ends Today<br><br>- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
 									}else{
-										$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\n28-30 Dec\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
+										$line = "\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nOffer Ends Today\n\n- On Memberships: FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20";
 									}
 								
 									break;
@@ -4974,7 +4986,29 @@ class FindersController extends \BaseController {
 					$this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
-				
+				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
+					if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+					   
+					   //   $vendor_page_without_login = false;
+					   // if(empty($jwt_token)){
+					   //  $vendor_page_without_login = true;
+					   // }
+					   //vendor_page_without_login set to default false as dhruv said it will be general coupon only which will be applicable to all users
+					   $vendor_page_without_login = false;
+					   $coupon_data = $this->couponService->addcoupoun($data['finder']['services'],$vendor_page_without_login,$request_from = "app",$data['finder']);
+					   if(isset($coupon_data['services_coupon']) && !empty($coupon_data['services_coupon'])){
+						   $data['finder']['services_coupon'] = $coupon_data['services_coupon'];
+					   }
+		   
+					   if(isset($coupon_data['offers']) && !empty($coupon_data['offers'])){
+						   $data['finder']['offers'] = $coupon_data['offers'];
+						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
+								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].' is applied on all the rates below. Please note that all prices are inclusive of GST.';
+						   		$data['finder']['offers']['removed_coupon_text'] = '';
+						   }
+					   }
+					 }
+				   }
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -5391,17 +5425,19 @@ class FindersController extends \BaseController {
             // 	$finderData['finder']['pay_per_session'] = false;
             // }
     
-            // commented on 9th August - Akhil
+            $allowSession = false;
+            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+			
+			// commented on 9th August - Akhil
             if(!empty($customer_id)){
-                $this->addCreditPoints($finderData['finder']['services'], $customer_id);
+                $this->addCreditPoints($finderData['finder']['services'], $customer_id, $allowSession['allow_session'], $allowSession['max_amount']);
             }
             //adding static data for hanman fitness
             // if(isset($finderData['finder']) && isset($finderData['finder']['brand_id']) && $finderData['finder']['brand_id']==56){
             // 	$finderData['finder']['finder_one_line']='All above rates are applicable to new members only. If you are looking to renew your membership at hanMan';
             // }
             //Log::info('finder',[$finderData['finder']]);
-            $allowSession = false;
-            $allowSession = $this->passService->allowSession(1, $customer_id, null, $finderData['finder']['_id']);
+            
             foreach($finderData['finder']['services'] as &$service){
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
@@ -5475,6 +5511,20 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['photos']);
 			}
 
+			// $finderData['finder']['finder_one_line']= "";
+            if(isset($finderData['finder']['services_coupon'])) {
+				foreach($finderData['finder']['services'] as $srkey => $srval){
+					foreach($srval['ratecard'] as $ratecardKey => $ratecard){
+						if(isset($finderData['finder']['services_coupon'][$ratecard['_id']])) {
+							$finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecard['_id']]['coupons'];      
+						}
+					}    
+				}
+				if(!empty($finderData['finder']['offers']['options']) && count($finderData['finder']['offers']['options'])>0 && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])){
+					unset($finderData['finder']['finder_one_line']);
+				}
+				unset($finderData['finder']['services_coupon']);
+			}
 		}else{
 
 			$finderData['status'] = 404;
@@ -8552,7 +8602,7 @@ class FindersController extends \BaseController {
 						$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 					}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
 						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift | Use Code: DEC20 \n\n28-30 Dec");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT  20% Off On Lowest Prices Of Gyms & Studio Memberships + Assured Gift | Use Code: DEC20 \n\nOffer Ends Today");
 						}
 					}
                 }else{
@@ -8689,7 +8739,7 @@ class FindersController extends \BaseController {
 	}
 
 
-	public function addCreditPoints(&$value, $customer_id){
+	public function addCreditPoints(&$value, $customer_id, $allowSession=false, $allowMaxAmount=1000){
 		
 		if(!empty($customer_id)){
 			foreach($value as &$service){
@@ -8697,7 +8747,8 @@ class FindersController extends \BaseController {
 					foreach($service['serviceratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							// $creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	
@@ -8709,7 +8760,8 @@ class FindersController extends \BaseController {
 					foreach($service['ratecard'] as &$ratecards){
 						if($ratecards['type']=='workout session'){
 							// $creditApplicable = $this->passService->getCreditsApplicable($ratecards['price'], $customer_id);
-							$creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							// $creditApplicable = $this->passService->allowSession($ratecards['price'], $customer_id, null, $ratecards['finder_id']);
+							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
 								$ratecards['price_text'] = 'Free for you';	

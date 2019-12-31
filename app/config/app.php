@@ -1124,6 +1124,7 @@ return array(
 	'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251],
 	"service_icon_base_url" => "http://b.fitn.in/iconsv1/",
 	"service_icon_base_url_extention" => ".png",
-	"checkin_checkout_max_distance_in_meters" => 2000
-    
+	"checkin_checkout_max_distance_in_meters" => 2000,
+
+	"config_campaign_id" => 1
 );
