@@ -4054,7 +4054,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		Log::info($_SERVER['REQUEST_URI']);
 
@@ -5514,9 +5514,9 @@ class FindersController extends \BaseController {
 			// $finderData['finder']['finder_one_line']= "";
             if(isset($finderData['finder']['services_coupon'])) {
 				foreach($finderData['finder']['services'] as $srkey => $srval){
-					foreach($srval['ratecard'] as $ratecardKey => $ratecard){
-						if(isset($finderData['finder']['services_coupon'][$ratecard['_id']])) {
-							$finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecard['_id']]['coupons'];      
+					foreach($srval['ratecard'] as $ratecardKey => $ratecardValue){
+						if(isset($finderData['finder']['services_coupon'][$ratecardValue['_id']])) {
+							$finderData['finder']['services'][$srkey]['ratecard'][$ratecardKey]['coupons'] =  $finderData['finder']['services_coupon'][$ratecardValue['_id']]['coupons'];      
 						}
 					}    
 				}
