@@ -3896,7 +3896,7 @@ Class CustomerReward {
                         $discount_max_overridable = false;
                         Log::info("conditinsss:::");
                         foreach($y['conditions'] as $yc){
-                            if(!empty($yc['key']) && !empty($yc['operator']) && !empty($yc['values'])){
+                            if(!empty($yc['key']) && !empty($yc['operator']) && isset($yc['values'])){
                                 
                                 if (strpos($yc['key'], 'transaction') !== false) {
                                     Log::info('transaction');
