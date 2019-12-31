@@ -1418,7 +1418,7 @@ class FindersController extends \BaseController {
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
-							$vendor_stripe_line = "FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code: NE2020 | Offer Expires Soon";
+							$vendor_stripe_line = "Complimentary upgrade to the Fitternity Plus privilege program with assured rewards worth INR 12,000 on purchase of every membership";
 						}
 						
 						if(!empty($vendor_stripe_line)){
@@ -5035,7 +5035,7 @@ class FindersController extends \BaseController {
 					   if(isset($coupon_data['offers']) && !empty($coupon_data['offers'])){
 						   $data['finder']['offers'] = $coupon_data['offers'];
 						   if(!empty($data['finder']['offers']['options']) && count($data['finder']['offers']['options'])>0) {
-								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].' is applied on all the rates below. Please note that all prices are inclusive of GST.';
+								$data['finder']['offers']['applied_coupon_text'] = $coupon_data['offers']['options'][0]['code'].Config::get('app.app_oneliner_finder');
 						   		$data['finder']['offers']['removed_coupon_text'] = '';
 								unset($data['finder']['finder_one_line']);
 						   }
