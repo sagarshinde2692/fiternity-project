@@ -1086,7 +1086,7 @@ return [
                 ],
                 [
                     "icon" => "https://b.fitn.in/onepass/Refund_3x.png",
-                    "text" => "Not liking your Onepass? Get your Money back with using Easy Refund Policy.",
+                    "text" => "Not liking your Onepass? Get your Money back with Easy Refund Policy.",
                 ]
             ]
         ],
