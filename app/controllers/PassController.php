@@ -94,7 +94,12 @@ class PassController extends \BaseController {
 
     public function passCapture(){
 
-        $data = Input::json()->all();
+        
+		$data = Input::json()->all();
+
+		if(empty($data)){
+			$data = Input::all();
+		}
 
         $rules = [
             'pass_id'=>'required | integer',

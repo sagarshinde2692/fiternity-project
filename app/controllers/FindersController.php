@@ -529,42 +529,42 @@ class FindersController extends \BaseController {
 						array_push($photoArr, $photoObj);
 					}
 					array_set($finder, 'photos', $photoArr);
-// //                    print_pretty($photoArr);exit;
+					// //                    print_pretty($photoArr);exit;
 
-// 					$service_tags_photo_arr             =   [];
-// 					$info_tags_photo_arr                =   [];
+					// 					$service_tags_photo_arr             =   [];
+					// 					$info_tags_photo_arr                =   [];
 
-// 					if(count($photoArr) > 0 ) {
-// 						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
-// 						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+					// 					if(count($photoArr) > 0 ) {
+					// 						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+					// 						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
 
-// 						foreach ($unique_service_tags_arr as $unique_service_tags) {
-// 							$service_tags_photoObj = [];
-// 							$service_tags_photoObj['name'] = $unique_service_tags;
-// 							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
-// 								if (in_array($unique_service_tags, $value['servicetags'])) {
-// 									return $value;
-// 								}
-// 							});
-// 							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
-// 							array_push($service_tags_photo_arr, $service_tags_photoObj);
-// 						}
+					// 						foreach ($unique_service_tags_arr as $unique_service_tags) {
+					// 							$service_tags_photoObj = [];
+					// 							$service_tags_photoObj['name'] = $unique_service_tags;
+					// 							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+					// 								if (in_array($unique_service_tags, $value['servicetags'])) {
+					// 									return $value;
+					// 								}
+					// 							});
+					// 							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+					// 							array_push($service_tags_photo_arr, $service_tags_photoObj);
+					// 						}
 
-// 						foreach ($unique_info_tags_arr as $unique_info_tags) {
-// 							$info_tags_photoObj = [];
-// 							$info_tags_photoObj['name'] = $unique_info_tags;
-// 							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
-// 								if (in_array($unique_info_tags, $value['tags'])) {
-// 									return $value;
-// 								}
-// 							});
-// 							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
-// 							array_push($info_tags_photo_arr, $info_tags_photoObj);
-// 						}
-// 					}
+					// 						foreach ($unique_info_tags_arr as $unique_info_tags) {
+					// 							$info_tags_photoObj = [];
+					// 							$info_tags_photoObj['name'] = $unique_info_tags;
+					// 							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+					// 								if (in_array($unique_info_tags, $value['tags'])) {
+					// 									return $value;
+					// 								}
+					// 							});
+					// 							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+					// 							array_push($info_tags_photo_arr, $info_tags_photoObj);
+					// 						}
+					// 					}
 
-// 					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
-// 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+					// 					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+					// 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
 				}
 				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -1016,7 +1016,7 @@ class FindersController extends \BaseController {
 					}
 				}
 
-// 				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
+				// 				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
 					
 				
 				$this->removeConvinienceFee($finder);
@@ -1026,7 +1026,7 @@ class FindersController extends \BaseController {
 
 				
 				
-// 				}
+				// 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
 				// 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
@@ -1506,11 +1506,12 @@ class FindersController extends \BaseController {
 					  if(!empty($coupon_data)) {
 						  $response['finder']['coupons'] = $coupon_data;
 					  }
-			  }
-		  }	
-				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
+				}
+				}
+	
+                $this->applyNoCostEMITag($response, "web");
 
-
+                Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
 			}else{
 
@@ -5503,6 +5504,7 @@ class FindersController extends \BaseController {
 				else if(!empty($finderData['finder']['finder_one_line'])) {
 					unset($finderData['finder']['finder_one_line']);
 				}
+				$this->applyNoCostEMITag($finderData, "app");	
 			}
 
         	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
@@ -9036,5 +9038,33 @@ class FindersController extends \BaseController {
 				return Response::json($finderdata,$finderdata['status']);
 	}
 
+	/**
+	 * @param $response
+	 * Tags ratecards where no cost emi is available
+	 */
+	public function applyNoCostEMITag(&$data, $source=null)
+	{	
+		if(!empty($data['finder']['services'])){
+			foreach($data['finder']['services'] as &$service){
+				foreach($service[getRatecardKey($source)] as &$ratecard){
+					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+					
+						$emi_resp = $this->utilities->getEMIData(['amount'=>$price, 'finder_id'=>$ratecard['finder_id'], 'finder'=>$data['finder']]);
+
+						if(!empty($emi_resp['no_cost_emi_applicable']) && checkDeviceForFeature('no-cost-emi')){
+
+							$ratecard['emi_text'] = Config::get("app.no_cost_emi.finder_detail_ratecard", "NO COST EMI AVAILABLE");
+						
+						}else if(!empty($emi_resp['normal_emi_applicable'])){
+							
+							$ratecard['emi_text'] = Config::get("app.no_cost_emi.finder_detail_ratecard_normal_text", "EMI AVAILABLE");
+
+						}
+
+					
+				}
+			}
+		}
+	}
 
 }

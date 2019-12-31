@@ -2981,7 +2981,7 @@ if (!function_exists(('getReversehash'))){
 }
 
 if (!function_exists(('getHash'))){
-    function getHash($data){
+    function getHash($data,$subvention_amt = null){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
         Log::info("getHash===================");
@@ -2994,6 +2994,11 @@ if (!function_exists(('getHash'))){
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
+		if(!empty($subvention_amt)){
+			$key = '5ntOB3';
+        	$salt = 'fAGAt25l';	
+		}
 
         if($env == "production"){
             $key = 'l80gyM';
@@ -3011,15 +3016,19 @@ if (!function_exists(('getHash'))){
         $udf3 = "";
         $udf4 = "";
         $udf5 = "";
-
-        $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        
+        if(!empty($subvention_amt)){
+            $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt.'|'.$subvention_amt;
+        } else {
+            $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        }
         Log::info($payhash_str);
 
         $data['payment_hash'] = hash('sha512', $payhash_str);
-
-        $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-
+        if(!empty($subvention_amt)){
+            $verify_str = $subvention_amt.'|'.$salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        } else {
+            $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        }
         $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
@@ -4407,6 +4416,16 @@ if (!function_exists('requestFromWeb')) {
     }
 
 }
+
+if (!function_exists('requestFromWebHeader')) {
+
+    function requestFromWebHeader()
+    {
+       return (empty(Request::header('Device-Type')) || !in_array(Request::header('Device-Type'), ['ios', 'android']));
+    }
+
+}
+
 if (!function_exists('upgradeMembershipCondition')) {
 
     function upgradeMembershipCondition($value, $service)
@@ -4852,4 +4871,37 @@ if(!function_exists(('deletePassDetailFromToken'))){
         unset($customer_data['pass_premium_booking_price']);
     }
 }
+
+if (!function_exists(('getRatecardKey'))){
+    function getRatecardKey($source = null){
+        return $source == 'web' ? 'serviceratecard' : 'ratecard';
+    }
+}
+
+if (!function_exists(('formatInput'))){
+    function formatInput(&$input, $format){
+        
+		$int_keys = $format['int_values'];
+
+		foreach($int_keys as $key){
+			if(!empty($input[$key])){
+				$input[$key] = intval($input[$key]);
+			}
+		}
+
+
+    }
+}
+
+if (!function_exists(('checkDeviceForFeature'))){
+    function checkDeviceForFeature($feature){
+        
+		switch($feature){
+			case 'no-cost-emi':
+				return checkAppVersionFromHeader(['ios'=>'5.4', 'android'=>'5.35']) || requestFromWebHeader();
+		}
+
+    }
+}
+
 ?>

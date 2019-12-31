@@ -1477,7 +1477,11 @@ class TransactionController extends \BaseController {
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
-        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 5000) ? true : false;
+        $emi_resp = $this->utilities->getEMIData(['amount'=>$result['amount'], 'finder_id'=> $data['finder_id'], 'finder'=> ['_id'=>$data['finder_id'], 'flags'=>!empty($data['finder_flags']) ? $data['finder_flags'] : []]]);
+
+		$no_cost_emi_applicable = $emi_resp['no_cost_emi_applicable'] && checkDeviceForFeature('no-cost-emi');
+
+		$emi_applicable = $no_cost_emi_applicable || $emi_resp['normal_emi_applicable'];
 
         $part_payment_applicable = false; //(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
@@ -1502,7 +1506,8 @@ class TransactionController extends \BaseController {
             'cash_pickup' => $cash_pickup_applicable,
             'emi'=>$emi_applicable,
             'pay_at_vendor'=>$pay_at_vendor_applicable,
-            'pay_later'=>$pay_later
+            'pay_later'=>$pay_later,
+			'no_cost_emi_applicable'=>$no_cost_emi_applicable
         );
 
         if(!empty($data['ratecard_pay_at_vendor'])){
@@ -10293,6 +10298,80 @@ class TransactionController extends \BaseController {
         }
 
         return $purchasesummary_remark;
+	}
+    
+	/*@author: Swapnil Pal
+    purpose of function: If NO COST EMI is payment option selected then subvention amounts & emi details need to be updated
+    */
+    public function subventionDataUpdate(){
+		// return \View::make("payupayload.index");
+		$data = Input::json()->all();
+
+		if(empty($data)){
+			$data = Input::all();
+		}
+
+		$rules = [
+			'order_id'=>'required',
+			'bank_code'=>'required',
+		];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+
+        $order_id= intval($data['order_id']);
+        $bank_code = $data['bank_code'];
+        
+		$orders_data = Order::find($order_id, ['finder_name','service_name','txnid','amount','customer_name','customer_email','logged_in_customer_id']);
+        $emi_struct = \Config::get('app.emi_struct');
+		$data['service_name'] = $orders_data['service_name'];
+		$data['finder_name']= $orders_data['finder_name'];
+		$data['txnid']= $orders_data['txnid'];
+		$data['amount']= $orders_data['amount'];
+		$data['customer_name']=$orders_data['customer_name'];
+		$data['customer_email']= $orders_data['customer_email'];
+		$data['env'] = 1;
+		$data['logged_in_customer_id'] = $orders_data['logged_in_customer_id'];
+		$emi_struct_key =array_search($bank_code, array_column($emi_struct,"bankCode"));
+        $bank_calculation_emi_data = $emi_struct[$emi_struct_key];
+        
+        $subvention_amt = $this->calculateSubventionAmount($bank_calculation_emi_data,$data['amount']);
+        
+        $hashData = getHash($data,$subvention_amt);
+		if(!empty($hashData)){
+            $orders_update_data['payment_hash'] = $hashData['payment_hash'];
+            $orders_update_data['verify_hash'] = $hashData['verify_hash'];
+            $orders_update_data['payment_related_details_for_mobile_sdk_hash'] = $hashData['payment_related_details_for_mobile_sdk_hash'];
+            $orders_update_data['self_funded_no_cost_emi'] = array(
+                                                        "subvention_amt" => $subvention_amt,
+                                                        "emi" => $bank_calculation_emi_data['bankTitle'],
+                                                        "bank_code" => $bank_calculation_emi_data['bankCode'],
+                                                        "bank_name" => $bank_calculation_emi_data['bankName']
+                                                    );
+            
+            $orderObj = Order::where("_id", $order_id)->update($orders_update_data);                                        
+
+			return ['status'=>200, 'data'=>['subvention_amount'=> $subvention_amt, "hash"=> $hashData['verify_hash']]];
+   
+        }
+    }
+    
+    public function calculateSubventionAmount($bank_calculation_emi_data, $amount){
+
+		return $amount;
+        
+        $interest = $bank_calculation_emi_data['rate']/1200.00;
+        $t = pow(1+$interest, $bank_calculation_emi_data['bankTitle']);             
+        $x = $amount * $interest * $t;
+        $y = $t - 1;
+        $emi = round($x / $y,0);
+        $total_amount =  (string)($emi * $bank_calculation_emi_data['bankTitle']);
+        $emi = (string)$emi;
+        $subvention_amt  = round($total_amount-$amount);
+        return $subvention_amt;
     }
 
 }
