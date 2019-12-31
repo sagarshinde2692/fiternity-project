@@ -11138,27 +11138,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11188,27 +11188,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11240,27 +11240,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | Offer Ends Today";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\nOffer Ends Today";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             default: return $return_arr;
