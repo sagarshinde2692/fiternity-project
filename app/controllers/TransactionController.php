@@ -1481,7 +1481,7 @@ class TransactionController extends \BaseController {
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
-        $emi_resp = $this->utilities->getEMIData(['amount'=>$result['amount'], 'finder_id'=> $data['finder_id'], 'finder'=> ['_id'=>$data['finder_id'], 'flags'=>!empty($data['finder_flags']) ? $data['finder_flags'] : []]]);
+        $emi_resp = $this->utilities->getEMIData(['amount'=>$result['amount_final'], 'finder_id'=> $data['finder_id'], 'finder'=> ['_id'=>$data['finder_id'], 'flags'=>!empty($data['finder_flags']) ? $data['finder_flags'] : []]]);
 
 		$no_cost_emi_applicable = $emi_resp['no_cost_emi_applicable'] && checkDeviceForFeature('no-cost-emi');
 
