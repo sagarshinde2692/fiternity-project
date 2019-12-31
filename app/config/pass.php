@@ -302,6 +302,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
@@ -395,6 +397,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
@@ -495,6 +499,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
