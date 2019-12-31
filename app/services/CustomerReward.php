@@ -2453,10 +2453,10 @@ Class CustomerReward {
             }
             if(($ratecard || $pass) && (isset($coupon['and_conditions']) || isset($coupon['or_conditions']) )){
 
-                if(empty($finder) && !empty($ratecard['finder_id'])){
+                if(empty($finder)){
                     $finder = Finder::where('_id', $ratecard['finder_id'])->first();
                 }
-                if(empty($service) && !empty($ratecard['service_id'])){
+                if(empty($service)){
                     $service = Service::where('_id', $ratecard['service_id'])->first();
                 }
                 
@@ -2486,8 +2486,9 @@ Class CustomerReward {
 				if(!is_array($ratecard) && !empty($ratecard)){
 					$ratecard = $ratecard->toArray();
 				}
-
-				$utilities->addDiscountFlags($ratecard, $service, $finder);
+				if(!empty($ratecard) && !empty($service) && !empty($finder)){
+					$utilities->addDiscountFlags($ratecard, $service, $finder);
+				}
 				
                 $condtions_data = $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard, 'logged_in_customer'=>$logged_in_customer, 'customer_email'=>$customer_email, 'pass'=>$pass, 'customer'=>$booking_for_customer, 'header' => $header, 'customer_id' => $customer_id];
                
@@ -3533,8 +3534,9 @@ Class CustomerReward {
                 if($ratecard){
                     $ratecard['duration_days'] = $utilities->getDurationDay($ratecard);
                 }
-
-				$utilities->addDiscountFlags($ratecard, $service, $finder);
+				if(!empty($ratecard) && !empty($service) && !empty($finder)){
+					$utilities->addDiscountFlags($ratecard, $service, $finder);
+				}
                 
                 $condtions_data = $data = ['finder'=>$finder, 'service'=>$service, 'ratecard'=>$ratecard];
                
