@@ -1018,7 +1018,7 @@ return [
                 ],
                 [
                     "icon" => "https://b.fitn.in/onepass/EMI_3x.png",
-                    "text" => "Have the ease of paying for your OnePass as per your convenience with Interest Free EMI Payment Option",
+                    "text" => "Buy your Onepass as per your convenience with the Interest-Free EMI payment option.",
                 ],
                 [
                     "icon" => "https://b.fitn.in/onepass/Refund_3x.png",
