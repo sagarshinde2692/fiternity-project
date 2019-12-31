@@ -1125,5 +1125,6 @@ return array(
 	"service_icon_base_url" => "http://b.fitn.in/iconsv1/",
 	"service_icon_base_url_extention" => ".png",
 	"checkin_checkout_max_distance_in_meters" => 2000,
+
 	"config_campaign_id" => 1
 );
