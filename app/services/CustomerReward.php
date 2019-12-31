@@ -2483,7 +2483,7 @@ Class CustomerReward {
                     $header = array('source'=>'multifit');
                 }
 
-				if(!is_array($ratecard)){
+				if(!is_array($ratecard) && !empty($ratecard)){
 					$ratecard = $ratecard->toArray();
 				}
 
