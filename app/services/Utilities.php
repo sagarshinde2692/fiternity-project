@@ -11469,6 +11469,40 @@ Class Utilities {
         }
     }
 
+    public function checkForOtherWorkoutServices($finder_id, &$service_details){
+        $services_ids = Service::active()
+        ->where('finder_id', $finder_id)
+        ->where('_id', '!=', $service_details['_id'])
+        ->where('trial' ,'!=', 'disable')
+        // ->where('membership' ,'!=', 'disable')
+        ->lists('_id')
+        ;
+
+        $services_count = Ratecard::active()
+        ->where('finder_id', $finder_id)
+        ->whereIn('service_id', $services_ids)
+        ->whereIn('type', ['workout session', 'trial'])
+        ->where('direct_payment_enable', "1")
+        ->get(['type', 'price', '_id'])
+        ;
+
+        $ratecard = [];
+        foreach($services_count as $key=>$value){
+            array_push($ratecard ,$value['_id']);
+            if($value['type']=='trial' && $value['price'] ==0){
+                $index = array_search($value['_id'], $ratecard);
+                if($index >=0 ){
+                    unset($ratecard[$index]);
+                    $ratecard = array_values($ratecard);
+                }
+            }
+        }
+        
+        if(count($ratecard) > 0){
+            $service_details['other_workout_text'] = "Other Workouts";
+        }
+        return;
+    }
 
 	function checkNormalEMIApplicable($data){
 		return !empty($data['amount'] && $data['amount'] >= Config::get("app.no_cost_emi.minimum_amount_emi", 6000));

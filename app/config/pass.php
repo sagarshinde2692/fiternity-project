@@ -1011,11 +1011,13 @@ return [
     
     "before_purchase_tab" => [
         "headerview" =>[
-            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png", //"https://b.fitn.in/onepass/onepss_background_logo.png",
-            "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png",
+            // "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "background_image" => "https://b.fitn.in/onepass/onepass_background.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
+        "passes_header" => "Choose what's best for you",
         "passes" => [
             [
                 "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
@@ -1067,11 +1069,32 @@ return [
 
         "offers" => [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
-            "header" => "Exciting OnePass Offers",
+            "header" => "OFFERS YOU CAN`T REFUSE",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
             "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
         ],
 
+        "offers_v2" => [
+            "header" => "Offer you can't refuse",
+            "offer" => [
+                [
+                    "icon" => "https://b.fitn.in/onepass/Offers_3x.png",
+                    "text" => "",
+                    "header" => "Offers For You",
+                    "button_text" => "VIEW ALL OFFERS",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/EMI_3x.png",
+                    "text" => "Buy your Onepass as per your convenience with the Interest-Free EMI payment option.",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/Refund_3x.png",
+                    "text" => "Not liking your Onepass? Get your Money back with Easy Refund Policy.",
+                ]
+            ]
+        ],
+        "checkout_button_text" => "CHECKOUT ALL GYMS AND STUDIOS",
+        
         'faq' => [
             "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
             'header' => 'Frequently Asked Questions',
@@ -1091,7 +1114,8 @@ return [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
             'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
             'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
-        ]
+        ],
+
     ],
 
     "after_purchase_tab" => [

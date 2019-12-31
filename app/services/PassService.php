@@ -22,6 +22,7 @@ use Finder;
 use stdClass;
 use Input;
 use Service;
+
 class PassService {
     protected $utilities;
 
