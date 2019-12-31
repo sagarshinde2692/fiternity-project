@@ -950,7 +950,7 @@ return [
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
-        "passes_header" => "CHOOSE WHAT`S BEST FOR YOU",
+        "passes_header" => "Choose what's best for you",
         "passes" => [
             [
                 "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
@@ -1008,7 +1008,7 @@ return [
         ],
 
         "offers_v2" => [
-            "header" => "OFFERS YOU CAN'T REFUSE",
+            "header" => "Offer you can't refuse",
             "offer" => [
                 [
                     "icon" => "https://b.fitn.in/onepass/Offers_3x.png",
