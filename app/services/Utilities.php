@@ -11353,7 +11353,66 @@ Class Utilities {
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
-    function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
+
+	public function applyNoCostEMI($data, &$emi_array = []){
+
+		if(!empty($data['order_id'])){
+			$order = Order::where('_id', $data['order_id'])->where('type', 'pass')->count();
+		}
+
+		if(	(empty($data['finder_id']) && empty($order))
+			|| $data['amount'] < Config::get('app.no_cost_emi.minimum_amount_no_cost_emi', 6000) 
+			|| !checkDeviceForFeature('no-cost-emi')
+		){
+			return;
+		}
+		
+		if(empty($order)){
+
+			if(empty($data['finder_id'])){
+				return;
+			}
+
+			if(!empty($data['finder'])){
+				$finder = $data['finder'];
+			}else{
+				$finder = Finder::where('_id', $data['finder_id'])->where('flags.no_cost_emi_enabled', true)->first();
+			}
+
+
+			if(empty($finder['flags']['no_cost_emi_enabled'])){
+				return;
+			}
+
+		}
+
+
+		$no_cost_emi_durations = $this->getNoCostEmiDuration();
+		
+		foreach($emi_array as &$emi){
+			if(in_array($emi['bankTitle'], $no_cost_emi_durations)){
+				$emi['original_rate'] = $emi['rate'];
+				$emi['original_emi'] = $emi['emi'];
+				$emi['original_total_amount'] = $emi['total_amount'];
+				$emi['original_interest'] = $emi['interest'];
+				$emi['interest'] = 0;
+				$emi['rate'] = 0;
+				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
+				$emi['total_amount'] = $data['amount'];
+				$emi['is_interest_free'] = true;
+				$no_cost_emi_available = true;
+			}
+		}
+
+		return !empty($no_cost_emi_available);
+		
+	}
+
+	public function getNoCostEmiDuration(){
+		return Config::get("app.no_cost_emi.duration_months", [3, 6]);
+	}
+    
+	function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
         $couponCode = null;
         if(!empty($headerSource) && $headerSource==Config::get('app.sbig_acronym')){
             if(empty($pass)) {
@@ -11410,4 +11469,138 @@ Class Utilities {
         }
     }
 
+
+	function checkNormalEMIApplicable($data){
+		return !empty($data['amount'] && $data['amount'] >= Config::get("app.no_cost_emi.minimum_amount_emi", 6000));
+	}
+
+	function removeNormalEMI(&$emiData){
+
+		$emiData=array_filter($emiData,function ($e){return empty($e['interest']);});
+		$emiData;
+
+	}
+
+	/**
+     * @param $data
+     * @param $emiStruct
+     * @param $emi
+     */
+    public function addEMIValues($data, &$emiStruct)
+    {
+        if (isset($data['amount'])) {
+
+            foreach ($emiStruct as &$emi) {
+
+                if ($data['amount'] >= $emi['minval']) {
+
+                    $interest = $emi['rate'] / 1200.00;
+                    $t = pow(1 + $interest, $emi['bankTitle']);
+                    $x = $data['amount'] * $interest * $t;
+                    $y = $t - 1;
+
+                    $emi['emi'] = round($x / $y, 0);
+
+                    $emi['total_amount'] = $emi['emi'] * $emi['bankTitle'];
+
+					$emi['interest'] = $emi['total_amount'] - $data['amount'];
+
+                }
+            }
+        }
+    }
+
+	public function getEMIData($data){
+		
+		$response = [
+			"bankList"=>[],
+			"emiData"=>[],
+			"higerMinVal" => []
+		];
+
+		if(!empty($data['finder']['_id'])){
+			$data['finder_id'] = $data['finder']['_id'];
+		}
+
+		$emiData = Config::get('app.emi_struct');
+		
+        $this->addEMIValues($data, $emiData);
+
+		$no_cost_emi_applicable = $this->applyNoCostEMI($data, $emiData);
+		
+		$normal_emi_applicable = $this->checkNormalEMIApplicable(['amount'=>$data['amount']]);
+		
+		if(empty($normal_emi_applicable)){
+			
+			$this->removeNormalEMI($emiData);
+		
+		}
+		
+		$this->formatEMIData($emiData);
+		
+		$response['bankList'] = array_column($emiData, 'bankName');
+		$response['bankData'] = $emiData;
+		$response['no_cost_emi_applicable'] = !empty($no_cost_emi_applicable);
+		$response['normal_emi_applicable'] = !empty($normal_emi_applicable);
+
+	    return $response;
+	}
+
+	/**
+     * @param array $emiData
+     */
+    public function formatEMIData(&$emiStruct)
+    {
+		$keysToBeStringified = [
+			"emi",
+			"total_amount",
+			"bankTitle",
+			"rate",
+			"minval",
+			"interest",
+			"original_rate",
+			"original_emi",
+			"original_total_amount",
+			"original_interest",
+		];
+
+		
+
+		foreach ($emiStruct as &$emiData){
+
+			foreach($keysToBeStringified as $key){
+				if(isset($emiData[$key])){
+					$emiData[$key] = (string)$emiData[$key];
+				}
+			}
+
+			if(isset($emiData['emi']) && isset($emiData['bankTitle'])){
+				$emiData['message'] = "Rs. " . $emiData['emi'] . " will be charged on your credit card every month for the next " . $emiData['bankTitle'] . " months";
+			}
+			
+			if(isset($emiData['bankTitle'])){
+				$emiData['months'] = $emiData['bankTitle'];
+			}
+		
+		}
+		
+		
+		$arr = [];
+
+		foreach ($emiStruct as $key => $item) {
+		   $arr[$item['bankName']][$key] = $item;
+		}
+
+		$groups = [];
+
+		foreach ($arr as $key => $item) {
+		   $groups[] = [
+			   'bankName' => $key,
+			   'emiData'=>array_values($item)
+		   ];
+		}
+
+		$emiStruct = $groups;
+
+    }
 }

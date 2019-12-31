@@ -786,8 +786,18 @@ class PassService {
             'payment_options'=>$payment_options
         );
 
+		if($this->utilities->checkNormalEMIApplicable(['amount'=>$order['amount']])){
+		
+			$payment_modes[] =  [
+				"title"=> "EMI",
+				"subtitle"=> "Transact online with credit installments",
+				"value"=> "emi"
+			];        
+		}
+
         return $payment_modes;
-    }
+    
+	}
 
     public function getPassOrderDetails($customerId, $credits) {
         $passOrder = Order::raw(function($collection) use ($customerId, $credits) {
@@ -2704,7 +2714,7 @@ class PassService {
 
         }
 
-        if(!empty($cityData)){
+        if(!empty($cityData) && $cityData){
             $data['finder_city'] = $cityData['slug'];
             $data['city_id'] = $cityData['_id'];
             $data['city_name'] = $cityData['slug'];

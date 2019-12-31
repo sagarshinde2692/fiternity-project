@@ -639,6 +639,7 @@ return array(
 		 	array(
                 "bankCode"=> "EMIA3",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -647,6 +648,7 @@ return array(
             array(
                 "bankCode"=> "EMIA6",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -655,6 +657,7 @@ return array(
             array(
                 "bankCode"=> "EMIA9",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -663,6 +666,7 @@ return array(
             array(
                 "bankCode"=> "EMIA12",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -673,6 +677,7 @@ return array(
             array(
                 "bankCode"=> "EMI",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>3,
                 "pgId"=> "15",
                 "minval"=> 3000,
@@ -681,6 +686,7 @@ return array(
             array(
                 "bankCode"=> "EMI6",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 3000,
@@ -689,6 +695,7 @@ return array(
             array(
                 "bankCode"=> "EMI9",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>9,
                 "pgId"=> "15",
                 "minval"=> 3000,
@@ -697,6 +704,7 @@ return array(
           	array(
                 "bankCode"=> "EMI12",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 3000,
@@ -705,6 +713,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS03",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -713,6 +722,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS06",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -721,6 +731,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS09",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -729,6 +740,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS12",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -737,6 +749,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS18",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=> 18,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -745,6 +758,7 @@ return array(
             array(
                 "bankCode"=> "EMIIC3",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -753,6 +767,7 @@ return array(
 			array(
                 "bankCode"=> "EMIICP6",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -761,6 +776,7 @@ return array(
             array(
                 "bankCode"=> "EMIICP9",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -769,6 +785,7 @@ return array(
             array(
                 "bankCode"=> "EMIIC12",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -777,6 +794,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND3",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -785,6 +803,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND6",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -793,6 +812,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND9",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -801,6 +821,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND12",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -809,6 +830,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND18",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 18,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -817,6 +839,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND24",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 24,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -825,6 +848,7 @@ return array(
             array(
                 "bankCode"=> "EMIK3",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -833,6 +857,7 @@ return array(
             array(
                 "bankCode"=> "EMIK6",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -841,6 +866,7 @@ return array(
             array(
                 "bankCode"=> "EMIK9",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -849,6 +875,7 @@ return array(
             array(
                 "bankCode"=> "EMIK12",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -857,6 +884,7 @@ return array(
             array(
                 "bankCode"=> "SBI03",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -865,6 +893,7 @@ return array(
             array(
                 "bankCode"=> "SBI06",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -873,6 +902,7 @@ return array(
             array(
                 "bankCode"=> "SBI09",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -881,6 +911,7 @@ return array(
             array(
                 "bankCode"=> "SBI12",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>12,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -1126,5 +1157,15 @@ return array(
 	"service_icon_base_url_extention" => ".png",
 	"checkin_checkout_max_distance_in_meters" => 2000,
 
-	"config_campaign_id" => 1
+	"config_campaign_id" => 1,
+    
+	"no_cost_emi"=> [
+        "minimum_amount_emi"=> 6000,
+        "minimum_amount_no_cost_emi"=> 6000,
+        "finder_detail_ratecard_no_cost_text"=>"NO COST EMI AVAILABLE",
+		"duration_months"=> [3, 6],
+		'finder_detail_ratecard_normal_text'=>"EMI AVAILABLE"
+    ]
+
+    
 );
