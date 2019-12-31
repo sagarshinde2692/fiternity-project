@@ -28,10 +28,41 @@ class ImageManipulationController extends \BaseController {
         ini_set('memory_limit','2048M');
         // $input = Input::get('image');
 
-        $finder_ids = Watermark::where('watermark_updated', 0)->lists('finder_id');
+        $finder_ids = Watermark::where('watermark_updated', 0)->limit(100)->lists('finder_id');
         // print_r($finder_ids);exit;
+
         $vendors = Vendor::whereIn('_id',$finder_ids)->select('_id','media.images.gallery')->get()->toArray();
         // print_r($vendors);exit;
+
+        Finder::$withoutAppends = true;
+        $finders = Finder::whereIn('_id',$finder_ids)->select('_id','photos')->get()->toArray();
+        // print_r($finders);exit();
+
+        $bulk_images_data_fitadmin = [];
+        foreach($finders as $finder){
+            // print_r($finder);exit;
+            $media_photos = $new_photos = [];
+            foreach($finder['photos'] as $photos){
+                $media_photos = array_merge($media_photos,$photos);
+                $media_photos['url'] = 'new/'.$photos['url'];
+                $media_photos['old_url'] = $photos['url'];
+
+                array_push($new_photos,$media_photos);
+            }
+
+            //prepare data for multiple update photos fitadmin
+            array_push($bulk_images_data_fitadmin, [
+                "q"=>['_id'=>$finder['_id']],
+                "u"=>[
+                    '$set'=>[
+                        'photos'=>$new_photos,
+                    ]
+                ],
+                'multi' => false
+            ]);
+        }
+        // print_r($bulk_images_data_fitadmin);exit;
+
         $base_url = Config::get('app.s3_finderurl.gallery').'original/';
         // print_r($base_url);exit;
         $bulk_images_data = $bulk_status_data = [];
@@ -43,10 +74,8 @@ class ImageManipulationController extends \BaseController {
                 // print_r($data);exit;
                 //determine width & height of image
                 $input = $base_url.$data['url'];
-                // $filename = $input->getClientOriginalName();
-                // print_r($filename);exit;
+
                 list($width, $height) = @getimagesize($input);
-                // print_r($width);exit;
 
                 if(!empty($width) || !empty($height)){
                     // open an image file
@@ -75,9 +104,7 @@ class ImageManipulationController extends \BaseController {
                     $filepath = public_path($filename);
                     $img->save($filepath);
 
-                    // $img->stream();
-
-                    $s3_path = 'f/g/new/'.$data['url'];
+                    $s3_path = 'f/g/full/new/'.$data['url'];
 
                     $s3 = \AWS::get('s3');
 
@@ -87,33 +114,27 @@ class ImageManipulationController extends \BaseController {
                         'SourceFile' => $filepath,
                     ));
 
-                    // echo $s3_path;
                     @unlink($filepath);
 
-                    // array_set($media_images, 'media.images.gallery.url', 'new/'.$data['url']);
-                    // array_set($media_images, 'media.images.gallery.old_url', $data['url']);
                     $media_images = array_merge($media_images,$data);
                     $media_images['url'] = 'new/'.$data['url'];
                     $media_images['old_url'] = $data['url'];
 
-                    array_push($all_media['media']['images']['gallery'],$media_images);
-                    array_push($new_media,$media_images);
-                    // print_r($media_images);
-                    // exit;
+                    // array_push($all_media['media']['images']['gallery'],$media_images);
+                    // print_r($media_images); exit;
+                }else{
+                    $media_images = array_merge($media_images,$data);
                 }
+                array_push($new_media,$media_images);
             }
             // print_r($new_media);exit;
 
-            //prepare data for multiple update
+            //prepare data for multiple update fitapi
             array_push($bulk_images_data, [
                 "q"=>['_id'=>$vendor['_id']],
                 "u"=>[
                     '$set'=>[
-                        'media'=>[
-                            'images' => [
-                                'gallery' => $new_media
-                            ]
-                        ]
+                        'media.images.gallery'=>$new_media
                     ]
                 ],
                 'multi' => false
@@ -132,17 +153,25 @@ class ImageManipulationController extends \BaseController {
 
             // Vendor::where('_id',$vendor['_id'])->update($all_media);
             // Watermark::where('finder_id',$vendor['_id'])->update(array('watermark_updated'=>1,'updated_at'=>new MongoDate(time())));
-            // Log::info('-----------Watermark updated for vendor id-----------------',[$vendor['_id']]);
+
+            Log::info('-----------Watermark bulk data prepared for vendor id-----------------',[$vendor['_id']]);
         }
 
         // print_r($bulk_images_data);
         // print_r($bulk_status_data);
         // exit();
 
+        //batch update in fitapi
         $update_images = $this->batchUpdate('mongodb2', 'vendors', $bulk_images_data);
+
+        //batch update in fitadmin
+        $update_photos = $this->batchUpdate('mongodb', 'finders', $bulk_images_data_fitadmin);
         $update_status = $this->batchUpdate('mongodb', 'new_watermark', $bulk_status_data);
 
-        echo 'Watermark updated successfully';
+        Log::info('----------- Watermark updated successfully -----------------');
+
+        $msg = 'Watermark updated successfully';
+        return Response::json(array('status'=>200,'message'=>$msg));
     }
 
     public function batchUpdate($db, $collection, $update_data){
