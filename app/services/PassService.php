@@ -160,7 +160,7 @@ class PassService {
                 'remarks' => (!empty($pass['type']) && $pass['type'] == 'subscription') ? "" : ucwords($pass['type']),
                 'type' => $pass['type'],
                 'min_start_date' => time(),
-                'max_start_date' => strtotime('31-12-2019'),
+                'max_start_date' => strtotime('+30 days'),
                 'duration' => $pass['duration'],
                 'complementary' => (!empty($pass['complementary']))?$pass['complementary']:false,
             ];
