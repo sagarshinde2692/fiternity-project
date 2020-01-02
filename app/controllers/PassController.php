@@ -94,7 +94,12 @@ class PassController extends \BaseController {
 
     public function passCapture(){
 
-        $data = Input::json()->all();
+        
+		$data = Input::json()->all();
+
+		if(empty($data)){
+			$data = Input::all();
+		}
 
         $rules = [
             'pass_id'=>'required | integer',
@@ -269,22 +274,49 @@ class PassController extends \BaseController {
                 $result['onepass_pre']['tnc']['url'] = strtr($result['onepass_pre']['tnc']['url_lite'], ['city_name'=>strtolower($city)]);
             }
             unset($result['onepass_pre']['tnc']['url_lite']);
-            //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
-            Log::info('near by vendors');
+
             if(!empty(count($vendor_near_by['data']))){
                 $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
                 $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
             }
+
+            $agrs1 = array('city' => $city);
+            $brandingData = $this->utilities->getPassBranding($agrs1);
+
+            if(empty(checkAppVersionFromHeader(['ios'=>'5.3', 'android'=> "5.34"]))) {
+                unset($result['onepass_pre']['passes_header']);
+                unset($result['onepass_pre']['checkout_button_text']);
+
+                if(!empty($result['onepass_pre']['offers'])){
+                    if(!empty($brandingData['footer_text'])){
+                        $result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+                    }
+                }
+            }
+            else {
+                $coupons = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
+
+                if(!empty($brandingData['footer_text'])){
+                    $result['onepass_pre']['offers_v2']['offer'][0]['text'] = $brandingData['footer_text'];
+                }
+
+                $result['onepass_pre']['offers'] =$result['onepass_pre']['offers_v2'];
+
+                if(!empty($coupons['options'])) {
+                    $result['onepass_pre']['offers']['offer'][0]['options'] = $coupons['options'];
+                }
+                else {
+                    unset($result['onepass_pre']['offers']['offer'][0]);
+                    $result['onepass_pre']['offers']['offer'] = array_values($result['onepass_pre']['offers']['offer']);
+                }
+            }
+
+            unset($result['onepass_pre']['offers_v2']);
 		}
 
-        if(!empty($result['onepass_pre']['offers'])){
-            $agrs1 = array('city' => $city);
-			$brandingData = $this->utilities->getPassBranding($agrs1);
-			if(!empty($brandingData['footer_text'])){
-				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
-			}
-        }
+        
 
 		$response = Response::make($result);
 		return $response;

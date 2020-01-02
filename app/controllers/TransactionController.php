@@ -22,6 +22,7 @@ use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 use App\Services\Paytm as PaytmService;
 use App\Services\PassService as PassService;
+use App\Services\PlusService as PlusService;
 //use App\Controllers\PaymentGatewayController as GatewayController;
 //use App\config\paytm as paytmConfig;
 class TransactionController extends \BaseController {
@@ -39,6 +40,7 @@ class TransactionController extends \BaseController {
     protected $fitweb;
     protected $PaytmService;
     protected $passService;
+    protected $plusService;
     
     //protected $GatewayController;
     //protected $paytmConfig;
@@ -55,7 +57,8 @@ class TransactionController extends \BaseController {
         Fitapi $fitapi,
         Fitweb $fitweb,
         PaytmService $PaytmService,
-        PassService $passService
+        PassService $passService,
+        PlusService $plusService
         //GatewayController $GatewayController,
         //paytmConfig $paytmConfig
     ) {
@@ -71,6 +74,7 @@ class TransactionController extends \BaseController {
         $this->fitapi               =   $fitapi;
         $this->fitweb               =   $fitweb;
         $this->passService          =   $passService;
+        $this->plusService          =   $plusService;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -1477,7 +1481,11 @@ class TransactionController extends \BaseController {
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
-        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 5000) ? true : false;
+        $emi_resp = $this->utilities->getEMIData(['amount'=>$result['amount_final'], 'finder_id'=> $data['finder_id'], 'finder'=> ['_id'=>$data['finder_id'], 'flags'=>!empty($data['finder_flags']) ? $data['finder_flags'] : []]]);
+
+		$no_cost_emi_applicable = $emi_resp['no_cost_emi_applicable'] && checkDeviceForFeature('no-cost-emi');
+
+		$emi_applicable = $no_cost_emi_applicable || $emi_resp['normal_emi_applicable'];
 
         $part_payment_applicable = false; //(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
@@ -1502,7 +1510,8 @@ class TransactionController extends \BaseController {
             'cash_pickup' => $cash_pickup_applicable,
             'emi'=>$emi_applicable,
             'pay_at_vendor'=>$pay_at_vendor_applicable,
-            'pay_later'=>$pay_later
+            'pay_later'=>$pay_later,
+			'no_cost_emi_applicable'=>$no_cost_emi_applicable
         );
 
         if(!empty($data['ratecard_pay_at_vendor'])){
@@ -1525,7 +1534,7 @@ class TransactionController extends \BaseController {
             }
             
             
-            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
+            if(!empty($data['coupon_code']) && (!empty($data['coupon_discount_amount']) || !empty($data['coupon_flags']['cashback_100_per']) || !empty($data['coupon_flags']['cashback_percentage']) || !empty($data['coupon_flags']['vk_bag_and_box_reward']))){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
@@ -1602,9 +1611,17 @@ class TransactionController extends \BaseController {
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
-
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-    
+                $membershipPlusApp = !empty($_GET['device_type']) && (in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+                if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
+                    $amount_customer_int = !empty($order['amount_customer']) ? (int)$order['amount_customer'] : 0;
+                    $convinience_fee_int = !empty($order['convinience_fee']) ? (int)$order['convinience_fee'] : 0;
+                    $base_amount_int = $amount_customer_int - $convinience_fee_int;
+                    $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($base_amount_int);
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type, $membershipPlusDetails);
+                }
+                else {
+                    $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+                }
             }
             
             $resp['data']['payment_details'] = $payment_details;
@@ -1779,6 +1796,30 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(!empty(Request::header('source'))){
+            $source = Request::header('source');
+        }
+        
+        $membershipPlusApp = (!empty($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34]));
+
+        if(empty($_GET['device_type']) || !in_array($_GET['device_type'], ['android', 'ios']) || $membershipPlusApp) {
+            //apply fitternity plus
+            Log::info("fitternity plus started");
+            $amount_customer_int = !empty($data['amount_customer']) ? (int)$data['amount_customer'] : 0;
+            $convinience_fee_int = !empty($data['convinience_fee']) ? (int)$data['convinience_fee'] : 0;
+            $base_amount_int = $amount_customer_int - $convinience_fee_int;
+            Log::info("amount_customer_int ::", [$amount_customer_int]);
+            Log::info("convinience_fee_int ::", [$convinience_fee_int]);
+            Log::info("base_amount_int ::", [$base_amount_int]);
+            if(!empty($base_amount_int) && !empty($data['type']) && ($data['type'] == 'memberships' || $data['type'] == 'membership') ) {
+                Log::info("fitternity plus apply");
+                $plus_arg_data = array('base_amount' => $base_amount_int, 'customer_id' => $data['customer_id']);
+                $plus_details = $this->plusService->applyPlus($plus_arg_data);
+                if(!empty($plus_details)){
+                    $order->update(["plus" => $plus_details]);
+                }
+            }
+        }
         
         Log::info("capture response");
         Log::info($resp);
@@ -5085,6 +5126,8 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
         $brand_id                        =    (!empty($finder['brand_id'])) ? $finder['brand_id'] : 0;
+        $photos                        =    (!empty($finder['photos']) && count($finder['photos'])>0) ? $finder['photos'] : null;
+        $coverimage                        =    (!empty($finder['coverimage'])) ? $finder['coverimage'] : null;
         
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -5112,6 +5155,8 @@ class TransactionController extends \BaseController {
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
+        $data['photos'] = $photos;
+        $data['coverimage'] = $coverimage;
 
         if(!empty($brand_id)){
             $data['brand_id'] = $brand_id;
@@ -6280,7 +6325,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 20% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: DEC20 | 28-30 Dec ",'position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Expires Soon ",'position'=>$position++];
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
@@ -6299,7 +6344,7 @@ class TransactionController extends \BaseController {
 
         // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 100% instant cashback with this purchase, use code: CB100','position'=>$position++];
+            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 50% instant cashback with this purchase, use code: CASH | Get FLAT 20% off on your workout session, use code: OFF20','position'=>$position++];
 
             // $first_session_free = $this->firstSessionFree($data);
             // if(!empty($first_session_free) && $first_session_free){
@@ -6333,7 +6378,7 @@ class TransactionController extends \BaseController {
         return $booking_details;
     }
 
-    function getPaymentDetails($data,$payment_mode_type){
+    function getPaymentDetails($data,$payment_mode_type, $membershipPlusDetails = null){
 
         $jwt_token = Request::header('Authorization');
 
@@ -6371,6 +6416,15 @@ class TransactionController extends \BaseController {
                         'field' => 'Session Pack Amount',
                         'value' => 'Rs. '.$data['ratecard_amount']
                     ); 
+                }
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $amount_summary, 1, 0, [$fpItem] );
                 }
             }
             // $amount_summary[] = array(
@@ -6517,13 +6571,13 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per']))){
+            if((isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0) || (!empty($data['coupon_flags']['cashback_100_per'])) || (!empty($data['coupon_flags']['cashback_percentage']))){
 
                 if($payment_mode_type != 'pay_later'){
 
                     $amount_summary[] = array(
                         'field' => 'Coupon Discount',
-                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : "100% Cashback"
+                        'value' => !empty($data['coupon_discount_amount']) ? '-Rs. '.$data['coupon_discount_amount'] : ((!empty($data['coupon_flags']['cashback_percentage'])) ? $data['coupon_flags']['cashback_percentage']."% Cashback" : "100% Cashback")
                     );
                     
                     $you_save += (!empty($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0);
@@ -6768,7 +6822,8 @@ class TransactionController extends \BaseController {
         //             ]
         //     ];
         // }
-        
+
+
         if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
@@ -6807,10 +6862,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-
-
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
-
         if(!empty($data['emi']) && $data['emi']){
             $payment_modes[] = array(
                 'title' => 'EMI',
@@ -6821,11 +6873,13 @@ class TransactionController extends \BaseController {
         
         if(!$this->vendor_token){
             if(!empty($data['cash_pickup']) && $data['cash_pickup'] && empty($data['data']['coupon_details']['applied'])){
-                $payment_modes[] = array(
-                    'title' => 'Cash Pickup',
-                    'subtitle' => 'Schedule cash payment pick up',
-                    'value' => 'cod',
-                );
+                // if(!checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $payment_modes[] = array(
+                        'title' => 'Cash Pickup',
+                        'subtitle' => 'Schedule cash payment pick up',
+                        'value' => 'cod',
+                    );
+                // }
             }
 
             if(!empty($data['part_payment']) && $data['part_payment']){
@@ -7445,6 +7499,8 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
         $headerSource = Request::header('Source');
+        $deviceType = Request::header('Device-Type');
+        $appVersion = Request::header('App-Version');
         if(!empty($headerSource) && $headerSource=='multifit'){
             $data['multifit'] = true;
         }
@@ -7806,10 +7862,10 @@ class TransactionController extends \BaseController {
                                 
                                 $data['you_save'] += $data['corporate_coupon_discount'];
                                 
-                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per']))){
+                                if((isset($data['corporate_coupon_discount']) && $data['corporate_coupon_discount'] > 0) || (!empty($coupon['flags']['cashback_100_per'])) || (!empty($coupon['flags']['cashback_percentage']))){
                                     $result['payment_details']['amount_summary'][] = [
                                         'field' => 'Corporate Discount (Coupon: '.strtoupper($coupon['code']).')',
-                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : "100% Cashback"
+                                        'value' => !empty($data['corporate_coupon_discount']) ? '-Rs. '.$data['corporate_coupon_discount'] : ((!empty($data['coupon_flags']['cashback_percentage'])) ? $data['coupon_flags']['cashback_percentage']."% Cashback" : "100% Cashback")
                                     ];
                                 }else{
                                     $result['payment_details']['amount_summary'][] = [
@@ -8049,12 +8105,59 @@ class TransactionController extends \BaseController {
             }
             $result['order_details'] = array_values($result['order_details']);
 
+            $nonAppCheck = empty($deviceType) || !in_array(strtolower($deviceType), ['android', 'ios']);
+            $nonTPCheck = empty($headerSource);
+            $membershipPlusDetails = null;
+            if($nonAppCheck && $nonTPCheck && !empty($ratecard['type']) && in_array($ratecard['type'], ['membership', 'extended validity'])) {
+                $orderDetails = [];
+                $memDets = [
+                    'header' => $data['finder_name'],
+                    'subheader' => ucwords($ratecard['type']),
+                    'description' => $data['service_name'],
+                    'special_price' => '₹ '.number_format($data['actual_amount']),
+                    'image' => '',
+                ];
+                if($data['ratecard_original_price']>$data['actual_amount']) {
+                    $memDets['price'] = '₹ '.number_format($data['ratecard_original_price']);
+                }
+                if(!empty($data['coverimage'])) {
+                    $memDets['image'] = 'https://b.fitn.in/f/c/'.($data['coverimage']);
+                }
+                array_push($orderDetails, $memDets);
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    array_push($orderDetails, [
+                        'header' => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        'description' => (!empty($membershipPlusDetails['header']))?$membershipPlusDetails['header']:null,
+                        'duration' => (!empty($membershipPlusDetails['duration']))?$membershipPlusDetails['duration']:null,
+                        'price' => (!empty($membershipPlusDetails['price']))?$membershipPlusDetails['price']:null,
+                        'special_price' => (!empty($membershipPlusDetails['special_price']))?$membershipPlusDetails['special_price']:null,
+                        'know_more_text' => (!empty($membershipPlusDetails['know_more_text']))?$membershipPlusDetails['know_more_text']:null,
+                        'know_more_url' => (!empty($membershipPlusDetails['know_more_url']))?$membershipPlusDetails['know_more_url']:null,
+                        'image' => (!empty($membershipPlusDetails['image']))?$membershipPlusDetails['image']:null,
+                        'fitternity_plus' => (!empty($membershipPlusDetails['fitternity_plus']))?$membershipPlusDetails['fitternity_plus']:null
+                    ]);
+                }
+                $result['order_details'] = $orderDetails;
+            }
             if($data['you_save'] > 0 && (empty($data['type']) || $data['type'] != 'workout session')){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
                     'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
+            }
+            if(!$nonAppCheck && checkAppVersionFromHeader(['ios'=>'5.3', 'android'=>5.34])) {
+                $membershipPlusDetails = $this->utilities->getMembershipPlusDetails($data['actual_amount']);
+                if(!empty($membershipPlusDetails)) {
+                    $fpItem = [
+                        "field" => (!empty($membershipPlusDetails['title']))?$membershipPlusDetails['title']:null,
+                        "value" => (!empty($membershipPlusDetails['special_price_rs']))?$membershipPlusDetails['special_price_rs']:null,
+                        "price" => (!empty($membershipPlusDetails['price_rs']))?$membershipPlusDetails['price_rs']:null
+                    ];
+                    
+                    array_splice( $result['payment_details']['amount_summary'], 1, 0, [$fpItem] );
+                }
             }
 
         }elseif(isset($ticket_id)){
@@ -9953,6 +10056,10 @@ class TransactionController extends \BaseController {
             Log::info("updatePpsRepeat");
             $this->updatePpsRepeat($data);
         }
+
+        if(!empty($data['plus'])){
+            $this->plusService->createPlusRewards($data);
+        }
         
         $this->utilities->fitnessForce(['data'=>$data, 'type'=>$type]);
 
@@ -10296,7 +10403,86 @@ class TransactionController extends \BaseController {
         }
 
         return $purchasesummary_remark;
+	}
+    
+	/*@author: Swapnil Pal
+    purpose of function: If NO COST EMI is payment option selected then subvention amounts & emi details need to be updated
+    */
+    public function subventionDataUpdate(){
+		// return \View::make("payupayload.index");
+		$data = Input::json()->all();
+
+		if(empty($data)){
+			$data = Input::all();
+		}
+
+		$rules = [
+			'order_id'=>'required',
+			'bank_code'=>'required',
+		];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+
+        $order_id= intval($data['order_id']);
+        $bank_code = $data['bank_code'];
+        
+		$orders_data = Order::find($order_id, ['finder_name','service_name','txnid','amount','customer_name','customer_email','logged_in_customer_id']);
+        $emi_struct = \Config::get('app.emi_struct');
+		$data['service_name'] = $orders_data['service_name'];
+		$data['finder_name']= $orders_data['finder_name'];
+		$data['txnid']= $orders_data['txnid'];
+		$data['amount']= $orders_data['amount'];
+		$data['customer_name']=$orders_data['customer_name'];
+		$data['customer_email']= $orders_data['customer_email'];
+		$data['env'] = 1;
+		$data['logged_in_customer_id'] = $orders_data['logged_in_customer_id'];
+		$emi_struct_key =array_search($bank_code, array_column($emi_struct,"bankCode"));
+        $bank_calculation_emi_data = $emi_struct[$emi_struct_key];
+        
+        $subvention_amt = $this->calculateSubventionAmount($bank_calculation_emi_data,$data['amount']);
+        
+        $hashData = getHash($data,$subvention_amt);
+		if(!empty($hashData)){
+            $orders_update_data['payment_hash'] = $hashData['payment_hash'];
+            $orders_update_data['verify_hash'] = $hashData['verify_hash'];
+            $orders_update_data['payment_related_details_for_mobile_sdk_hash'] = $hashData['payment_related_details_for_mobile_sdk_hash'];
+            $orders_update_data['self_funded_no_cost_emi'] = array(
+                                                        "subvention_amt" => $subvention_amt,
+                                                        "emi" => $bank_calculation_emi_data['bankTitle'],
+                                                        "bank_code" => $bank_calculation_emi_data['bankCode'],
+                                                        "bank_name" => $bank_calculation_emi_data['bankName']
+                                                    );
+            
+            $orderObj = Order::where("_id", $order_id)->update($orders_update_data);                                        
+
+			return ['status'=>200, 'data'=>['subvention_amount'=> $subvention_amt, "hash"=> $hashData['verify_hash']]];
+   
+        }
+    }
+    
+    public function calculateSubventionAmount($bank_calculation_emi_data, $amount){
+
+		return $amount;
+        
+        $interest = $bank_calculation_emi_data['rate']/1200.00;
+        $t = pow(1+$interest, $bank_calculation_emi_data['bankTitle']);             
+        $x = $amount * $interest * $t;
+        $y = $t - 1;
+        $emi = round($x / $y,0);
+        $total_amount =  (string)($emi * $bank_calculation_emi_data['bankTitle']);
+        $emi = (string)$emi;
+        $subvention_amt  = round($total_amount-$amount);
+        return $subvention_amt;
     }
 
+    public function createPlusRewards(){
+        $order_id = 422205;
+        $data = Order::where('_id', $order_id)->first()->toArray();
+        return $this->plusService->createPlusRewards($data);
+    }
 }
 

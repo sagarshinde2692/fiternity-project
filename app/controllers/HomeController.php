@@ -9,6 +9,8 @@ use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\RelianceService as RelianceService;
+use App\Services\CouponService as CouponService;
+use App\Services\PlusService as PlusService;
 
 class HomeController extends BaseController {
 
@@ -17,17 +19,18 @@ class HomeController extends BaseController {
     protected $debug = false;
     protected $client;
     protected $utilities;
-    
+    protected $plusService;
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService,CouponService $couponService, PlusService $plusService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
+        $this->plusService = $plusService;
         $this->initClient();
-
+        $this->couponService = $couponService;
         $this->vendor_token = false;
         $this->relianceService = $relianceService;
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1219,7 +1222,7 @@ class HomeController extends BaseController {
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
-                    if(!empty($checkin_response)){
+                    if(!empty($checkin_response['header']) && !empty($checkin_response['sub_header_2'])){
                         $response['header'] .= "\n ".$checkin_response['header'];
                         $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
                     } 
@@ -1931,6 +1934,13 @@ class HomeController extends BaseController {
                 Log::info("item ---" . $item['payment_mode']);
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'at the studio'){
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been blocked/reserved. Activate your membership with an activation code (given by ".$booking_details_data["finder_name_location"]['value'].") on making the payment at the gym/studio.";
+                }
+
+                if(!empty($item['plus'])){
+                    
+                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
+                    // return $getPlusSuccessMsg;
+                    $subline .= $getPlusSuccessMsg;
                 }
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
@@ -4041,9 +4051,9 @@ class HomeController extends BaseController {
         $device_type = $data['device_type'];
         $to = $data['to'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']),"label"=>$data['label']);
+            $notification_object = array("media-url" => $data["image"], "image-url" => $data["icon"], "notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']),"label"=>$data['label']);
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1, "label"=>$data['label']), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
+            $notification_object = array("media-url" => $data["image"], "aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1, "label"=>$data['label']), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         if(!empty($data['campaign'])) {
@@ -5357,7 +5367,34 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
-        	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+            $data = $_GET;
+            $deviceType=Request::header("Device-Type");
+            $appVersion=Request::header("App-Version");
+            $source=Request::header("Source");
+            $type = "vendor";
+            $pass_id= "";
+            if(isset($data['pass_id'])){
+                $type = "pass";
+                $pass_id = $data['pass_id'];
+            }
+            $ratecard_id = (isset($data['ratecard_id']))?$data['ratecard_id']:"";
+            $order_id = (isset($data['order_id']))?$data['order_id']:"";
+            if(!empty($deviceType) && !empty($appVersion)){
+                if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+                } else {
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+                }
+            }else{
+                if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic', 'sbig', 'corporate'])){
+                    $coupons = [];
+                }
+                else {
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                }
+                return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+            }
         	try {
                 $data = $_GET;
                 Log::info($_GET);

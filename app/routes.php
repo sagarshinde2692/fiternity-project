@@ -1389,6 +1389,7 @@ Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses'
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
 Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+Route::any('subventiondataupdate/', array('as' => 'transaction.subventionDataUpdate','uses' => 'TransactionController@subventionDataUpdate'));
 
 Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
 Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
@@ -1421,5 +1422,6 @@ Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
 Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
 Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
+Route::get('createPlusRewards', 'TransactionController@createPlusRewards');
 
 // Route::get('getcampaigndata', 'HomeController@getCampaignData');

@@ -4326,7 +4326,7 @@ class CustomerController extends \BaseController {
 			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-			'footer' => "Get 100% Instant Cashback on Workout Sessions",
+			'footer' => "50% Instant Cashback on Workout Sessions OR FLAT 20% Off",
 			'button_text' => 'EXPLORE'
 		];
 
@@ -4430,7 +4430,7 @@ class CustomerController extends \BaseController {
                 "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
                 "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
                 "subheader"=>"Book sessions and only pay for days you workout",
-                "footer"=>"Get 100% Instant Cashback on Workout Sessions"
+                "footer"=>"50% Instant Cashback on Workout Sessions OR FLAT 20% Off"
             ];
         }
 		
@@ -4746,9 +4746,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.31;
-		$current_version_ios = '5.2.7';
+		$current_version_ios = '5.3';
 
-		$last_stable_version_android = 5.31;
+		$last_stable_version_android = 5.34;
 
 		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){
@@ -5163,6 +5163,10 @@ class CustomerController extends \BaseController {
 					$walletData['flags'] = $fitcashcode['flags'];
 				}
 
+				if(!empty($fitcashcode['order_type'])){
+					$walletData['order_type'] = $fitcashcode['order_type'];
+				}
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
@@ -5324,163 +5328,25 @@ class CustomerController extends \BaseController {
 	}
 
 	public function displayEmi(){
-		$bankNames=array();
-		$bankList= array();
-	 	$emiStruct = Config::get('app.emi_struct');
+
 		$data = Input::json()->all();
-		$response = array(
-			"bankList"=>array(),
-			"emiData"=>array(),
-			"higerMinVal" => array()
-			);
-		$bankData = array();
-		foreach ($emiStruct as $emi) {
-			if(isset($data['bankName']) && !isset($data['amount'])){
-				if($emi['bankName'] == $data['bankName']){
-					if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-					// Log::info("inside1");
-					$emiData = array();
-						$emiData['total_amount'] =  "";
-						$emiData['emi'] ="";
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-					array_push($response['emiData'], $emiData);
-					
-					if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-						}else{
-							$bankData[$emi['bankName']] = [$emiData];
-						}
+		
+		$rules = [
+			'amount' => 'required'
+		];
 
-					
-				}
-			
-			}elseif(isset($data['bankName'])&&isset($data['amount'])){
-					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						// Log::info("inside2");
-						$emiData = array();
-						if(!in_array($emi['bankName'], $bankList)){
-							array_push($bankList, $emi['bankName']);
-						}
-                        $interest = $emi['rate']/1200.00;
-                        $t = pow(1+$interest, $emi['bankTitle']);
-                        $x = $data['amount'] * $interest * $t;
-                        $y = $t - 1;
-                        $emiData['emi'] = round($x / $y,0);
-                        $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
-                        $emiData['emi'] = (string)$emiData['emi'];
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['emiData'], $emiData);
-						
-						if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-						}else{
-							$bankData[$emi['bankName']] = [$emiData];
-						}
+		formatInput($data, ['int_values' => ['finder_id', 'amount', 'order_id']]);
 
-					}elseif($emi['bankName'] == $data['bankName']){
-						$emiData = array();
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['higerMinVal'], $emiData);
-						break;
-					}
-			}elseif(isset($data['amount']) && !(isset($data['bankName']))){
-				if($data['amount']>=$emi['minval']){
-					if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-					// Log::info("inside3");
-					$emiData = array();
-                    $interest = $emi['rate']/1200.00;
-                    $t = pow(1+$interest, $emi['bankTitle']);
-                    $x = $data['amount'] * $interest * $t;
-                    $y = $t - 1;
-                    $emiData['emi'] = round($x / $y,0);
-                    $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
-                    $emiData['emi'] = (string)$emiData['emi'];
-					$emiData['months'] = (string)$emi['bankTitle'];
-					$emiData['bankName'] = $emi['bankName'];
-                    $emiData['bankCode'] = $emi['bankCode'];
-					$emiData['rate'] = (string)$emi['rate'];
-					$emiData['minval'] = (string)$emi['minval'];
-					array_push($response['emiData'], $emiData);
-					
-					if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-					}else{
-						$bankData[$emi['bankName']] = [$emiData];
-					}
+		$validator = Validator::make($data,$rules);
 
-				}else{
-					$key = array_search($emi['bankName'], $bankNames);
-					if(!is_int($key)){
-						array_push($bankNames, $emi['bankName']);
-						$emiData = array();
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['higerMinVal'], $emiData);
-					}
-				}
-			}else{
-				if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-				// Log::info("inside4");
-				$emiData = array();
-						$emiData['total_amount'] =  "";
-						$emiData['emi'] ="";
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)(string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-				array_push($response['emiData'], $emiData);
-				
-				if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-				}else{
-					$bankData[$emi['bankName']] = [$emiData];
-				}
+		if($validator->fails()) {
 
-			}
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),400);
 		}
-		/*$device_type = Request::header('Device-Type');
-		$app_version = Request::header('App-Version');
-		Log::info($device_type);
-		Log::info($app_version);
-		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
-			$response = [];*/
-			foreach($bankData as $key => $value){
 
-				//echo"<pre>";print_r($value);exit;
+		return $this->utilities->getEMIData($data);
 
-				foreach ($value as $key_emiData => &$value_emiData) {
-
-					$message = "Rs. ".$value_emiData['emi']." will be charged on your credit card every month for the next ".$value_emiData['months']." months";
-
-					$value_emiData['message'] = $message;
-				}
-
-				$response['bankData'][] = [
-					'bankName' => $key,
-					'emiData' => $value,
-				];
-			}
-		// }
-		$response['bankList'] = $bankList;
-	    return $response;
+		
 	}
 
 

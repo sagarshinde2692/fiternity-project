@@ -51,6 +51,7 @@ use Capture;
 
 use Booktrial;
 use CampaignNotification;
+use Plusratecard;
 
 Class Utilities {
 
@@ -6378,7 +6379,7 @@ Class Utilities {
 
     } 
     
-    public function assignVoucher($customer, $voucher_category){
+    public function assignVoucher($customer, $voucher_category, $order_data = null){
         
         $already_assigned_voucher = \LoyaltyVoucher::
                 where('milestone', $voucher_category->milestone)
@@ -6392,6 +6393,17 @@ Class Utilities {
                 where('milestone', $voucher_category->milestone)
                 ->where('selected_voucher', $voucher_category->_id)
                 ->where('customer_id', $customer['_id'])
+                ->orderBy('_id', 'asc')
+                ->first();
+        }
+
+        if(!empty($order_data) && !empty($voucher_category['plus_id'])){
+            Log::info("plus_id");
+            $already_assigned_voucher = \LoyaltyVoucher::
+                where('milestone', $voucher_category->milestone)
+                ->where('selected_voucher', $voucher_category->_id)
+                ->where('customer_id', $customer['_id'])
+                ->where('order_id', $order_data['_id'])
                 ->orderBy('_id', 'asc')
                 ->first();
         }
@@ -6416,7 +6428,7 @@ Class Utilities {
 
         if(!empty($voucher_category['flags']['manual_redemption'])){
             
-            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category);
+            $new_voucher =  $this->assignManualVoucher($customer, $voucher_category, $order_data);
         
         }else{
             // Log::info("new".$voucher_category->_id);
@@ -6458,6 +6470,14 @@ Class Utilities {
 
         if(!empty($voucher_category['title'])){
             $new_voucher->title = $voucher_category['title'];
+        }
+
+        if(isset($voucher_category['plus_id'])){
+            $new_voucher->plus_id = $voucher_category['plus_id'];
+        }
+
+        if(isset($order_data['_id'])){
+            $new_voucher->order_id = $order_data['_id'];
         }
 
         if(!empty($voucher_category['required_info'])){
@@ -7725,7 +7745,7 @@ Class Utilities {
         }
     }
 
-    public function assignManualVoucher($customer, $voucher_category){
+    public function assignManualVoucher($customer, $voucher_category, $order_data = null){
         
         $voucher_data = [
             'voucher_category'=>$voucher_category['_id'],
@@ -7748,6 +7768,14 @@ Class Utilities {
             $voucher_data['title'] = $voucher_category['title'];
         }
 
+        if(isset($voucher_category['plus_id'])){
+            $voucher_data['plus_id'] = $voucher_category['plus_id'];
+        }
+
+        if(isset($order_data['_id'])){
+            $voucher_data['order_id'] = $order_data['_id'];
+        }
+
         if(!empty($voucher_category['flags']['diet_plan'])){
         
             $diet_plan = $this->generateFreeDietPlanOrder(['customer_name'=>$customer->name, 'customer_email'=>$customer->email,'customer_phone'=>$customer->contact_no]);
@@ -7759,10 +7787,19 @@ Class Utilities {
             $voucher_data['diet_plan_order_id'] = $diet_plan['order_id'];
         }
 
-        if(!empty($voucher_category['flags']['swimming_session']) || !empty($voucher_category['flags']['workout_session'])){
+        $coupon_conditions = !empty($voucher_category['coupon_conditions']) ? $voucher_category['coupon_conditions'] : null;
+        $order_data_arg = !empty($order_data) ? $order_data : null;
+
+        if(!empty($voucher_category['flags']['swimming_session']) || !empty($voucher_category['flags']['workout_session']) || !empty($voucher_category['flags']['renewal'])){
             $workout_session_flag = !empty($voucher_category['flags']['workout_session']) ? true: null;
-            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months'))], $workout_session_flag);
+            $renewal_flag = !empty($voucher_category['flags']['renewal']) ? true: null;
+            
+            $voucher_data['code']  = $this->generateSwimmingCouponCode(['customer'=>$customer, 'amount'=>$voucher_category['amount'], 'description'=>$voucher_category['description'],'end_date'=>new MongoDate(strtotime('+2 months')), 'coupon_conditions' => $coupon_conditions, 'voucher_category' => $voucher_category, 'order_data' => $order_data_arg], $workout_session_flag, $renewal_flag);
             Log::info("asdsad");
+        }
+        
+        if(!empty($voucher_category['flags']['fitcash_coupon'])){
+            $voucher_data['code']  = $this->generateFitcashCouponCode(['customer'=>$customer, 'coupon_conditions' => $coupon_conditions, 'voucher_category' => $voucher_category, 'order_data' => $order_data_arg]);
         }
         
         return $voucher = \LoyaltyVoucher::create($voucher_data);
@@ -7792,7 +7829,7 @@ Class Utilities {
         return $new_voucher;
     }
 
-    public function generateSwimmingCouponCode($data, $workout_session_flag=null){
+    public function generateSwimmingCouponCode($data, $workout_session_flag=null, $renewal_flag = null){
 
         $coupon = [
             "name" =>$data['description'],
@@ -7844,7 +7881,15 @@ Class Utilities {
         $coupon["ratecard_type"] = [ "workout session"];
         $coupon["loyalty_reward"] = true;
 
-        $coupon['code'] = $this->getSwimmingSessionCode($data['customer'], $workout_session_flag);
+        if(!empty($data['coupon_conditions'])){
+            $coupon = array();
+            $coupon_data = $this->plusCouponCondition($data);
+            if(!empty($coupon_data)){
+                $coupon = array_merge($coupon,$coupon_data);
+            }   
+        }
+
+        $coupon['code'] = $this->getSwimmingSessionCode($data['customer'], $workout_session_flag, $renewal_flag);
         // print_r($coupon);
         // exit();
         
@@ -7855,7 +7900,7 @@ Class Utilities {
 
     }
 
-    public function getSwimmingSessionCode($customer, $workout_session_flag){
+    public function getSwimmingSessionCode($customer, $workout_session_flag, $renewal_flag){
         $random_string = $this->generateRandomString();
         $code = 'sw'.$random_string;
         if(!empty($customer['name']) && !empty($workout_session_flag)){
@@ -7864,12 +7909,18 @@ Class Utilities {
                 $code = substr($customer['name'],0,3).$random_string;
             }
         }
+        if(!empty($customer['name']) && !empty($renewal_flag)){
+            $code = $customer['name'].$random_string;
+            if(strlen($customer['name']) >3 ){
+                $code = "renew".substr($customer['name'],0,3).$random_string."fit";
+            }
+        }
         $code = strtolower($code);
         // print_r($code);
         // exit();
         $alreadyExists = Coupon::where('code', $code)->first();
         if($alreadyExists){
-            return $this->getSwimmingSessionCode($customer, $workout_session_flag);
+            return $this->getSwimmingSessionCode($customer, $workout_session_flag, $renewal_flag);
         }
         return $code;
     }
@@ -10313,7 +10364,7 @@ Class Utilities {
     }
     
     public function orderSummarySlots($slotsdata, $service_name, $vendor_name, $finder = null){
-        $orderSummary = Config::get('orderSummary.slot_summary');
+       $orderSummary = Config::get('orderSummary.slot_summary');
 		$orderSummary['header'] = strtr($orderSummary['header'], ['vendor_name'=>$vendor_name, 'service_name'=>$service_name]);
 		
 		foreach($slotsdata as &$slot){
@@ -10334,11 +10385,10 @@ Class Utilities {
     
     public function orderSummaryService($service){
 		Log::info('service name at order summary3', [$service['name']]);
-		$summary= Config::get('orderSummary.service_summary');
+	    $summary= Config::get('orderSummary.service_summary');
 		$summary['header'] = (strtr($summary['header'], ['vendor_name'=>$service['finder_name'], 'service_name'=>$service['name']]));
         
         $service['order_summary']['header']= $summary['header'];
-        	
 		return $service;
     }
     
@@ -10495,7 +10545,7 @@ Class Utilities {
     public function rollbackVouchers($customer, $combo_vouchers_list){
         foreach($combo_vouchers_list as $key=>$value){
             if(!empty($value)){
-                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id'];
+                $keys = ['customer_id', 'claim_date', 'selected_voucher', 'name', 'image', 'terms', 'amount', 'milestone', 'flags', 'diet_plan_order_id', 'order_id'];
                 
                 try{
                     if($value['diet_plan_order_id']){
@@ -11138,27 +11188,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11188,27 +11238,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11240,27 +11290,27 @@ Class Utilities {
                         }
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
-                            $return_arr['text'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "Last Chance: FLAT 20% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 20% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "Last Chance: FLAT 30% Off + 25% Cashback".getLineBreaker()."Use Code: ONE5X. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "Last Chance: Addnl FLAT 30% Off + 25% Cashback On OnePass, Use Code: ONE5X. Prices Going Up Soon | 28-30 Dec";
+                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Expires Soon";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nFLAT 55% Off On OnePass Membership, Use Code: ONE5X\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['red_remarks_header'] = "\n\nFitMania: No Excuses 2020\n\nLast Chance - Best Deal Of 2019\n\nAddnl FLAT 30% Off + 25% Cashback, Use Code: ONE5X. Limited Slots\n\nPrices Going Up Soon, HURRY!\n\n28-30 Dec";
-                $return_arr['footer_text'] = "Last Chance: Best Deal Of 2019 - FLAT 55% Off On Lowest Price OnePass Membership";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
                 return $return_arr;
                 break;
             default: return $return_arr;
@@ -11353,7 +11403,66 @@ Class Utilities {
         unset($preRegistrationScreenData['partners_new']);
         unset($preRegistrationScreenData['check_ins']['ios_old']);   
     }
-    function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
+
+	public function applyNoCostEMI($data, &$emi_array = []){
+
+		if(!empty($data['order_id'])){
+			$order = Order::where('_id', $data['order_id'])->where('type', 'pass')->count();
+		}
+
+		if(	(empty($data['finder_id']) && empty($order))
+			|| $data['amount'] < Config::get('app.no_cost_emi.minimum_amount_no_cost_emi', 6000) 
+			|| !checkDeviceForFeature('no-cost-emi')
+		){
+			return;
+		}
+		
+		if(empty($order)){
+
+			if(empty($data['finder_id'])){
+				return;
+			}
+
+			if(!empty($data['finder'])){
+				$finder = $data['finder'];
+			}else{
+				$finder = Finder::where('_id', $data['finder_id'])->where('flags.no_cost_emi_enabled', true)->first();
+			}
+
+
+			if(empty($finder['flags']['no_cost_emi_enabled'])){
+				return;
+			}
+
+		}
+
+
+		$no_cost_emi_durations = $this->getNoCostEmiDuration();
+		
+		foreach($emi_array as &$emi){
+			if(in_array($emi['bankTitle'], $no_cost_emi_durations)){
+				$emi['original_rate'] = $emi['rate'];
+				$emi['original_emi'] = $emi['emi'];
+				$emi['original_total_amount'] = $emi['total_amount'];
+				$emi['original_interest'] = $emi['interest'];
+				$emi['interest'] = 0;
+				$emi['rate'] = 0;
+				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
+				$emi['total_amount'] = $data['amount'];
+				$emi['is_interest_free'] = true;
+				$no_cost_emi_available = true;
+			}
+		}
+
+		return !empty($no_cost_emi_available);
+		
+	}
+
+	public function getNoCostEmiDuration(){
+		return Config::get("app.no_cost_emi.duration_months", [3, 6]);
+	}
+    
+	function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
         $couponCode = null;
         if(!empty($headerSource) && $headerSource==Config::get('app.sbig_acronym')){
             if(empty($pass)) {
@@ -11410,4 +11519,339 @@ Class Utilities {
         }
     }
 
+    public function checkForOtherWorkoutServices($finder_id, &$service_details){
+        $services_ids = Service::active()
+        ->where('finder_id', $finder_id)
+        ->where('_id', '!=', $service_details['_id'])
+        ->where('trial' ,'!=', 'disable')
+        // ->where('membership' ,'!=', 'disable')
+        ->lists('_id')
+        ;
+
+        $services_count = Ratecard::active()
+        ->where('finder_id', $finder_id)
+        ->whereIn('service_id', $services_ids)
+        ->whereIn('type', ['workout session', 'trial'])
+        ->where('direct_payment_enable', "1")
+        ->get(['type', 'price', '_id'])
+        ;
+
+        $ratecard = [];
+        foreach($services_count as $key=>$value){
+            array_push($ratecard ,$value['_id']);
+            if($value['type']=='trial' && $value['price'] ==0){
+                $index = array_search($value['_id'], $ratecard);
+                if($index >=0 ){
+                    unset($ratecard[$index]);
+                    $ratecard = array_values($ratecard);
+                }
+            }
+        }
+        
+        if(count($ratecard) > 0){
+            $service_details['other_workout_text'] = "Other Workouts";
+        }
+        return;
+    }
+
+	function checkNormalEMIApplicable($data){
+		return !empty($data['amount'] && $data['amount'] >= Config::get("app.no_cost_emi.minimum_amount_emi", 6000));
+	}
+
+	function removeNormalEMI(&$emiData){
+
+		$emiData=array_filter($emiData,function ($e){return empty($e['interest']);});
+		$emiData;
+
+	}
+
+	/**
+     * @param $data
+     * @param $emiStruct
+     * @param $emi
+     */
+    public function addEMIValues($data, &$emiStruct)
+    {
+        if (isset($data['amount'])) {
+
+            foreach ($emiStruct as &$emi) {
+
+                if ($data['amount'] >= $emi['minval']) {
+
+                    $interest = $emi['rate'] / 1200.00;
+                    $t = pow(1 + $interest, $emi['bankTitle']);
+                    $x = $data['amount'] * $interest * $t;
+                    $y = $t - 1;
+
+                    $emi['emi'] = round($x / $y, 0);
+
+                    $emi['total_amount'] = $emi['emi'] * $emi['bankTitle'];
+
+					$emi['interest'] = $emi['total_amount'] - $data['amount'];
+
+                }
+            }
+        }
+    }
+
+	public function getEMIData($data){
+		
+		$response = [
+			"bankList"=>[],
+			"emiData"=>[],
+			"higerMinVal" => []
+		];
+
+		if(!empty($data['finder']['_id'])){
+			$data['finder_id'] = $data['finder']['_id'];
+		}
+
+		$emiData = Config::get('app.emi_struct');
+		
+        $this->addEMIValues($data, $emiData);
+
+		$no_cost_emi_applicable = $this->applyNoCostEMI($data, $emiData);
+		
+		$normal_emi_applicable = $this->checkNormalEMIApplicable(['amount'=>$data['amount']]);
+		
+		if(empty($normal_emi_applicable)){
+			
+			$this->removeNormalEMI($emiData);
+		
+		}
+		
+		$this->formatEMIData($emiData);
+		
+		$response['bankList'] = array_column($emiData, 'bankName');
+		$response['bankData'] = $emiData;
+		$response['no_cost_emi_applicable'] = !empty($no_cost_emi_applicable);
+		$response['normal_emi_applicable'] = !empty($normal_emi_applicable);
+
+	    return $response;
+	}
+
+	/**
+     * @param array $emiData
+     */
+    public function formatEMIData(&$emiStruct)
+    {
+		$keysToBeStringified = [
+			"emi",
+			"total_amount",
+			"bankTitle",
+			"rate",
+			"minval",
+			"interest",
+			"original_rate",
+			"original_emi",
+			"original_total_amount",
+			"original_interest",
+		];
+
+		
+
+		foreach ($emiStruct as &$emiData){
+
+			foreach($keysToBeStringified as $key){
+				if(isset($emiData[$key])){
+					$emiData[$key] = (string)$emiData[$key];
+				}
+			}
+
+			if(isset($emiData['emi']) && isset($emiData['bankTitle'])){
+				$emiData['message'] = "Rs. " . $emiData['emi'] . " will be charged on your credit card every month for the next " . $emiData['bankTitle'] . " months";
+			}
+			
+			if(isset($emiData['bankTitle'])){
+				$emiData['months'] = $emiData['bankTitle'];
+			}
+		
+		}
+		
+		
+		$arr = [];
+
+		foreach ($emiStruct as $key => $item) {
+		   $arr[$item['bankName']][$key] = $item;
+		}
+
+		$groups = [];
+
+		foreach ($arr as $key => $item) {
+		   $groups[] = [
+			   'bankName' => $key,
+			   'emiData'=>array_values($item)
+		   ];
+		}
+
+		$emiStruct = $groups;
+
+    }
+	public function addDiscountFlags(&$ratecard, $service, $finder){
+
+		if((!isset($ratecard['flags']['disc_value']) || !isset($ratecard['flags']['disc_type'])) && isset($finder['flags']['disc_long']['type']) && isset($finder['flags']['disc_long']['value'])){
+			$ratecard['flags']['disc_value'] = $finder['flags']['disc_long']['value'];
+			$ratecard['flags']['disc_type'] = $finder['flags']['disc_long']['type'];
+			return;
+		}
+
+		if(!isset($ratecard['flags']['disc_value']) || !isset($ratecard['flags']['disc_type'])){
+			$ratecard['flags']['disc_value'] = 0;
+			$ratecard['flags']['disc_type'] = 'amount';
+		}
+
+	}
+
+    public function getMembershipPlusDetails($amt=null) {
+		if(!empty($amt)) {
+			$plusRatecard = Plusratecard::where('status', '1')->where('min', '<=', $amt)->where('max', '>=', $amt)->first();
+			if(!empty($plusRatecard)) {
+				$plusId = $plusRatecard['plus_id'];
+				$plusDuration = $plusRatecard['duration_text'];
+				$retObj = [
+					'header' => 'By Purchasing This Membership Through Fitternity You Get Exclusive Accesss to '.((!empty($plusDuration))?ucwords($plusDuration):'').' Fitternity Plus Membership',
+					'image' => 'https://b.fitn.in/membership-plus/app-fplus-logo.png',
+					'title' => 'Fitternity Plus',
+					'address_header' => 'Reward delivery details',
+					'description' => 'Fitternity Plus gives you access to exclusive fitness merchandise, great deals on workouts and much more!',
+					'know_more_text' => 'KNOW MORE',
+					'know_more_url' => Config::get('app.website').'/fitternity-plus'.'?mobile_app=true',
+					'price' => $this->getRupeeForm($plusRatecard['price']),
+					'price_rs' => "Rs. ".$plusRatecard['price'],
+					'special_price' => 'FREE',
+					'special_price_rs' => 'FREE',
+					'address_required' => true,
+					'amount' => $plusRatecard['price'],
+					'duration' => ucwords($plusDuration),
+					'address_required' => true,
+					'fitternity_plus' => true,
+				];
+				if($amt>4000) {
+					$retObj['size'] = Config::get('loyalty_screens.voucher_required_info.size');
+				}
+				return $retObj;
+			}
+		}
+		return null;
+	}
+
+    public function plusCouponCondition($data){
+        $customer = $data['customer'];
+        $voucher_category = $data['voucher_category'];
+        $coupon_conditions = $data['coupon_conditions'];
+        $order_data = $data['order_data'];
+        
+        $coupon['name'] = !empty($voucher_category['title']) ? $voucher_category['title'] : $voucher_category['description'];
+        $coupon['description'] = !empty($voucher_category['description']) ? $voucher_category['description'] : null;
+        $coupon['discount_percent'] = !empty($coupon_conditions['discount_percent']) ? $coupon_conditions['discount_percent'] : 0;
+        $coupon['discount_max'] = !empty($coupon_conditions['discount_max']) ? $coupon_conditions['discount_max'] : 0;
+        $coupon['discount_amount'] = !empty($coupon_conditions['discount_amount']) ? $coupon_conditions['discount_amount'] : 0;
+        $coupon['start_date'] = new MongoDate();
+        $coupon['end_date'] = !empty($coupon_conditions['end_date_in_months']) ? new MongoDate(strtotime('+'.$coupon_conditions['end_date_in_months'].' months')) : new MongoDate(strtotime('+2 months'));
+
+        if(!empty($customer['email'])){
+            $coupon['customer_emails'] = [$customer['email']];
+        }
+        
+        if(!empty($coupon_conditions['and_conditions'])){
+            $coupon['and_conditions'] = $coupon_conditions['and_conditions'];
+        }
+        
+        if(!empty($coupon_conditions['once_per_user'])){
+            $coupon['once_per_user'] = $coupon_conditions['once_per_user'];
+        }
+
+        if(!empty($coupon_conditions['flags'])){
+            $coupon['flags'] = $coupon_conditions['flags'];
+        }
+
+        if(!empty($coupon_conditions['ratecard_type'])){
+            $coupon['ratecard_type'] = $coupon_conditions['ratecard_type'];
+        }
+
+        if(!empty($voucher_category['flags']['renewal'])){
+
+            $coupon['end_date'] = !empty($coupon_conditions['end_date_in_months']) ? new MongoDate(strtotime('+'.$coupon_conditions['end_date_in_months'].' months', strtotime($order_data['end_date']))) : new MongoDate(strtotime('+2 months'));
+
+            if(!empty($order_data['finder_id'])){
+                if(!empty($coupon['and_conditions'])){
+                    array_push(
+                        $coupon['and_conditions'],
+                        [
+                            "key" =>"finder._id",
+                            "operator" =>"in",
+                            "values" =>[ 
+                                $order_data['finder_id']
+                            ]
+                        ]
+                    );
+                }else{
+                    $coupon['and_conditions'] = [
+                        [
+                            "key" =>"finder._id",
+                            "operator" =>"in",
+                            "values" =>[ 
+                                $order_data['finder_id']
+                            ]
+                        ]   
+                    ];
+                }
+            }
+        }
+        
+        $coupon['total_available'] = !empty($coupon_conditions['total_available']) ? $coupon_conditions['total_available'] : 1;
+        $coupon['fitternity_plus'] = true;
+        $coupon['total_used'] = 0;
+        
+        return $coupon;
+    }
+
+    public function generateFitcashCouponCode($data){
+        $customer = $data['customer'];
+        $voucher_category = $data['voucher_category'];
+        $coupon_conditions = $data['coupon_conditions'];
+        $order_data = $data['order_data'];
+
+        $fitcashcoupon['amount'] = !empty($coupon_conditions['amount']) ? $coupon_conditions['amount'] : 0;
+        $fitcashcoupon['quantity'] = !empty($coupon_conditions['quantity']) ? $coupon_conditions['quantity'] : 0;
+        $fitcashcoupon['type'] = !empty($coupon_conditions['type']) ? $coupon_conditions['type'] : 'fitcashplus';
+        $fitcashcoupon['valid_till'] = $fitcashcoupon['expiry'] = !empty($coupon_conditions['valid_till_in_months']) ? strtotime('+'.$coupon_conditions['valid_till_in_months'].' months') : strtotime('+2 months');
+        
+        if(!empty($coupon_conditions['order_type'])){
+            $fitcashcoupon['order_type'] = $coupon_conditions['order_type'];
+        }
+
+        $fitcashcoupon['fitternity_plus'] = true;
+
+        $fitcashcoupon['code'] = $this->getFitcashCode($data);
+
+        $fitcashcoupon['created_at'] = new MongoDate();
+        $fitcashcoupon['updated_at'] = new MongoDate();
+
+        \Fitcashcoupon::insert($fitcashcoupon);
+        
+        return $fitcashcoupon['code'];
+    }
+
+    public function getFitcashCode($data){
+        $customer = $data['customer'];
+
+        $random_string = $this->generateRandomString();
+        $code = 'fit'.$random_string;
+        if(!empty($customer['name'])){
+            if(strlen($customer['name']) >3 ){
+                $code .= substr($customer['name'],0,3);
+            }
+        }
+        $code .= 'cash';
+        $code = strtolower($code);
+        // print_r($code);
+        // exit();
+        $alreadyExists = \Fitcashcoupon::where('code', $code)->first();
+        if($alreadyExists){
+            return $this->getFitcashCode($data);
+        }
+
+        return $code;
+    }
 }
