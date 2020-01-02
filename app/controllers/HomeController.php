@@ -9,6 +9,8 @@ use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\RelianceService as RelianceService;
+use App\Services\CouponService as CouponService;
+use App\Services\PlusService as PlusService;
 
 class HomeController extends BaseController {
 
@@ -17,17 +19,18 @@ class HomeController extends BaseController {
     protected $debug = false;
     protected $client;
     protected $utilities;
-    
+    protected $plusService;
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities, RelianceService $relianceService,CouponService $couponService, PlusService $plusService) {
         parent::__construct();
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
+        $this->plusService = $plusService;
         $this->initClient();
-
+        $this->couponService = $couponService;
         $this->vendor_token = false;
         $this->relianceService = $relianceService;
         $vendor_token = Request::header('Authorization-Vendor');
@@ -1058,12 +1061,17 @@ class HomeController extends BaseController {
 
             if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
+                // $camp_arg_data = array('source' => 'app', 'sub_source' => 'successpage');
+			    // $campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+                // $concate_subline = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
+
                 $header = "BOOKING SUCCESSFUL!";
                 
                 $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.' or by scanning the QR code available there. FitCode helps you mark your attendance that let\'s you earn cashbacks.'."<br><br>Keep booking sessions at ".$item['finder_name']." without buying a membership and earn rewards on your every workout";
 
                 if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                     $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                    // $subline .= "<br><br> ".$concate_subline;
                 }
 
                 if(!empty($item['pass_order_id'])){
@@ -1085,6 +1093,7 @@ class HomeController extends BaseController {
 
                     if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                         $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                        // $subline .= "<br><br> ".$concate_subline;
                     }
 
                     if(!empty($item['first_session_free'])){
@@ -1213,7 +1222,7 @@ class HomeController extends BaseController {
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
-                    if(!empty($checkin_response)){
+                    if(!empty($checkin_response['header']) && !empty($checkin_response['sub_header_2'])){
                         $response['header'] .= "\n ".$checkin_response['header'];
                         $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
                     } 
@@ -1927,6 +1936,13 @@ class HomeController extends BaseController {
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been blocked/reserved. Activate your membership with an activation code (given by ".$booking_details_data["finder_name_location"]['value'].") on making the payment at the gym/studio.";
                 }
 
+                if(!empty($item['plus'])){
+                    
+                    $getPlusSuccessMsg = $this->plusService->getMembershipSuccessData($item, $booking_details_data);
+                    // return $getPlusSuccessMsg;
+                    $subline .= $getPlusSuccessMsg;
+                }
+
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
                     if(!isset($item['extended_validity'])){
                         $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id', 'validity']);
@@ -1982,6 +1998,7 @@ class HomeController extends BaseController {
                         
                         if(!empty($item['coupon_flags']['cashback_100_per']) && ((isset($item['customer_quantity']) && $item['customer_quantity'] == 1) || empty($item['customer_quantity']) )){
                             $subline .= "<br><br> Congratulations on receiving your instant cashback. Make the most of the cashback by booking multiple workout sessions on Fitternity App for yourself as well as your friends & family without any restriction on spend value";
+                            // $subline .= "<br><br> ".$concate_subline;
                         }
 
                         break;
@@ -4034,11 +4051,14 @@ class HomeController extends BaseController {
         $device_type = $data['device_type'];
         $to = $data['to'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            $notification_object = array("media-url" => $data["image"], "image-url" => $data["icon"], "notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']),"label"=>$data['label']);
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            $notification_object = array("media-url" => $data["image"], "aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1, "label"=>$data['label']), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
+        if(!empty($data['campaign'])) {
+            $notificationData['campaign'] = $data['campaign'];
+        }
         $route  = $device_type;
         return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
     }
@@ -5347,7 +5367,34 @@ class HomeController extends BaseController {
 
         public function listValidCoupons()
         {
-        	return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+            $data = $_GET;
+            $deviceType=Request::header("Device-Type");
+            $appVersion=Request::header("App-Version");
+            $source=Request::header("Source");
+            $type = "vendor";
+            $pass_id= "";
+            if(isset($data['pass_id'])){
+                $type = "pass";
+                $pass_id = $data['pass_id'];
+            }
+            $ratecard_id = (isset($data['ratecard_id']))?$data['ratecard_id']:"";
+            $order_id = (isset($data['order_id']))?$data['order_id']:"";
+            if(!empty($deviceType) && !empty($appVersion)){
+                if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+                } else {
+                    return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+                }
+            }else{
+                if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic', 'sbig', 'corporate'])){
+                    $coupons = [];
+                }
+                else {
+                    $coupons = $this->couponService->getlistvalidcoupons($type,$order_id,$pass_id,$ratecard_id);
+                }
+                return $resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>$coupons];
+            }
         	try {
                 $data = $_GET;
                 Log::info($_GET);
@@ -5539,6 +5586,9 @@ class HomeController extends BaseController {
  
  	public function getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false) {
 		return $this->utilities->getLoyaltyAppropriationConsentMsg($customer_id, $order_id, $messageOnly = false);
-	}
+    }
 
+    // public function getCampaignData(){
+    //     return $this->utilities->getCampaignData();
+    // }
 }

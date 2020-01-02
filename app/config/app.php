@@ -25,6 +25,12 @@ return array(
 	// 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
     // "pps_url_branch_io" => "https://ftrnty.test-app.link/9g4PJcq2WW",
     // 'uploadStepsStage'=>'http://localhost:5000/fitness-steps-stage/asia-east2/',
+	// "corporate_mapping" => [
+	// 	[ "id" => "123456789123421", "key" => "wfuefiesieuwfuururuuiwri", "name" => "Goqii", "acronym" => "goqii", "dummy_email_domain" => "@goqii.com" ],
+	// 	[ "id" => "111332255567802", "key" => "wfuefiesekincareuuvfiwri", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+	// 	[ "id" => "236348957967467", "key" => "wdsdfiavtruworthvuvfsdgs", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
+	// 	[ "id" => "123456789123421", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJzdGFnZSIsImlhdCI6MTU3NDMyNDQzM30.gKSY53izgoVmgNBdsaZlTD51RyJGDPr2u4ns2rsQgro", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
+	// ],
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -106,17 +112,21 @@ return array(
 	// 'uploadStepsStage'=>'https://asia-east2-fitness-steps-live.cloudfunctions.net/',
     // 'razorpay' => [ 'key_id' => 'rzp_live_irBeGznBeqpZia', 'secret_key' => 'bMblNmPddzIIP4vbyoKYLhwR', 'currency' => 'INR', 'customer' => ['url' => 'https://api.razorpay.com/v1/customers'], 'plan' => ['interval' => 1, 'period' => 'monthly', 'url' => 'https://api.razorpay.com/v1/plans'], 'subscription' => ['total_count' => 60, 'url' => 'https://api.razorpay.com/v1/subscriptions', 'interval' => '+30 days'], "webhook_secret_key"=>"qwepoifghtyvb" ],
 	// "corporate_mapping" => [
-	//     [ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
-	// 	[ "id" => "347583457893", "key" => "yurbvfbhtruworthvfdfjgrk", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ]
+	// 	[ "id" => "555123098567", "key" => "sfgvdhfjekincarevdfggjfc", "name" => "Ekincare", "acronym" => "ekn", "dummy_email_domain" => "@ekincare.com" ],
+	// 	[ "id" => "347583457893", "key" => "yurbvfbhtruworthvfdfjgrk", "name" => "Truworth", "acronym" => "twh", "dummy_email_domain" => "@truworth.com" ],
+	// 	[ "id" => "9934985980486", "key" => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmaXR0ZXJuaXR5IiwibmFtZSI6InNiaWciLCJlbnYiOiJwcm9kIiwiaWF0IjoxNTc0MzI0NDMzfQ.-3VmCd-k8H01FZz1CB9mfCyk-UyxzO9R6U00ATmWtW4", "name" => "SBIG", "acronym" => "sbig", "dummy_email_domain" => "@sbig.com" ],
 	// ],
 
+	"generic_corporate_exclude" => ['sodexo', 'sbig', 'thelabellife'],
 	"app_download_url_branch_io" => "https://ftrnty.app.link/8v6VWNGwi0",
     'creditMap' => [
 		['max_price'=>300, 'credits'=>2],
 		['max_price'=>500, 'credits'=>3],
 		['max_price'=>749, 'credits'=>4]
 	],
-
+	'sbig_acronym' => 'sbig',
+	'sbig_coupon_code' => 'qwersbigpoiu34876',
+	'sbig_complementary_coupon_code' => 'compsbigpoiu58632',
 	'pass_payment_options' => [
 		[
 			'title' => 'Paypal',
@@ -606,6 +616,7 @@ return array(
         184     => 400
     ],
 
+	'app_oneliner_finder' => ' is applied on all the rates below. Offer Expires soon. All prices are inclusive of GST.',
 
     'workout_results_categorywise'        =>   [
         65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
@@ -629,6 +640,7 @@ return array(
 		 	array(
                 "bankCode"=> "EMIA3",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -637,6 +649,7 @@ return array(
             array(
                 "bankCode"=> "EMIA6",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -645,6 +658,7 @@ return array(
             array(
                 "bankCode"=> "EMIA9",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -653,6 +667,7 @@ return array(
             array(
                 "bankCode"=> "EMIA12",
                 "bankName"=> "AXIS",
+				"img"=> 'https://b.fitn.in/global/emi-page/banks/newicons/Axis.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -663,6 +678,7 @@ return array(
             array(
                 "bankCode"=> "EMI",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>3,
                 "pgId"=> "15",
                 "minval"=> 3000,
@@ -671,6 +687,7 @@ return array(
             array(
                 "bankCode"=> "EMI6",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 3000,
@@ -679,6 +696,7 @@ return array(
             array(
                 "bankCode"=> "EMI9",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=>9,
                 "pgId"=> "15",
                 "minval"=> 3000,
@@ -687,6 +705,7 @@ return array(
           	array(
                 "bankCode"=> "EMI12",
                 "bankName"=> "HDFC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HDFC.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 3000,
@@ -695,6 +714,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS03",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -703,6 +723,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS06",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -711,6 +732,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS09",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -719,6 +741,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS12",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -727,6 +750,7 @@ return array(
             array(
                 "bankCode"=> "EMIHS18",
                 "bankName"=> "HSBC",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/HSBC.png',
                 "bankTitle"=> 18,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -735,6 +759,7 @@ return array(
             array(
                 "bankCode"=> "EMIIC3",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -743,6 +768,7 @@ return array(
 			array(
                 "bankCode"=> "EMIICP6",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -751,6 +777,7 @@ return array(
             array(
                 "bankCode"=> "EMIICP9",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -759,6 +786,7 @@ return array(
             array(
                 "bankCode"=> "EMIIC12",
                 "bankName"=> "ICICI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/ICICI.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 1500,
@@ -767,6 +795,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND3",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -775,6 +804,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND6",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -783,6 +813,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND9",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -791,6 +822,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND12",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -799,6 +831,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND18",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 18,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -807,6 +840,7 @@ return array(
             array(
                 "bankCode"=> "EMIIND24",
                 "bankName"=> "INDUS",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/Indusind.png',
                 "bankTitle"=> 24,
                 "pgId"=> "8",
                 "minval"=> 2000,
@@ -815,6 +849,7 @@ return array(
             array(
                 "bankCode"=> "EMIK3",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -823,6 +858,7 @@ return array(
             array(
                 "bankCode"=> "EMIK6",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -831,6 +867,7 @@ return array(
             array(
                 "bankCode"=> "EMIK9",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -839,6 +876,7 @@ return array(
             array(
                 "bankCode"=> "EMIK12",
                 "bankName"=> "KOTAK",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/KOTAK.png',
                 "bankTitle"=> 12,
                 "pgId"=> "8",
                 "minval"=> 500,
@@ -847,6 +885,7 @@ return array(
             array(
                 "bankCode"=> "SBI03",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>3,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -855,6 +894,7 @@ return array(
             array(
                 "bankCode"=> "SBI06",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>6,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -863,6 +903,7 @@ return array(
             array(
                 "bankCode"=> "SBI09",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>9,
                 "pgId"=> "8",
                 "minval"=> 2500,
@@ -871,13 +912,14 @@ return array(
             array(
                 "bankCode"=> "SBI12",
                 "bankName"=> "SBI",
+				"img"=>'https://b.fitn.in/global/emi-page/banks/newicons/SBI.png',
                 "bankTitle"=>12,
                 "pgId"=> "8",
                 "minval"=> 2500,
                 "rate"=>14
             )
         ),
-	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com', 'kailash.cp2419@gmail.com'],	
+	'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'vinichellani@fitternity.com','surajpalai@fitternity.com','kedarkhanvilkar@fitternity.com','nikitasharma@fitternity.com', 'firojmulani@fitternity.com', 'vipulchauhan@fitternity.com', 'vipul.chauhan705@gmail.com', 'ankitamamnia@fitternity.com', 'kailash.cp2419@gmail.com', 'akhilkulkarni@fitternity.com', 'kevalshah@fitternity.com'],	
     
 	'test_vendors' => ['fitternity-test-page', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
@@ -1031,6 +1073,7 @@ return array(
 
 	'first_free_string'=>' (First session Free)',
 	'onepass_free_string'=>'Free Via Onepass',
+	'onepass_lite_free_string'=>'Free Via Onepass Lite',
     'eoys_excluded_vendor_ids'=>[8546,11230,11810,10466,941,12157,1020,613,9427,10965,1429,718,9432,4534,13660,9988,3184,9400,3192,13327,13328,13332,7010,3350,3351,3449,3450,11025,11352,3975,11988,12690,12101,6156,9579,11251,13271,14422,11456,5200,6411,7014,5601,5617,7136,5769,5833,5300,7013,5444,7012,10987,4929,7541,7616,6697,7649,5348,7585,8094,10537,4878,5688,9354,9341,5634,6578,9880,9878,4924,6214,9375,10974,5008,7832,6680,9395,8141,10975,4968,9417,9454,5108,5647,10983,7344,9487,9489,6213,5125,5347,9624,9905,9904,6477,9967,9763,9385,10549,9912,9483,5947,7395,10757,5633,10591,11370,10949,6912,12120,11043,5625,8598,8613,6475,11017,11012,11169,11171,11170,11137,11136,11185,11071,11134,5031,11236,5521,11405,11442,11499,11501,13693,11503,11517,11519,11521,11521,7368,5381,11884,11895,11901,10200,6331,11960,12062,12061,12065,10733,10507,10512,10517,10518,11934,11965,12760,7356,6564,6624,11036,12873,12885,13104,4997,7403,7174,12442,10849,13205,13213,13690,11818,13267,6052,13992,9215,9260,14065,14075,14135,9238,12449,14180,14199,14256,13398,12868,12869,13577,12848,13668,13084,13289,13291,13296,13596,14191,14192,14195,14196,14197,12862,14110,12872,14148,10932,12430,14123,14289,13823,13822,12968,13378,14357,12908,12909,14339,13673,14461,9185,14382,14432,9212,14779,14435,14412,14926,],
     'ratecard_button_color'=>'#53b7b7',
 	'pg_charge'=>2,
@@ -1113,6 +1156,17 @@ return array(
 	'tab_session_pack_vendor_ids'=>[1490,424,1935,9423,9481,9932,9954,10970,11021,11223,12208,13968,14102,15431,15775,15980,16251],
 	"service_icon_base_url" => "http://b.fitn.in/iconsv1/",
 	"service_icon_base_url_extention" => ".png",
-	"checkin_checkout_max_distance_in_meters" => 2000
+	"checkin_checkout_max_distance_in_meters" => 2000,
+
+	"config_campaign_id" => 1,
+    
+	"no_cost_emi"=> [
+        "minimum_amount_emi"=> 6000,
+        "minimum_amount_no_cost_emi"=> 6000,
+        "finder_detail_ratecard_no_cost_text"=>"NO COST EMI AVAILABLE",
+		"duration_months"=> [3, 6],
+		'finder_detail_ratecard_normal_text'=>"EMI AVAILABLE"
+    ]
+
     
 );

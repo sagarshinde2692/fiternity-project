@@ -308,7 +308,6 @@ Route::group(array('before' => 'validatetoken'), function() {
     /******************** AUTHENTICATION ENFORCED FOR SECURITY END HERE ***********************/
 
 	Route::post('customer/campaignseenstatus', array('as' => 'customer.campaignseenstatus','uses' => 'CustomerController@campaignSeenStatus'));
-
 });
 
 Route::post('walletTransactionnew', array('uses' => 'OrderController@debitWalletTransaction'));
@@ -411,6 +410,8 @@ Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopre
 
 Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
 // Route::get("/pushBrandOutlets/{index_name}", "GlobalPushController@pushBrandOutlets");
+Route::get('finderdetailphoto/app/{slug}', array('as' => 'finders.finderdetailAppPhoto','uses' => 'FindersController@finderdetailAppPhoto'));
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -1388,6 +1389,7 @@ Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses'
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
 Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
+Route::any('subventiondataupdate/', array('as' => 'transaction.subventionDataUpdate','uses' => 'TransactionController@subventionDataUpdate'));
 
 Route::get('brandwebsite/home/{brand_id}', 'BrandsController@getBrandWebsiteHome');
 Route::get('brandwebsite/aboutus/{brand_id}', 'BrandsController@getBrandWebsiteAboutUs');
@@ -1420,5 +1422,6 @@ Route::post('tpcancelsession', 'SchedulebooktrialsController@tpcancelsession');
 Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
 Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
+Route::get('createPlusRewards', 'TransactionController@createPlusRewards');
 
-
+// Route::get('getcampaigndata', 'HomeController@getCampaignData');

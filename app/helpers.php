@@ -109,9 +109,9 @@ if(!function_exists('citywise_category')){
                 "swimming",
                 "pilates",
                 "luxury-hotels",
-                "healthy-snacks-and-beverages",
+                // "healthy-snacks-and-beverages",
                 "spinning-and-indoor-cycling",
-                "healthy-tiffins",
+                // "healthy-tiffins",
                 "sport-nutrition-supplement-stores",
                 "aqua-fitness", "_id" => 51
             ];
@@ -131,7 +131,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -154,7 +154,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes", "_id" => 6],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
@@ -175,7 +175,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -196,7 +196,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Marathon Training","slug" => "marathon-training", "_id" => 36],
@@ -218,7 +218,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 ["name" => "Luxury Hotels","slug" => "luxury-hotels", "_id" => 47],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
@@ -401,14 +401,14 @@ if(!function_exists('citywise_category')){
                 ["name" => "Zumba","slug" => "zumba-classes","_id" => 12],
                 ["name" => "Fitness Studios","slug" => "fitness-studios", "_id" => 43],
                 ["name" => "Pilates","slug" => "pilates-classes", "_id" => 11],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins", "_id" => 42],
                 ["name" => "Cross Functional Training","slug" => "functional-training","_id" => 35],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes", "_id" => 8],
                 ["name" => "Dance","slug" => "dance-classes", "_id" => 7],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes", "_id" => 14],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
-                ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
+                // ["name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"],
                 ["name" => "Marathon Training","slug" => "marathon-training", "_id" => 36],
                 ["name" => "Swimming","slug" => "swimming-pools", "_id" => 10],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -2981,7 +2981,7 @@ if (!function_exists(('getReversehash'))){
 }
 
 if (!function_exists(('getHash'))){
-    function getHash($data){
+    function getHash($data,$subvention_amt = null){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
         Log::info("getHash===================");
@@ -2994,6 +2994,11 @@ if (!function_exists(('getHash'))){
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
+
+		if(!empty($subvention_amt)){
+			$key = '5ntOB3';
+        	$salt = 'fAGAt25l';	
+		}
 
         if($env == "production"){
             $key = 'l80gyM';
@@ -3011,15 +3016,19 @@ if (!function_exists(('getHash'))){
         $udf3 = "";
         $udf4 = "";
         $udf5 = "";
-
-        $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        
+        if(!empty($subvention_amt)){
+            $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt.'|'.$subvention_amt;
+        } else {
+            $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        }
         Log::info($payhash_str);
 
         $data['payment_hash'] = hash('sha512', $payhash_str);
-
-        $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-
+        if(!empty($subvention_amt)){
+            $verify_str = $subvention_amt.'|'.$salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        } else {
+            $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        }
         $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
@@ -3245,7 +3254,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false, $type = null, $servicecategory_id=null){
 
-        $inoperational_dates = ['2019-10-27', '2019-10-28'];
+        $inoperational_dates = ['2020-01-01'];
         $partially_inoperational_dates = ['2019-10-26'];
 
         if( in_array($date, $inoperational_dates) ){
@@ -4407,6 +4416,16 @@ if (!function_exists('requestFromWeb')) {
     }
 
 }
+
+if (!function_exists('requestFromWebHeader')) {
+
+    function requestFromWebHeader()
+    {
+       return (empty(Request::header('Device-Type')) || !in_array(Request::header('Device-Type'), ['ios', 'android']));
+    }
+
+}
+
 if (!function_exists('upgradeMembershipCondition')) {
 
     function upgradeMembershipCondition($value, $service)
@@ -4521,6 +4540,10 @@ if (!function_exists('setNewToken')) {
         Log::info(gettype($customer_data));
         Log::info('gettype($customer_data)');
         $pass_data = [];
+
+        deletePassDetailFromToken($customer_data);
+        $update_header = true;
+        
         if(!empty($pass)){
             
             $totalSessions = (!empty($pass['onepass_sessions_total']))?($pass['onepass_sessions_total']-1):null;
@@ -4556,34 +4579,20 @@ if (!function_exists('setNewToken')) {
                     !empty($pass['pass']['premium_booking_price']) ? $pass_data['pass_premium_booking_price'] = $pass['pass']['premium_booking_price'] : null;  
                 }
             }
+
+
+            if(!empty($pass['pass']['lite'])){
+                $pass_data['pass_lite'] = $pass['pass']['lite'];
+            }
+
             $exhausted_vendors = bookingExhaustedOnVendors($customer_data, $pass);
             $pass_data['exhausted_vendors'] = $exhausted_vendors;
 
             $customer_data = array_merge($customer_data, $pass_data);
-            $update_header = true;
-        }else if(empty($pass)){
-            unset($customer_data['pass']);
-            unset($customer_data['pass_id']);
-            unset($customer_data['pass_start_date']);
-            unset($customer_data['pass_expiry_date']);
-            unset($customer_data['pass_type']);
-            unset($customer_data['pass_sessions_total']);
-            unset($customer_data['pass_sessions_used']);
-            unset($customer_data['pass_city_id']);
-            unset($customer_data['pass_city_name']);
-            unset($customer_data['pass_sessions_monthly_total']);
-            unset($customer_data['pass_sessions_monthly_used']);
-            unset($customer_data['pass_order_id']);
-            unset($customer_data['pass_corporate']);
-            unset($customer_data['pass_premium_session_restriction']);
-            unset($customer_data['premium_min_booking_price_restriction']);
-            unset($customer_data['pass_premium_booking_price']);
-            unset($customer_data['exhausted_vendors']);
-            unset($customer_data['pass_premium_session_exhausted']);
-            unset($customer_data['pass_premium_min_booking_price']);
-            unset($customer_data['pass_premium_booking_price']);
+            
             $update_header = true;
         }
+        
         if(!empty($update_header) || $rel_banner_shown){
             $new_token = createCustomerToken(null, $customer_data, $rel_banner_shown);
             $response->headers->set('token', $new_token);
@@ -4807,6 +4816,9 @@ if (!function_exists(('setPassToToken'))){
 
             $exhausted_vendors = bookingExhaustedOnVendors($customer, $passOrder);
             $data['exhausted_vendors'] =  $exhausted_vendors;
+            if(!empty($passOrder['pass']['lite'])){
+                $data['pass_lite'] = $passOrder['pass']['lite'];
+            }
         }
     }
 }
@@ -5025,4 +5037,62 @@ if (!function_exists(('bookingExhaustedOnVendors'))){
         return $exhausted_vendors;
     }
 }
+if(!function_exists(('deletePassDetailFromToken'))){
+    function deletePassDetailFromToken(&$customer_data){
+        unset($customer_data['pass']);
+        unset($customer_data['pass_id']);
+        unset($customer_data['pass_start_date']);
+        unset($customer_data['pass_expiry_date']);
+        unset($customer_data['pass_type']);
+        unset($customer_data['pass_sessions_total']);
+        unset($customer_data['pass_sessions_used']);
+        unset($customer_data['pass_city_id']);
+        unset($customer_data['pass_city_name']);
+        unset($customer_data['pass_sessions_monthly_total']);
+        unset($customer_data['pass_sessions_monthly_used']);
+        unset($customer_data['pass_order_id']);
+        unset($customer_data['pass_corporate']);
+        unset($customer_data['pass_lite']);
+        unset($customer_data['pass_premium_session_restriction']);
+        unset($customer_data['premium_min_booking_price_restriction']);
+        unset($customer_data['pass_premium_booking_price']);
+        unset($customer_data['exhausted_vendors']);
+        unset($customer_data['pass_premium_session_exhausted']);
+        unset($customer_data['pass_premium_min_booking_price']);
+        unset($customer_data['pass_premium_booking_price']);
+    }
+}
+
+if (!function_exists(('getRatecardKey'))){
+    function getRatecardKey($source = null){
+        return $source == 'web' ? 'serviceratecard' : 'ratecard';
+    }
+}
+
+if (!function_exists(('formatInput'))){
+    function formatInput(&$input, $format){
+        
+		$int_keys = $format['int_values'];
+
+		foreach($int_keys as $key){
+			if(!empty($input[$key])){
+				$input[$key] = intval($input[$key]);
+			}
+		}
+
+
+    }
+}
+
+if (!function_exists(('checkDeviceForFeature'))){
+    function checkDeviceForFeature($feature){
+        
+		switch($feature){
+			case 'no-cost-emi':
+				return checkAppVersionFromHeader(['ios'=>'5.4', 'android'=>'5.35']) || requestFromWebHeader();
+		}
+
+    }
+}
+
 ?>

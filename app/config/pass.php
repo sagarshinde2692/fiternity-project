@@ -1,5 +1,6 @@
 <?php
 $apiUrl = \Config::get('app.url');
+$website_url = \Config::get('app.website');
 $success_page_template = Config::get('successPage');
 // $red_pass = 'https://b.fitn.in/global/classpass/mobile/red%20card-website.png';
 // $black_pass = 'https://b.fitn.in/global/classpass/mobile/back%20card%20-%20website.png';
@@ -9,8 +10,10 @@ $black_pass = 'https://b.fitn.in/passes/cards/onepass-black.png';
 return [
     'price_upper_limit' => 1001,
     'sodexo_price_upper_limit' => 751,
+    'onepass_lite_price_upper_limit' => 301,
     'list' => [
         'title'=>'ONEPASS',
+        'onepass_lite_available' => false,
         'passes' => [
             [
                 'header' => 'UNLIMITED USAGE',
@@ -28,8 +31,10 @@ return [
                     ]
                 ],
                 'offerings' => [
-                    'header' => 'UNLIMITED USAGE PASS',
+                    "border_text" => "RECOMMENDED",
+                    'header' => "<b>Limitless access</b> to the entire network including Premium Gyms, Studios and Luxury Swimming Pools",
                     'text' => '(Limited Access)',
+                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [
@@ -42,6 +47,15 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
+                ],
+                'offerings_lite' => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'header' => '<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.',
+                    "onepass_lite" => true,
+                    'button_text' => 'Check Options On OnePass Lite',
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ],
             [
@@ -60,6 +74,7 @@ return [
                     ]
                 ],
                 'offerings' => [
+                    "border_text" => "RECOMMENDED",
                     'header' => 'UNLIMITED VALIDITY PASS',
                     'text' => '(Unlimited Access)',
                     'ratecards' => []
@@ -70,6 +85,14 @@ return [
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscripe'
 
+                ],
+                'offerings_lite' => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'header' => "<b>Pocket Friendly</b> version with limitless access to a selected network of Gym & Studios.",
+                    "onepass_lite" => true,
+                    'text' => '(Limited Access)',
+                    'ratecards' => []
                 ]
             ]
         ],
@@ -96,13 +119,23 @@ return [
                         'Onepass Red gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 1 Month to 1 year."),
+                    'button_text' => 'CHECKOUT GYMS and STUDIOS'
+                ],
                 'offerings' => [
-                    'text' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 15 days to 1 year."),
-                    'button_text' => 'Checkout Gyms/Studios',
+                    "border_text" => "RECOMMENDED",
+                    "image" => "http://b.fitn.in/passes/onepass-app.png",
+                    'text' => (json_decode('"'."\u2713".'"')."<b>Limitless access</b> to 12,000+ Premium Gyms & Studios"),
+                    'text_lite' => "<b>Limitless access</b> to 12,000+ Premium Gyms & Studios",
+                    'text_campaign' => (json_decode('"'."\u2713".'"')." Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\n".json_decode('"'."\u2713".'"')." Use it like a fitness membership - choose a duration of 1 Month to 1 year."),
+                    'text_lite_campaign' => "Limitless workouts across 12,000+ fitness classes, gyms and sports facilities across India.\nUse it like a fitness membership - choose a duration of 1 Month to 1 year.",
+                    "offering_text" => 'Limitless access to the entire network including Premium Gyms, Studios and Luxury Swimming Pools',
+                    'button_text' => 'Check Options On OnePass',
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=unlimited'
@@ -111,7 +144,21 @@ return [
                     'header' => 'Onepass Red city_name',
                     'description' => 'description of red pass',
                     'button_text' => 'buy'
-                ]
+                ],
+                "offerings_lite" => [
+                    "image" => "https://b.fitn.in/onepass/OnePass_lite_tiny.png",
+                    "border_text" => "LITE",
+                    'text' => "<b>Pocket friendly</b> version with access to selected Gyms & Studios",
+                    'button_text' => 'Check Options On OnePass Lite',
+                    "onepass_lite" => true,
+                    'ratecards' => []
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $website_url.'/onepass/tnc/red?mobile_app=true'
+                ],
             ],
             [
                 'header' => 'ONEPASS BLACK',
@@ -135,18 +182,32 @@ return [
                         'Onepass Black gives you the option to workout Anytime, Anywhere'
                     ]
                 ],
+                "about_pass" => [
+                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')."  Replace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity."),
+                    'button_text' => 'CHECKOUT GYMS and STUDIOS',
+                ],
                 'offerings' => [
-                    'text' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 45 sessions with lifetime validity."),
-                    'button_text' => 'Checkout Gyms/Studios',
+                    "image" => "http://b.fitn.in/passes/onepass-app.png",
+                    'text' => (json_decode('"'."\u2713".'"')."Get limitless validity with Onepass black"),
+                    'text_lite' => "Get <b>limitless validity</b> with Onepass black",
+                    'text_camaign' => (json_decode('"'."\u2713".'"')." Get Limitless validity - Your membership will never expire!.\n".json_decode('"'."\u2713".'"')." Replace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity."),
+                    'text_lite_camaign' => "Get Limitless validity - Your membership will never expire!.\nReplace your membership by choosing a pack - ranging from 15 to 100 sessions with lifetime validity.",
+                    "button_text" => "Check Options On OnePass",
                     'ratecards' => []
                 ],
                 'remarks' => [
-                    'header' => "In addition to owning the coolest fitness membership, OnePass users get exclusive rewards, vouchers and more!", // need content
+                    'header' => "", // need content
                     'text' => 'Terms and Conditions',
                     "title" =>'Terms and Conditions',
                     'url' => $apiUrl.'/passtermscondition?type=subscribe'
 
-                ]
+                ],
+                "tnc" => [
+                    "icon" => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
+                    "header" => "Terms and Conditions",
+                    "title" =>  "",
+                    "url" => $website_url.'/onepass/tnc/black?mobile_app=true'
+                ],
             ]
         ],
         'faq' => [
@@ -155,59 +216,81 @@ return [
             'title' => 'FAQ Title',
             'url' => $apiUrl.'/passfaq'
         ],
+        "faq_v_2" => [
+            "icon" =>  "https://b.fitn.in/onepass/FAQ_3x.png",
+            "header" => "Frequently Asked Questions",
+            "title" => "FAQ Title",
+            "url" =>  $apiUrl.'/passfaq'
+        ],
         'subheader' => 'duration_text PASS FOR usage_text'
     ],
     "total_available" => 300,
     "terms"=>[
         "red"=>[
             "<ul>
-                <li>Get Fit Go Sale</li>
-                <li><b>Offer Valid On 12th & 13th December</b></li>
-
-                <li>A. EXTRA 15% off on OnePass Red Memberships, Use Code: ONE15 <br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Avail additional discount of 15% using code: ONE15 on OnePass Red<br>
-                3) The additional discount value is capped up to INR 3,000 <br>
-                4) This offer is not applicable on 15 days OnePass Red<br>
-                5) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>B. Full 100% Cashback on 15 days OnePass Red, No Code Required<br>
-                1) The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 16th Dec 2019<br>
-                2) The FitCash received can be utilized only to upgrade your OnePass<br>
-                3) The validity of your FitCash is 6 months starting from your OnePass expiry date<br>
-                4) The received FitCash can be used to upgrade as follows:<br>
-                        - 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
-                5) The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
-                6) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>C. Get Up to 30% off on OnePass Black Memberships, No Code Required<br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Additional discount varies across different durations of OnePass<br>
-                3) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>D. Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 on OnePass Black 60 and 100 sessions<br>
-                1)The Limited Edition Marvel Universe Fitness Merchandise contains an exclusive Avengers Gym Bag and T-shirt of your favorite Superhero worth INR 3500<br>
-                2) The Merchandise will reach your doorstep by 30th December 2019<br>
-                3) The user is required to head to his Fitternity profile and fill in his delivery address once his OnePass is purchased<br>
-                4) The offer is applicable only on OnePass Red: 6 months, 1 Year <br>
-                5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
-                6) The offer can be clubbed with other discount offers on OnePass
-                </li>
-
-                <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
-                2) Min purchase value should be INR 50<br>
-                3) Offer is applicable on new users only<br>
-                4) Instant cashback will be credited in the users PayPal wallet<br>
-                5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
-                </li>
+                <b>FitMania: No Excuses 2020</b><br />
+                <br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                <br />
+                How does it work?<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
+                <br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
+                How does it work?<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                2)The cashback credited will be 25% of the MRP<br />
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
+                <br />
+                1) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1) 30 days after the start date on your OnePass<br />
+                2) The FitCash received can be utilized only to buy a OnePass<br />
+                3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
+                4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
+                        - 45% on 1 Month OnePass Red and OnePass Lite<br />
+                        - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
+                        - 30% on OnePass Black<br />
+                5) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
+                1) Rates are already discounted upto 50%<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
+                3) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
+                2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
+                3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
+                4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
+                <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
+                E. Exclusive PayPal Cashback Offer (No code required)<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
+                2) Min purchase value should be INR 50<br />
+                3) Offer is applicable on new users only<br />
+                4) Instant cashback will be credited in the users PayPal wallet<br />
+                5) This offer is applicable along with Fitternity's promotional offers<br />
+                6) Instant Cashback received expires within 60 days<br />            
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -219,6 +302,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
@@ -241,53 +326,69 @@ return [
         ],
         "black" =>[
             "<ul>
-                <li>Get Fit Go Sale</li>
-                <li><b>Offer Valid On 12th & 13th December</b></li>
-
-                <li>A. EXTRA 15% off on OnePass Red Memberships, Use Code: ONE15 <br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Avail additional discount of 15% using code: ONE15 on OnePass Red<br>
-                3) The additional discount value is capped up to INR 3,000 <br>
-                4) This offer is not applicable on 15 days OnePass Red<br>
-                5) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>B. Full 100% Cashback on 15 days OnePass Red, No Code Required<br>
-                1) The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 16th Dec 2019<br>
-                2) The FitCash received can be utilized only to upgrade your OnePass<br>
-                3) The validity of your FitCash is 6 months starting from your OnePass expiry date<br>
-                4) The received FitCash can be used to upgrade as follows:<br>
-                        - 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
-                5) The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
-                6) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>C. Get Up to 30% off on OnePass Black Memberships, No Code Required<br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Additional discount varies across different durations of OnePass<br>
-                3) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>D. Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 on OnePass Black 60 and 100 sessions<br>
-                1)The Limited Edition Marvel Universe Fitness Merchandise contains an exclusive Avengers Gym Bag and T-shirt of your favorite Superhero worth INR 3500<br>
-                2) The Merchandise will reach your doorstep by 30th December 2019<br>
-                3) The user is required to head to his Fitternity profile and fill in his delivery address once his OnePass is purchased<br>
-                4) The offer is applicable only on OnePass Red: 6 months, 1 Year <br>
-                5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
-                6) The offer can be clubbed with other discount offers on OnePass
-                </li>
-
-                <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
-                2) Min purchase value should be INR 50<br>
-                3) Offer is applicable on new users only<br>
-                4) Instant cashback will be credited in the users PayPal wallet<br>
-                5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
-                </li>
+                <b>FitMania: No Excuses 2020</b><br />
+                <br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                <br />
+                How does it work?<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
+                <br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
+                How does it work?<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                2)The cashback credited will be 25% of the MRP<br />
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
+                <br />
+                1) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1) 30 days after the start date on your OnePass<br />
+                2) The FitCash received can be utilized only to buy a OnePass<br />
+                3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
+                4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
+                        - 45% on 1 Month OnePass Red and OnePass Lite<br />
+                        - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
+                        - 30% on OnePass Black<br />
+                5) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
+                1) Rates are already discounted upto 50%<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
+                3) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
+                2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
+                3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
+                4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
+                <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
+                E. Exclusive PayPal Cashback Offer (No code required)<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
+                2) Min purchase value should be INR 50<br />
+                3) Offer is applicable on new users only<br />
+                4) Instant cashback will be credited in the users PayPal wallet<br />
+                5) This offer is applicable along with Fitternity's promotional offers<br />
+                6) Instant Cashback received expires within 60 days<br /> 
 
                 <li>OnePass Black is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -296,6 +397,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on attendance of workout sessions.</li>
@@ -320,53 +423,69 @@ return [
         ],
         "default"=>[
             "<ul>
-                <li>Get Fit Go Sale</li>
-                <li><b>Offer Valid On 12th & 13th December</b></li>
-
-                <li>A. EXTRA 15% off on OnePass Red Memberships, Use Code: ONE15 <br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Avail additional discount of 15% using code: ONE15 on OnePass Red<br>
-                3) The additional discount value is capped up to INR 3,000 <br>
-                4) This offer is not applicable on 15 days OnePass Red<br>
-                5) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>B. Full 100% Cashback on 15 days OnePass Red, No Code Required<br>
-                1) The cashback  worth the transaction value will be added to your Fitternity account as FitCash (1 FitCash = INR 1) by 16th Dec 2019<br>
-                2) The FitCash received can be utilized only to upgrade your OnePass<br>
-                3) The validity of your FitCash is 6 months starting from your OnePass expiry date<br>
-                4) The received FitCash can be used to upgrade as follows:<br>
-                        - 45% of the 1 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 20% of the 3 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 15% of the 6 Month OnePass Red purchase price can be paid using the received Fitcash<br>
-                        - 100% of the FitCash received can be used to upgrade to 12 months OnePass Red<br>
-                5) The FitCash received will not be valid on upgrade to 15 Days OnePass Red<br>
-                6) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>C. Get Up to 30% off on OnePass Black Memberships, No Code Required<br>
-                1) The discount of up to 30% off is pre-applied on MRP<br>
-                2) Additional discount varies across different durations of OnePass<br>
-                3) This offer cannot be clubbed with any other existing offer
-                </li>
-
-                <li>D. Limited Edition Marvel Universe Fitness Merchandise worth INR 3500 on OnePass Black 60 and 100 sessions<br>
-                1)The Limited Edition Marvel Universe Fitness Merchandise contains an exclusive Avengers Gym Bag and T-shirt of your favorite Superhero worth INR 3500<br>
-                2) The Merchandise will reach your doorstep by 30th December 2019<br>
-                3) The user is required to head to his Fitternity profile and fill in his delivery address once his OnePass is purchased<br>
-                4) The offer is applicable only on OnePass Red: 6 months, 1 Year <br>
-                5) The offer is applicable only on OnePass Black: 60, 100 sessions<br>
-                6) The offer can be clubbed with other discount offers on OnePass
-                </li>
-
-                <li>E. Exclusive PayPal Cashback Offer (No code required)<br>
-                1) Get 50% instant cashback upto INR 300 on making payment via PayPal<br>
-                2) Min purchase value should be INR 50<br>
-                3) Offer is applicable on new users only<br>
-                4) Instant cashback will be credited in the users PayPal wallet<br>
-                5) This offer is applicable along with Fitternity's promotional offers<br>
-                6) Instant Cashback received expires within 60 days
-                </li>
+                <b>FitMania: No Excuses 2020</b><br />
+                <br />
+                A.Code: FIT2020 Is Applicable As Follows:<br />
+                1.Get FLAT 50% Off On Lowest Price OnePass Red and OnePass Lite<br />
+                <br />
+                How does it work?<br />
+                1) FLAT 50% off is additionally applicable on the already discounted OnePass Red and OnePass Lite<br />
+                2) FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                3) Discount (using code: FIT2020) varies across different duration of OnePass Red and OnePass Lite<br />
+                4) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                Note: The 25% cashback will be credited in users Fitternity account 30 days after your OnePass start date<br />
+                <br />
+                <br />
+                2. Get FLAT 50% off on OnePass Black<br />
+                How does it work?<br />
+                1)FLAT 50% off is divided into FLAT 25% instant discount and 25% cashback <br />
+                2)The cashback credited will be 25% of the MRP<br />
+                3)Discount (using code: FIT2020) varies across different duration of OnePass Black<br />
+                4)This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                B. Redemption Of Cashback received from Fitternity is applicable as follows:<br />
+                <br />
+                1) The cashback will be added to your Fitternity account as FitCash (1 FitCash = INR 1) 30 days after the start date on your OnePass<br />
+                2) The FitCash received can be utilized only to buy a OnePass<br />
+                3) The validity of your FitCash is 30 days starting from your OnePass expiry date<br />
+                4) The maximum discount redemption a user can avail on the application of FitCash (received on purchase of OnePass/ added directly into the users wallet) and/or a discount code is as follows:<br />
+                        - 45% on 1 Month OnePass Red and OnePass Lite<br />
+                        - 30% on 3,6,12 Months OnePass Red and OnePass Lite<br />
+                        - 30% on OnePass Black<br />
+                5) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                <br />
+                C. Get FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships. Use Code - NE2020<br />
+                1) Rates are already discounted upto 50%<br />
+                2) FLAT 30% off from Fitternity is applicable as follows:<br />
+                    a) At select gyms & studios, 30% off is applicable without any cap on the discount value<br />
+                    b) On certain gyms & studios, 30% off discount value is upto INR 5000<br />
+                3) This offer cannot be clubbed with any other existing offer<br />
+                <br />
+                D. On Pay-Per-Session: <br />
+                Get 100% Instant Cashback On Booking Workout Sessions, Use Code: CASH<br />
+                1) Code: CASH gives the user instant cashback of upto INR 250<br />
+                2) The cashback will be added in the form of FitCash in your Fitternity Wallet (1 Fitcash = INR 1)<br />
+                3) The FitCash can be utilized on any Pay-Per-Session transaction on Fitternity App, without any restriction on the spend value<br />
+                4) If the booking is done for more than 1 person, cashback will be credited for transaction value of 1 person only.<br />
+                <br />
+                Get FLAT 20% Off On Booking Workout Sessions, Use Code: OFF20<br />
+                How does it work?<br />
+                1) Code: OFF20 gives the user an instant discount of upto INR 100<br />
+                2) This offer cannot be clubbed with any other offer<br />
+                3) If the booking is done for more than 1 person, discount will be applied transaction value of 1 person only<br />
+                <br />
+                <br />
+                <br />
+                E. Exclusive PayPal Cashback Offer (No code required)<br />
+                1) Get 50% instant cashback upto INR 500 on making payment via PayPal<br />
+                2) Min purchase value should be INR 50<br />
+                3) Offer is applicable on new users only<br />
+                4) Instant cashback will be credited in the users PayPal wallet<br />
+                5) This offer is applicable along with Fitternity's promotional offers<br />
+                6) Instant Cashback received expires within 60 days<br />
 
                 <li>Onepass Red is your personal health and fitness pass, it cannot be used by your friends or family members.</li>
                 <li>All OnePass bookings can only be done through the Fitternity App.</li>
@@ -380,6 +499,8 @@ return [
                 <br/> - F45 Training in Juhu - 5 sessions per month, per customer for bookings taking place from 10th November 2019.
                 <br/> - The Lalit in Andheri East Mumbai - 8 Sessions per month including both Swimming and Gym Workout.
                 <br/> - Talwalker FLC, Juhu Versova - 10 Sessions per month, per customer for bookings taking place from 21st November 2019.
+                <br/> - Multifit Wellness Centers, PAN India - Booking per center is restricted to 12 sessions per month per center(Only applicable for Onepass users who have bought OnePass after 7th December).
+                <br/> - DNA 360 in Powai - 8 Sessions per month per customer.
                 </li>
                 <li>Fitternity reserves the right to revise, update and amend the list of Gyms and Fitness Classes available for Onepass booking.</li>
                 <li>No cashback streaks would be applicable for OnePass users on the attendance of workout sessions.</li>
@@ -717,7 +838,15 @@ return [
             "header2_color" => "#000000",
             "subheader" => "UNLIMITED VALIDITY",
             "desc_subheader" => "Limited Workouts"
-        ]
+        ],
+        "lite" => [
+            "image" => "https://b.fitn.in/passes/app-home/onepass-icon-new.png",
+            "header1" => "ONEPASS",
+            "header1_color" => "#000000",
+            "header2" => "Lite",
+            "header2_color" => "#259BA1",
+            "subheader" => ''
+        ],
             
     ],
 
@@ -888,11 +1017,13 @@ return [
     
     "before_purchase_tab" => [
         "headerview" =>[
-            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png", //"https://b.fitn.in/onepass/onepss_background_logo.png",
-            "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "header_img" =>  "https://b.fitn.in/passes/onepass-app.png",
+            // "background_image" => "http://b.fitn.in.s3.amazonaws.com/onepass/Confetti_3x.png",
+            "background_image" => "https://b.fitn.in/onepass/onepass_background.png",
             "header_text" => "FOR EVERYTHING HEALTH AND FITNESS",
             "header_sub_text"  => "Enjoy limitless access across Fitternity's network of 12,000+ fitness studios, gyms and swimming pools across India",
         ],
+        "passes_header" => "Choose what's best for you",
         "passes" => [
             [
                 "image" => "https://b.fitn.in/passes/app-home/op_red_thumb.png",//"https://b.fitn.in/onepass/OnePass_Red_3x.png",
@@ -944,11 +1075,32 @@ return [
 
         "offers" => [
             "icon" => "https://b.fitn.in/onepass/discount_3x.png",
-            "header" => "Exciting OnePass Offers",
+            "header" => "OFFERS YOU CAN`T REFUSE",
             "logo" => "https://b.fitn.in/onepass/OnePass_offer_Logo_3x.png",
             "text" => "Extra 20% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500",
         ],
 
+        "offers_v2" => [
+            "header" => "Offer you can't refuse",
+            "offer" => [
+                [
+                    "icon" => "https://b.fitn.in/onepass/Offers_3x.png",
+                    "text" => "",
+                    "header" => "Offers For You",
+                    "button_text" => "VIEW ALL OFFERS",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/EMI_3x.png",
+                    "text" => "Buy your Onepass as per your convenience with the Interest-Free EMI payment option.",
+                ],
+                [
+                    "icon" => "https://b.fitn.in/onepass/Refund_3x.png",
+                    "text" => "Not liking your Onepass? Get your Money back with Easy Refund Policy.",
+                ]
+            ]
+        ],
+        "checkout_button_text" => "CHECKOUT ALL GYMS AND STUDIOS",
+        
         'faq' => [
             "icon" => "https://b.fitn.in/onepass/FAQ_3x.png",
             'header' => 'Frequently Asked Questions',
@@ -960,14 +1112,16 @@ return [
             'icon' => "https://b.fitn.in/onepass/Terms_And_Conditions_3x.png",
             'header' => 'Terms and Conditions',
             'title' => '',
-            'url' => $apiUrl.'/passtermscondition'
+            'url' => $apiUrl.'/passtermscondition',
+            "url_lite" => $website_url.'/onepass/tnc/red?mobile_app=true'
         ],
 
         'footer' => [
             'contact_text' => 'Need Help? Contact your Personal Concierge',
             'contact_image' => 'https://b.fitn.in/passes/app-home/contact-us.png',
             'contact_no' => \Config::get('app.contact_us_customer_number_onepass')
-        ]
+        ],
+
     ],
 
     "after_purchase_tab" => [

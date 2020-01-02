@@ -18,6 +18,7 @@ class PassController extends \BaseController {
         $jwt_token = Request::header('Authorization');
         $device = Request::header('Device-Type');
         $version = Request::header('App-Version');
+        $token = Request::header('token'); // added for sbig
         $customer_id = null;
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
@@ -28,7 +29,10 @@ class PassController extends \BaseController {
         $category = null;
         $city = null;
         $source = null;
-
+        $email = null;
+        $corporateSource = null;
+        $include_onepass_lite_web= null;
+        
         if(!empty($input['category'])){
             $category = $input['category'];
         }
@@ -41,11 +45,37 @@ class PassController extends \BaseController {
             $source = $input['source'];
         }
         
+        if(!empty($input['corporate_source'])) {
+            $corporateSource = $input['corporate_source'];
+        }
+        
         if(empty($input['city']) || !empty($source)) {
             $city = 'mumbai';
         }
+        
+        if(!empty($input['email'])) {
+            $email = $input['email'];
+        }
 
-        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source);
+        if($source=='sbig') {
+            $corporateToken = array_values(array_filter(Config::get('app.corporate_mapping'), function($corpMap) use ($source) {
+                return ($corpMap['acronym']==$source);
+            }))[0]['key'];
+            if($corporateToken!=$token) {
+                return [
+                    "status" => 400,
+                    "data" => "token mismatch",
+                    "msg" => "failed"
+                ];
+            }
+        }
+
+        
+        if(!empty($input['include_onepass_lite_web'])) {
+            $include_onepass_lite_web = true;
+        }
+        $passes = $this->passService->listPasses($customer_id, $pass_type, $device, $version, $category, $city, $source, $email, $corporateSource, $include_onepass_lite_web);
+        
         if(empty($passes)) {
             return [
                 "status" => 400,
@@ -64,7 +94,12 @@ class PassController extends \BaseController {
 
     public function passCapture(){
 
-        $data = Input::json()->all();
+        
+		$data = Input::json()->all();
+
+		if(empty($data)){
+			$data = Input::all();
+		}
 
         $rules = [
             'pass_id'=>'required | integer',
@@ -193,6 +228,7 @@ class PassController extends \BaseController {
         // }
         $city =  !empty($input['city'])? $input['city'] : 'mumbai' ;
         $selected_region =  !empty($input['selected_region'])? $input['selected_region'] : null;
+        $isRenew = !empty($input['is_renew']) ? true: false;
 
         $coordinate = [
             'lat' => !empty($input['lat']) ? $input['lat']: "",
@@ -226,7 +262,7 @@ class PassController extends \BaseController {
 			}
 		}
 		
-		if($passPurchased && !empty($passOrder['pass']['pass_type'])) {
+		if(empty($isRenew) && $passPurchased && !empty($passOrder['pass']['pass_type'])) {
 			$result['onepass_post'] = $this->passService->passTabPostPassPurchaseData($passOrder['customer_id'], $city, false, $coordinate, $customer);
 		}else {
             $vendor_search = $coordinate;
@@ -234,22 +270,53 @@ class PassController extends \BaseController {
             $vendor_search['selected_region'] = $selected_region;
             $vendor_search['onepass_available'] = true;
             $result['onepass_pre'] = Config::get('pass.before_purchase_tab');
-            //$pps_near_by = $this->passService->workoutSessionNearMe($city, $coordinate);
+            if(!empty(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=> "5.33"]))){
+                $result['onepass_pre']['tnc']['url'] = strtr($result['onepass_pre']['tnc']['url_lite'], ['city_name'=>strtolower($city)]);
+            }
+            unset($result['onepass_pre']['tnc']['url_lite']);
+
             $vendor_near_by = $this->utilities->getVendorNearMe($vendor_search);
-            Log::info('near by vendors');
+
             if(!empty(count($vendor_near_by['data']))){
                 $result['onepass_pre']['near_by']['subheader'] = $vendor_near_by['header'];
                 $result['onepass_pre']['near_by']['near_by_vendor'] = $vendor_near_by['data'];
             }
+
+            $agrs1 = array('city' => $city);
+            $brandingData = $this->utilities->getPassBranding($agrs1);
+
+            if(empty(checkAppVersionFromHeader(['ios'=>'5.3', 'android'=> "5.34"]))) {
+                unset($result['onepass_pre']['passes_header']);
+                unset($result['onepass_pre']['checkout_button_text']);
+
+                if(!empty($result['onepass_pre']['offers'])){
+                    if(!empty($brandingData['footer_text'])){
+                        $result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
+                    }
+                }
+            }
+            else {
+                $coupons = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
+
+                if(!empty($brandingData['footer_text'])){
+                    $result['onepass_pre']['offers_v2']['offer'][0]['text'] = $brandingData['footer_text'];
+                }
+
+                $result['onepass_pre']['offers'] =$result['onepass_pre']['offers_v2'];
+
+                if(!empty($coupons['options'])) {
+                    $result['onepass_pre']['offers']['offer'][0]['options'] = $coupons['options'];
+                }
+                else {
+                    unset($result['onepass_pre']['offers']['offer'][0]);
+                    $result['onepass_pre']['offers']['offer'] = array_values($result['onepass_pre']['offers']['offer']);
+                }
+            }
+
+            unset($result['onepass_pre']['offers_v2']);
 		}
 
-        if(!empty($result['onepass_pre']['offers'])){
-            $agrs1 = array('city' => $city);
-			$brandingData = $this->utilities->getPassBranding($agrs1);
-			if(!empty($brandingData['footer_text'])){
-				$result['onepass_pre']['offers']['text'] = $brandingData['footer_text'];
-			}
-        }
+        
 
 		$response = Response::make($result);
 		return $response;

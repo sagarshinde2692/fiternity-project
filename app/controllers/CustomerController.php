@@ -3684,6 +3684,7 @@ class CustomerController extends \BaseController {
                         Log::info("Asdasdasdsss=======");
                         $trials = Booktrial
                             ::where('customer_email', '=', $customeremail)
+                            ->where('third_party_details','exists',false)
                             ->where('going_status_txt','!=','cancel')
                             ->where('post_trial_status', '!=', 'no show')
                             ->where('booktrial_type','auto')
@@ -3726,12 +3727,12 @@ class CustomerController extends \BaseController {
                     }else if($this->app_version > '4.4.3'){
                         
                         Log::info("4.4.3");
-                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category', 'finder_flags', 'servicecategory_id')->get();
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('third_party_details','exists',false)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id','amount','studio_extended_validity_order_id','studio_block_shown','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category', 'finder_flags', 'servicecategory_id')->get();
     
     
                     }else{
                         
-                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category', 'finder_flags', 'servicecategory_id')->get();
+                        $trials = Booktrial::where('customer_email', '=', $customeremail)->where('third_party_details','exists',false)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id','amount','third_party_details','finder_location', 'post_trial_status_updated_by_unlocksession', 'post_trial_initail_status', 'service_category', 'finder_flags', 'servicecategory_id')->get();
                     }
                 }
 				
@@ -4325,7 +4326,7 @@ class CustomerController extends \BaseController {
 			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-			'footer' => "Get 100% Instant Cashback on Workout Sessions",
+			'footer' => "50% Instant Cashback on Workout Sessions OR FLAT 20% Off",
 			'button_text' => 'EXPLORE'
 		];
 
@@ -4383,10 +4384,10 @@ class CustomerController extends \BaseController {
 		}
         $result['load_trending_vendors'] = false;
 
-		if(!empty($customer) && checkAppVersionFromHeader(['ios'=>'5.2.9', 'android'=>5.33])){
+		if(!empty($customer) && checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
 			$this->utilities->campaignNotification($customer, $city_id, $result);
 		}
-
+		
 		if(!empty($result['city_id']) && $result['city_id']==10000) {
 			unset($result['banner']);
 			unset($result['upcoming']);
@@ -4429,9 +4430,13 @@ class CustomerController extends \BaseController {
                 "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
                 "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
                 "subheader"=>"Book sessions and only pay for days you workout",
-                "footer"=>"Get 100% Instant Cashback on Workout Sessions"
+                "footer"=>"50% Instant Cashback on Workout Sessions OR FLAT 20% Off"
             ];
         }
+		
+		// $camp_arg_data = array('source' => 'app', 'sub_source' => 'homepage');
+		// $campBranding = $this->utilities->getCampaignBranding($camp_arg_data);
+		// $result['fitex']['footer'] = !empty($campBranding['pps_text']) ? $campBranding['pps_text'] : "";
 		
 		if(!empty($result['onepass_pre'])){
 			$agrs1 = array('city' => $city);
@@ -4741,9 +4746,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 5.31;
-		$current_version_ios = '5.2.7';
+		$current_version_ios = '5.3';
 
-		$last_stable_version_android = 5.31;
+		$last_stable_version_android = 5.34;
 
 		Log::info('forceupdate::: ', [$data["app_version"]]);
 		if($data["device_type"] == "android"){
@@ -5158,6 +5163,10 @@ class CustomerController extends \BaseController {
 					$walletData['flags'] = $fitcashcode['flags'];
 				}
 
+				if(!empty($fitcashcode['order_type'])){
+					$walletData['order_type'] = $fitcashcode['order_type'];
+				}
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
@@ -5319,163 +5328,25 @@ class CustomerController extends \BaseController {
 	}
 
 	public function displayEmi(){
-		$bankNames=array();
-		$bankList= array();
-	 	$emiStruct = Config::get('app.emi_struct');
+
 		$data = Input::json()->all();
-		$response = array(
-			"bankList"=>array(),
-			"emiData"=>array(),
-			"higerMinVal" => array()
-			);
-		$bankData = array();
-		foreach ($emiStruct as $emi) {
-			if(isset($data['bankName']) && !isset($data['amount'])){
-				if($emi['bankName'] == $data['bankName']){
-					if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-					// Log::info("inside1");
-					$emiData = array();
-						$emiData['total_amount'] =  "";
-						$emiData['emi'] ="";
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-					array_push($response['emiData'], $emiData);
-					
-					if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-						}else{
-							$bankData[$emi['bankName']] = [$emiData];
-						}
+		
+		$rules = [
+			'amount' => 'required'
+		];
 
-					
-				}
-			
-			}elseif(isset($data['bankName'])&&isset($data['amount'])){
-					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						// Log::info("inside2");
-						$emiData = array();
-						if(!in_array($emi['bankName'], $bankList)){
-							array_push($bankList, $emi['bankName']);
-						}
-                        $interest = $emi['rate']/1200.00;
-                        $t = pow(1+$interest, $emi['bankTitle']);
-                        $x = $data['amount'] * $interest * $t;
-                        $y = $t - 1;
-                        $emiData['emi'] = round($x / $y,0);
-                        $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
-                        $emiData['emi'] = (string)$emiData['emi'];
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['emiData'], $emiData);
-						
-						if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-						}else{
-							$bankData[$emi['bankName']] = [$emiData];
-						}
+		formatInput($data, ['int_values' => ['finder_id', 'amount', 'order_id']]);
 
-					}elseif($emi['bankName'] == $data['bankName']){
-						$emiData = array();
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['higerMinVal'], $emiData);
-						break;
-					}
-			}elseif(isset($data['amount']) && !(isset($data['bankName']))){
-				if($data['amount']>=$emi['minval']){
-					if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-					// Log::info("inside3");
-					$emiData = array();
-                    $interest = $emi['rate']/1200.00;
-                    $t = pow(1+$interest, $emi['bankTitle']);
-                    $x = $data['amount'] * $interest * $t;
-                    $y = $t - 1;
-                    $emiData['emi'] = round($x / $y,0);
-                    $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
-                    $emiData['emi'] = (string)$emiData['emi'];
-					$emiData['months'] = (string)$emi['bankTitle'];
-					$emiData['bankName'] = $emi['bankName'];
-                    $emiData['bankCode'] = $emi['bankCode'];
-					$emiData['rate'] = (string)$emi['rate'];
-					$emiData['minval'] = (string)$emi['minval'];
-					array_push($response['emiData'], $emiData);
-					
-					if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-					}else{
-						$bankData[$emi['bankName']] = [$emiData];
-					}
+		$validator = Validator::make($data,$rules);
 
-				}else{
-					$key = array_search($emi['bankName'], $bankNames);
-					if(!is_int($key)){
-						array_push($bankNames, $emi['bankName']);
-						$emiData = array();
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response['higerMinVal'], $emiData);
-					}
-				}
-			}else{
-				if(!in_array($emi['bankName'], $bankList)){
-						array_push($bankList, $emi['bankName']);
-					}
-				// Log::info("inside4");
-				$emiData = array();
-						$emiData['total_amount'] =  "";
-						$emiData['emi'] ="";
-						$emiData['months'] = (string)$emi['bankTitle'];
-						$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
-						$emiData['rate'] = (string)(string)$emi['rate'];
-						$emiData['minval'] = (string)$emi['minval'];
-				array_push($response['emiData'], $emiData);
-				
-				if(isset($bankData[$emi['bankName']])){
-							array_push($bankData[$emi['bankName']], $emiData);
-				}else{
-					$bankData[$emi['bankName']] = [$emiData];
-				}
+		if($validator->fails()) {
 
-			}
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),400);
 		}
-		/*$device_type = Request::header('Device-Type');
-		$app_version = Request::header('App-Version');
-		Log::info($device_type);
-		Log::info($app_version);
-		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
-			$response = [];*/
-			foreach($bankData as $key => $value){
 
-				//echo"<pre>";print_r($value);exit;
+		return $this->utilities->getEMIData($data);
 
-				foreach ($value as $key_emiData => &$value_emiData) {
-
-					$message = "Rs. ".$value_emiData['emi']." will be charged on your credit card every month for the next ".$value_emiData['months']." months";
-
-					$value_emiData['message'] = $message;
-				}
-
-				$response['bankData'][] = [
-					'bankName' => $key,
-					'emiData' => $value,
-				];
-			}
-		// }
-		$response['bankList'] = $bankList;
-	    return $response;
+		
 	}
 
 
@@ -9811,8 +9682,16 @@ class CustomerController extends \BaseController {
             if(!empty($voucher_categories_map[$milestone['milestone']])){
                 
                 $claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['voucher']) ? $customer_milestones[$milestone['milestone']-1]['voucher'] : [];
-				$manual_claimed_vouchers =  !empty($customer_milestones[$milestone['milestone']-1]['claim_voucher']) ? $customer_milestones[$milestone['milestone']-1]['claim_voucher'] : [];
+				$manual_claimed_vouchers_arr =  !empty($customer_milestones[$milestone['milestone']-1]['claim_voucher']) ? $customer_milestones[$milestone['milestone']-1]['claim_voucher'] : [];
+				if(!empty($manual_claimed_vouchers_arr)){
+					foreach($manual_claimed_vouchers_arr as $manual_claimed_voucher){
+						if(empty($manual_claimed_voucher['manually_claimed'])){
+							array_push($manual_claimed_vouchers, $manual_claimed_voucher);
+						}	
+					}
+				}
 				
+
 				$claimed_vouchers = array_merge($claimed_vouchers, $manual_claimed_vouchers);
 
                 $claimed_voucher_categories = [];

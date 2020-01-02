@@ -851,6 +851,7 @@ class MigrationReverseController extends \BaseController {
             $this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$entity->slug);
             $this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$entity->slug);
             $this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$entity->slug);
             $this->cacheapi->flushTagKey('finder_detail',($entity->slug).'-thirdp');
 
             Log::info("after flush");

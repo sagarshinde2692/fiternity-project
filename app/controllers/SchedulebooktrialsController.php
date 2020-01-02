@@ -2188,6 +2188,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['pass_booking'] = $order['pass_booking'];
             }
 
+            if(!empty($order['pass_booking_lite'])) {
+                $booktrialdata['pass_booking_lite'] = $order['pass_booking_lite'];
+            }
+
             if(!empty($order['pass_credits'])) {
                 $booktrialdata['pass_credits'] = $order['pass_credits'];
             }
@@ -2848,7 +2852,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                         Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
                         if(empty($alreadyWorkoutTaken)){
-                            $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                            // $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
+                            $onepassHoldCustomer = Order::active()->where("booktrial_id","=",(int)$booktrialdata['_id'])->where('pass_order_id', 'exists', true)->first();
 					        if(!(!empty($onepassHoldCustomer) && $onepassHoldCustomer)){
                                 $send_communication["customer_email_instant_workoutlevelstart"] = $this->customermailer->workoutSessionInstantWorkoutLevelStart($booktrialdata);
                             }
