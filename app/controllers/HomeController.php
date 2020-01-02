@@ -1222,7 +1222,7 @@ class HomeController extends BaseController {
                 
                 if(!empty($item['qrcodepayment'])){
                     unset($response['subline']);
-                    if(!empty($checkin_response)){
+                    if(!empty($checkin_response['header']) && !empty($checkin_response['sub_header_2'])){
                         $response['header'] .= "\n ".$checkin_response['header'];
                         $response['subline'] ='<p>'.$checkin_response['sub_header_2'].'</p>';
                     } 
