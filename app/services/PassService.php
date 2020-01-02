@@ -535,7 +535,7 @@ class PassService {
                 }
             }
             else if(!empty($order) && empty($data['coupon_code'])){
-                $keys = ['coupon_discount_percent', 'coupon_discount_amount', 'coupon_description', 'coupon_code'];
+                $keys = ['coupon_discount_percent', 'coupon_discount_amount', 'coupon_description', 'coupon_code','coupon_flags'];
                 $order->unset($keys);
             }
 
