@@ -108,7 +108,7 @@ class PlusService {
             }
 
             if(!empty($voucher_not_claimed)){
-                \Order::where('_id',$data['_id'])->update(['plus.voucher_not_sent', $voucher_not_claimed]);
+                \Order::where('_id',$data['_id'])->update(['plus.voucher_not_sent'=> $voucher_not_claimed]);
             }
         }
 
@@ -118,7 +118,7 @@ class PlusService {
                 $send_arg = array('customer' => $customer, 'order_data' => $data, 'claimed_rewards' => $claimed_rewards_arr);
                 $communication = $this->sendPlusCommunication($send_arg);
                 // return $communication;
-                \Order::where('_id',$data['_id'])->update(['communication', $communication]);
+                \Order::where('_id',$data['_id'])->update(['communication'=> $communication]);
             }catch (Exception $e) {
                 Log::info('Error : '.$e->getMessage());
             }
