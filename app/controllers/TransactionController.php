@@ -6333,9 +6333,9 @@ class TransactionController extends \BaseController {
 
             if(!empty($data['brand_id']) && $data['brand_id']== 88){
                 if($data['ratecard_amount'] >= 8000){
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15",'position'=>$position++];
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 }else{
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"Extra 15% Off On Lowest Prices | Use Code: FITME15",'position'=>$position++];
+                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
                 }
             }
             

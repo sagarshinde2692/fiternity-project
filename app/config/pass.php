@@ -1048,7 +1048,7 @@ return [
         ],
 
         'why_pass' => [
-            'header' => 'How it Works',//'Why Go For OnePass?',
+            'header' => 'How it works',//'Why Go For OnePass?',
             'data' => [
                 [
                     'header' => 'Select a Fitness Center & Slot',

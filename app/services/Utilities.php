@@ -11208,7 +11208,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer expires on 7th Jan";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11258,7 +11258,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer expires on 7th Jan";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11310,7 +11310,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Expires Soon";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership";
+                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer expires on 7th Jan";
                 return $return_arr;
                 break;
             default: return $return_arr;
@@ -11447,8 +11447,8 @@ Class Utilities {
 				$emi['original_interest'] = $emi['interest'];
 				$emi['interest'] = 0;
 				$emi['rate'] = 0;
-				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
 				$emi['total_amount'] = $data['amount'];
+				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
 				$emi['is_interest_free'] = true;
 				$no_cost_emi_available = true;
 			}
