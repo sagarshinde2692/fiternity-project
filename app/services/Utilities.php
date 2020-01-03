@@ -11447,8 +11447,8 @@ Class Utilities {
 				$emi['original_interest'] = $emi['interest'];
 				$emi['interest'] = 0;
 				$emi['rate'] = 0;
-				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
 				$emi['total_amount'] = $data['amount'];
+				$emi['emi'] = round($emi['total_amount']/$emi['bankTitle'], 0);
 				$emi['is_interest_free'] = true;
 				$no_cost_emi_available = true;
 			}
