@@ -4050,10 +4050,18 @@ class HomeController extends BaseController {
         $data = Input::json()->all();
         $device_type = $data['device_type'];
         $to = $data['to'];
+        if(empty($data["image-url"])) {
+            $data["image-url"] = null;
+        }
+        if(empty($data["media-url"])) {
+            $data["media-url"] = null;
+        }
         if($device_type == "android"){
+            // "media-url" => $data["image"], "image-url" => $data["icon"], 
             $notification_object = array("media-url" => $data["image"], "image-url" => $data["icon"], "notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']),"label"=>$data['label']);
         }else{
-            $notification_object = array("media-url" => $data["image"], "aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"],), "sound" => "default", "badge" => 1, "label"=>$data['label']), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
+            // "media-url" => $data["image"], 
+            $notification_object = array("media-url" => $data["image"], "category" => "rich-apns", "aps"=>array("alert"=> array("body" => $data["body"], "title" => $data["title"]), "sound" => "default", "badge" => 1, "label"=>$data['label'], "mutable-content" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"],"label"=>$data['label']));
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         if(!empty($data['campaign'])) {
