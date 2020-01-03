@@ -2200,6 +2200,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['pass_type'] = $order['pass_type'];
             }
 
+            if(!empty($order['pass_premium_session'])) {
+                $booktrialdata['pass_premium_session'] = $order['pass_premium_session'];
+            }
             $customer = Customer::where('_id', $customer_id)->first();
             
             if(!empty($customer['corporate_id'])) {

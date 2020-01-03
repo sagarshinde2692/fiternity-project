@@ -768,6 +768,7 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
+			$premiun_session_message = !empty($allowSession['premiun_session_message']) ? $allowSession['premiun_session_message'] : null;
 		}
 
         foreach ($items as $k => $item) {
@@ -849,6 +850,11 @@ class ServiceController extends \BaseController {
 				]
 			);
 
+
+			if(!empty($premiun_session_message)){
+				$service['premiun_session_message'] = $premiun_session_message;
+			}
+			
 			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && (($finder['brand_id'] == 66 && $finder['city_id'] == 3) || $finder['brand_id'] == 88)){
 
 				$service['cost'] = 'Free';
@@ -966,11 +972,14 @@ class ServiceController extends \BaseController {
 							)
 						){
 						// if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($rsh['price_only'] < Config::get('pass.price_upper_limit') || $nrsh['price_only'] < Config::get('pass.price_upper_limit'))){
+							
+
 							if($rsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
 								$rsh['price'] = Config::get('app.onepass_free_string');
 							}
 							
-							if($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder)){
+
+							if(($nrsh['price_only'] < $allowSession['max_amount'] || $this->utilities->forcedOnOnepass($finder))){
 								$nrsh['price'] = Config::get('app.onepass_free_string');
 							}
 
@@ -2252,6 +2261,8 @@ class ServiceController extends \BaseController {
 			// else {
 			// 	$allowSession = false;
 			// }
+			!empty($allowSession['premiun_session_message']) ? $service_details['premiun_session_message'] =$allowSession['premiun_session_message'] : null;
+			
 		}
 		
 		if(

@@ -545,6 +545,7 @@ class PassService {
             $data['preferred_starting_date'] = (!empty($data['preferred_starting_date']))?date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date'])):null;
             $data['code'] = (string) random_numbers(5);
             $this->addMonthlyBookingCounter($data);
+            $this->addVendorRestriction($data);
             if(empty($order_exists)){
                 $order = new Order($data);
                 $order['_id'] = $data['_id'];
@@ -1052,9 +1053,44 @@ class PassService {
             }
             else {
                 // below 1001
-                
-            return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType, 'pass_branding' => $pass_branding, 'max_amount' => $upper_amount, 'onepass_lite' => $onepass_lite];
-                //return [ 'allow_session' => true, 'order_id' => $passOrder['_id'], 'pass_type'=>$passType ];
+                $pass_premium_session = false;
+                empty($finderId) ? $finderId = null : '';
+                empty($finder) ? $finder = null : '';
+
+                $booking_restrictions = $this->checkForVendorRestrictionPassBooking($customer, $passOrder, $finderId, $finder);
+
+                $status = $booking_restrictions['status'];
+                $premiun_session_message = null;
+                if(!empty($booking_restrictions['data']['msg'])){
+                    $premiun_session_message = $booking_restrictions['data'];
+                }
+
+                if(!empty($status)){
+                    $premiumSessionCheck = $this->isPremiumSessionAvailableV2($customer['_id'], $passOrder, $amount, $finder);
+                    $status = $premiumSessionCheck['status'];
+
+                    if(!empty($premiumSessionCheck['pass_premium_session'])){
+                        $pass_premium_session = true;
+                    }
+
+                }
+
+                if(!empty($premiumSessionCheck['data']['msg'])){
+                    $premiun_session_message = $premiumSessionCheck['data'];
+                }
+
+                return [ 
+                    'allow_session' => $status, 
+                    'order_id' => $passOrder['_id'], 
+                    'pass_type'=>$passType, 
+                    'pass_branding' => $pass_branding, 
+                    'max_amount' => $upper_amount,
+                    'pass_order' => $passOrder,
+                    'premiun_session_message' => $premiun_session_message,
+                    'pass_premium_session' => $pass_premium_session,
+                    'onepass_lite' => $onepass_lite
+                ];
+
             }
         }
         
@@ -2145,7 +2181,7 @@ class PassService {
         if(!empty($customerData)){
             $customerData = Customer::where('_id', $customerId)->first();
         }
-        
+
         $profile = array();
         if(!empty($customerData)){
 
@@ -2723,6 +2759,225 @@ class PassService {
         }
 
         return $data;
+    }
+
+    public function checkForVendorRestrictionPassBooking($customer, $passOrder, $finder_id, $finder){
+        $status = true;
+        $messages = Config::get('pass.booking_restriction');
+        $msg = '';
+        $response = [
+            'status'=> $status, 
+            'data' => [
+                'msg' => $msg,
+                'background_color' => $messages['service_page']['background_color']
+            ]
+        ];
+        if(empty($passOrder['pass']['vendor_restriction']) && (empty($passOrder['pass']['max_booking_count']) || $passOrder['pass']['max_booking_count']==31)){
+            return $response;
+        }
+
+        $max_booking_count = !empty($passOrder['pass']['max_booking_count']) ? $passOrder['pass']['max_booking_count']: 31;
+        $finder_found = false;
+
+        if(!empty($finder_id) && !empty($passOrder['pass']['vendor_restriction'])){
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+                $finder_found = in_array($finder_id, $value['ids']);
+                if(!empty($finder_found)){
+                    $max_booking_count = $value['count'];
+                    break;
+                }
+            }
+        }
+
+        if(empty($finder_found) && $max_booking_count == 31){
+            $response['data']['msg'] = '';
+            return $response;
+        }
+        
+        $bookings = bookingsSumOnVendor($customer, $passOrder);
+
+        $message_temp = $messages['service_page']['success'];
+        if(!empty($finder_found)){
+            $message_temp = $messages['finder_page']['success'];
+        }
+
+        $response['data']['msg'] = strtr($message_temp, [ 'left_session'=> $max_booking_count, 'total_available'=> $max_booking_count]);
+
+        if(empty($bookings['result'])){
+            
+            if($max_booking_count == 31){
+                $response['data']['msg'] = '';
+            }
+
+            return $response;
+        }
+
+        $findersList = [];
+        $findersIndexWithBookings = [];
+
+        //add max booking count of generic
+        
+        foreach($bookings['result'] as $key=>$value){
+            array_push($findersList, $value['_id']);
+            $findersIndexWithBookings[$value['_id']] = $value['count'];
+
+        }
+
+        if(!empty($findersIndexWithBookings[$finder_id])){
+
+            if($max_booking_count <= $findersIndexWithBookings[$finder_id]){
+                $response['data']['msg'] = strtr($messages['service_page']['failed'], ['total_available'=> $max_booking_count]);
+                $status = false;
+            }
+            else{
+                $response['data']['msg'] = strtr($messages['service_page']['success'], [ 'left_session'=> $max_booking_count - $findersIndexWithBookings[$finder_id], 'total_available'=> $max_booking_count]);
+            }
+        }
+
+        if(!empty($status) && !empty($passOrder['pass']['vendor_restriction'])){
+            $msg = '';
+            $today = strtotime('now');
+            foreach($passOrder['pass']['vendor_restriction'] as $key=>$value){
+
+                $matched_finders = array_intersect($findersList, $value['ids']);
+                $total_bookings_count = 0;
+                
+                if(!empty($value['count_type']) && $value['count_type'] =='all' && !empty($matched_finders) && in_array($finder_id, $matched_finders)){
+    
+                    $total_bookings_count += array_map(function($matched_finder) use($findersIndexWithBookings){
+                        return $findersIndexWithBookings[$matched_finder];
+                    }, $matched_finders)[0];
+    
+                    $status = $value['count'] > $total_bookings_count  ?  true : false;
+                }
+    
+                if(!empty($value['count_type']) && $value['count_type'] =='each' && !empty($matched_finders) && in_array($finder_id, $matched_finders)){
+    
+                    foreach($matched_finders as $m_f_key=>$m_f_value){
+                        if($m_f_value == $finder_id && $findersIndexWithBookings[$m_f_value] >= $value['count']){
+                            $status = false;
+                            break;
+                        }
+                    }
+                }
+                
+                if(empty($status)){
+                    break;
+                }
+            }
+
+            if(empty($status)){
+                $response['data']['msg'] = strtr($messages['finder_page']['failed'], ['total_available'=> $max_booking_count]);
+            }
+            else if(!empty($status) && $max_booking_count != 31){
+                $response['data']['msg'] = strtr($messages['finder_page']['success'], [ 'left_session'=> $max_booking_count-(!empty($findersIndexWithBookings[$finder_id]) ? $findersIndexWithBookings[$finder_id] : 0), 'total_available'=> $max_booking_count]);
+
+            }
+        }
+        
+        Log::info('book trails::::::::::::::::', [$bookings, $passOrder['_id'], $response]);
+
+        $response['status'] = $status;
+        return $response;
+    }
+
+    public function isPremiumSessionAvailableV2($customer_id, $passOrder, $ratecard_price=0, $finder){
+
+        $messages = Config::get('pass.booking_restriction.premium_session');
+
+        $resp = [
+            'status' => true,
+            'data' => []
+        ];
+
+        if(empty($passOrder['pass']['premium_sessions_restriction'])){
+            return $resp;
+        }
+
+        $premium_amount = !empty($passOrder['pass']['premium_min_booking_price_restriction']) ? $passOrder['pass']['premium_min_booking_price_restriction'] : null;
+
+        $city_id = null;
+        !empty($finder['city_id']) ? $city_id = $finder['city_id']: null;
+
+        if(!empty($passOrder['pass']['premium_booking_price']) && !empty($city_id)){
+            foreach($passOrder['pass']['premium_booking_price'] as $key=>$value){
+                if(in_array($city_id, $value['city_ids'])){
+                    $premium_amount = $value['min'];
+                    break;
+                }
+            }
+        }
+
+        if(empty($premium_amount)){
+            return $resp;
+        }
+
+        Log::info('city id :::::::::::::::::::::::::', [$city_id, $premium_amount, $ratecard_price]);
+        if($premium_amount > $ratecard_price){
+            $resp['status'] = true;
+            $resp['data'] = [];
+            return $resp;
+        }
+
+        $resp['status'] = premiumSessionCount($customer_id, $passOrder);
+
+        Log::info('premium session count :::::::::::::::::::::::::', [$resp['status'], $passOrder['pass']['premium_sessions_restriction']]);
+        if(!empty($resp['status'])){
+            $resp['data']['msg'] = strtr($messages['success'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions_restriction']]);
+            $resp['data']['icon'] = $messages['success_icon'];
+            $resp['pass_premium_session'] = true;
+        }
+        else{ 
+            $resp['data']['msg'] = strtr($messages['failed'], ['no_of_premium_session' => $passOrder['pass']['premium_sessions_restriction']]);
+            $resp['data']['icon'] = $messages['failed_icon'];   
+        }
+
+        $resp['data']['background_color'] = $messages['background_color'];
+
+        return $resp;
+    }
+
+    public function addVendorRestriction(&$data){
+
+        $booking_restrictions = Finder::raw(function($collection){
+            $match = [
+                '$match' => [
+                    'status' => "1",
+                    'flags.onepass_max_booking_count' => [
+                        '$gt' => 0
+                    ]
+                ]
+            ];
+            $group = [
+                '$group' => [
+                    '_id' => '$flags.onepass_max_booking_count',
+                    'ids' => [
+                        '$addToSet' => '$_id'
+                    ]
+                ]
+            ];
+
+            $aggregate[] = $match;
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $booking_restrictions = $booking_restrictions['result'];
+        if(!empty($booking_restrictions)){
+            $temp = [
+                "ids" => [],
+                "count" => 0,
+                "count_type" => 'each'
+            ];
+
+            foreach($booking_restrictions as $key=>$value){
+                $temp['count'] = $value['_id'];
+                $temp['ids'] = $value['ids'];
+                $data['pass']['vendor_restriction'][] = $temp;
+            }
+        }
     }
 
     public function formatPassListingWithOnePassLite(&$response, $include_onepass_lite_web, $city){
