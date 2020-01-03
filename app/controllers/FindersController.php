@@ -1497,7 +1497,7 @@ class FindersController extends \BaseController {
 
 				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 				if(empty($response['finder']['flags']['state']) || !in_array($response['finder']['flags']['state'], ['closed', 'temporarily_shut']) && $response['finder']['membership'] != "disable"){ 
-					if(!in_array($response['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($response['finder']['flags']['monsoon_flash_discount_disabled']))  && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+					if(!in_array($response['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($response['finder']['flags']['monsoon_flash_discount_disabled']))  && (empty($finder['brand_id']) || $finder['brand_id'] != 88)){
 					  $vendor_page_without_login = false;
 					  if(empty($jwt_token)){
 						  $vendor_page_without_login = true;
