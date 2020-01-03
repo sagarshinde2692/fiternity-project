@@ -11527,12 +11527,6 @@ Class Utilities {
                 ||
                 $input['from'] != 'pass'
             )
-            || 
-            (
-                empty($finder_response['finder']['onepass_max_booking_count']) 
-                && 
-                empty($input['corporate'])
-            )
         ){
             return;
         }
@@ -11559,12 +11553,15 @@ Class Utilities {
                 $restriction_message['max_count'] = $corporate->max_booking_count;
             }
         }
-        // else{
-        //     $restriction_message['max_count'] = '∞';
-        //     $restriction_message['msg'] = $restriction_message['unlimited'];
-        // }
+        else{
+            unset($restriction_message['max_count']);
+            $restriction_message['msg'] = $restriction_message['unlimited'];
+        }
 
         unset($restriction_message['success']);
+        unset($restriction_message['success_trial']);
+        unset($restriction_message['unlimited']);
+        unset($restriction_message['failed']);
         unset($finder_response['finder']['onepass_max_booking_count']);
         if(!empty($restriction_message['msg'])){
             $finder_response['finder']['onepass_session_message'] = $restriction_message;

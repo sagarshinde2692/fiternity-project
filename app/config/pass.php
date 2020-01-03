@@ -1398,8 +1398,8 @@ return [
             'background_color' => '#0B445D',
             'max_count' => 0,
             'success_trial' => 'You can only book left_session sessions here via trial OnePass.',
-            'success' => 'left_session Sessions available each month with OnePass.',
-            'unlimited' => 'You can book unlimited sessions here with OnePass'      ,
+            'success' => 'Book left_session Sessions here per month with OnePass.',
+            'unlimited' => 'Book unlimited sessions here per month with OnePass.'      ,
             'failed' => 'You have exhausted your Session limit here.'      
         ],
     ]
