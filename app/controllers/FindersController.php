@@ -1414,7 +1414,7 @@ class FindersController extends \BaseController {
 
 						$vendor_stripe_line = "";
 						if(!empty($finder['brand_id']) && $finder['brand_id'] == 88){
-							$vendor_stripe_line = "Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships | Use Code: FITME15. Last Few Hours Left!";
+							$vendor_stripe_line = "";
 						}else if(!empty($finder['_id']) && in_array($finder['_id'], Config::get('app.fitbox_reward_vendor_id'))){
 							$vendor_stripe_line = "LOWEST PRICES + HANDPICKED HEALTHY FOOD HAMPER WORTH INR 2,500 ON MEMBERSHIPS | OFFER ENDING SOON";
 						}else if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($finder['flags']['monsoon_flash_discount_disabled']) ){
@@ -3921,35 +3921,35 @@ class FindersController extends \BaseController {
 		$m_pricemore = false;
 		$m_android_line = "";
 		$m_ios_line = "";
-		if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88])){
+		// if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88])){
 			
-			foreach($data['finder']['services'] as &$service){
-				foreach($service['ratecard'] as &$ratecard){
-					if($ratecard['type'] == 'membership'){
-						$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+		// 	foreach($data['finder']['services'] as &$service){
+		// 		foreach($service['ratecard'] as &$ratecard){
+		// 			if($ratecard['type'] == 'membership'){
+		// 				$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						
-						if($this->device_type == 'android'){
-							$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
-						}else{	
-							$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
-						}
+		// 				if($this->device_type == 'android'){
+		// 					$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
+		// 				}else{	
+		// 					$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices, Use Code: FITME15";
+		// 				}
 	
-						if($price >= 8000){
-							$m_pricemore = true;
-							if($this->device_type == 'android'){
-								$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
-							}else{	
-								$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
-							}
-							break;
-						}
-					}
-				}
-				if($m_pricemore){
-					break;
-				}
-			}
-		}
+		// 				if($price >= 8000){
+		// 					$m_pricemore = true;
+		// 					if($this->device_type == 'android'){
+		// 						$m_android_line = "On Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
+		// 					}else{	
+		// 						$m_ios_line = "\nOn Memberships: Extra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500, Use Code:FITME15";
+		// 					}
+		// 					break;
+		// 				}
+		// 			}
+		// 		}
+		// 		if($m_pricemore){
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
         if(!empty($data['finder']['brand_id']) && in_array($data['finder']['brand_id'], [88])){
 			if($this->device_type == 'android'){
@@ -8664,7 +8664,7 @@ class FindersController extends \BaseController {
 					
 					if(!empty($finder['brand_id']) && in_array($finder['brand_id'], [88])) {
 						if($price >= 8000){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices + Handpicked Healthy Food Hamper Worth INR 2,500 On Memberships \n\nUse Code: FITME15");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."");
 						}else{
 							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nExtra 15% Off On Lowest Prices \n\nUse Code: FITME15");
 						}
