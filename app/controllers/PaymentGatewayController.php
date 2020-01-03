@@ -1099,7 +1099,7 @@ class PaymentGatewayController extends \BaseController {
 					
 					// Order::where('txnid', $txnid)->update(['parent_payment_id_paypal' => $parent_payment_id, "payment_id_paypal" => $payment_id]);
 					if(empty($order)) {
-						$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name','amount_customer','schedule_date','type', 'device_type'])->toArray();
+						$order = Order::where('txnid', $txnid)->first(['_id','customer_name','customer_email','customer_phone','finder_id','service_name', 'amount', 'amount_customer','schedule_date','type', 'device_type'])->toArray();
 					}
 					$fin_arr = array(
 						"order_id" => $order['_id'],
@@ -1109,7 +1109,7 @@ class PaymentGatewayController extends \BaseController {
 						"customer_phone" => $order['customer_phone'],
 						"error_Message" => "",
 						"service_name" => $order['service_name'],
-						"amount" => $order['amount_customer'],
+						"amount" => $order['amount'],
 						"finder_id" => (!empty($order['finder_id']))?$order['finder_id']:0,
 						"schedule_date" => (empty($order['schedule_date']))? "" : $order['schedule_date'],
 						"type" => $order['type'],
