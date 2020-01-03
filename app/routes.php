@@ -17,7 +17,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
-require __DIR__.'/debug_routes.php';
+// require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 
@@ -1419,4 +1419,4 @@ Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
 Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
 
-
+Route::get('resize-image','ImageManipulationController@resize_watermark_image');

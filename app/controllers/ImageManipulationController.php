@@ -29,18 +29,15 @@ class ImageManipulationController extends \BaseController {
         // $input = Input::get('image');
 
         $finder_ids = Watermark::where('watermark_updated', 0)->limit(100)->lists('finder_id');
-        // print_r($finder_ids);exit;
 
         $vendors = Vendor::whereIn('_id',$finder_ids)->select('_id','media.images.gallery')->get()->toArray();
-        // print_r($vendors);exit;
 
         Finder::$withoutAppends = true;
         $finders = Finder::whereIn('_id',$finder_ids)->select('_id','photos')->get()->toArray();
-        // print_r($finders);exit();
 
         $bulk_images_data_fitadmin = [];
         foreach($finders as $finder){
-            // print_r($finder);exit;
+
             $media_photos = $new_photos = [];
             foreach($finder['photos'] as $photos){
                 $media_photos = array_merge($media_photos,$photos);
@@ -61,58 +58,36 @@ class ImageManipulationController extends \BaseController {
                 'multi' => false
             ]);
         }
-        // print_r($bulk_images_data_fitadmin);exit;
 
         $base_url = Config::get('app.s3_finderurl.gallery').'original/';
-        // print_r($base_url);exit;
+
         $bulk_images_data = $bulk_status_data = [];
         foreach($vendors as $vendor){
             $media_images = $all_media = $new_media = [];
             $all_media['media']['images']['gallery'] = array();
-            // print_r($vendor);exit();
+
             foreach($vendor['media']['images']['gallery'] as $data){
-                // print_r($data);exit;
-                //determine width & height of image
+
                 $input = $base_url.$data['url'];
 
+                $thumb_input = Config::get('app.s3_finderurl.gallery').'thumbs/'.$data['url'];
+                
+                //determine width & height of image
                 list($width, $height) = @getimagesize($input);
 
                 if(!empty($width) || !empty($height)){
-                    // open an image file
-                    $img = Image::make($input);
 
-                    // now you are able to resize the instance
-                    if($width > $height){
-                        // prevent possible upsizing
-                        $img->resize(800, null, function ($constraint) {
-                            $constraint->aspectRatio();
-                            $constraint->upsize();
-                        });
-                    }else{
-                        // prevent possible upsizing
-                        $img->resize(null, 1200, function ($constraint) {
-                            $constraint->aspectRatio();
-                            $constraint->upsize();
-                        });
-                    }
-
-                    // and insert a watermark after resizing
-                    $img->insert(public_path('images/watermark_small.png'),'bottom-right', 10, 10);
-
-                    // finally we save the image as a new file
-                    $filename = 'new_image_'.time().mt_rand(1,200).'.jpg';
-                    $filepath = public_path($filename);
-                    $img->save($filepath);
+                    //returns files path if processed properly else false
+                    $filepath = $this->resize_add_watermark($input,$width,$height);
 
                     $s3_path = 'f/g/full/new/'.$data['url'];
-
-                    $s3 = \AWS::get('s3');
-
-                    $s3->putObject(array(
-                        'Bucket'     => Config::get('app.aws.bucket'),
-                        'Key'        => $s3_path,
-                        'SourceFile' => $filepath,
-                    ));
+                    $s3_thumb_path = 'f/g/thumbs/new/'.$data['url'];
+                    
+                    //upload thumbnail
+                    $this->uploadS3FromLink($thumb_input,$s3_thumb_path);
+                    
+                    //upload processed image
+                    $this->uploadS3($filepath,$s3_path);
 
                     @unlink($filepath);
 
@@ -120,14 +95,11 @@ class ImageManipulationController extends \BaseController {
                     $media_images['url'] = 'new/'.$data['url'];
                     $media_images['old_url'] = $data['url'];
 
-                    // array_push($all_media['media']['images']['gallery'],$media_images);
-                    // print_r($media_images); exit;
                 }else{
                     $media_images = array_merge($media_images,$data);
                 }
                 array_push($new_media,$media_images);
             }
-            // print_r($new_media);exit;
 
             //prepare data for multiple update fitapi
             array_push($bulk_images_data, [
@@ -151,15 +123,8 @@ class ImageManipulationController extends \BaseController {
                 'multi' => false
             ]);
 
-            // Vendor::where('_id',$vendor['_id'])->update($all_media);
-            // Watermark::where('finder_id',$vendor['_id'])->update(array('watermark_updated'=>1,'updated_at'=>new MongoDate(time())));
-
             Log::info('-----------Watermark bulk data prepared for vendor id-----------------',[$vendor['_id']]);
         }
-
-        // print_r($bulk_images_data);
-        // print_r($bulk_status_data);
-        // exit();
 
         //batch update in fitapi
         $update_images = $this->batchUpdate('mongodb2', 'vendors', $bulk_images_data);
@@ -172,6 +137,71 @@ class ImageManipulationController extends \BaseController {
 
         $msg = 'Watermark updated successfully';
         return Response::json(array('status'=>200,'message'=>$msg));
+    }
+
+    public function uploadS3($filepath,$s3_path){
+        try{
+            $s3 = \AWS::get('s3');
+
+            $s3->putObject(array(
+                'Bucket'     => Config::get('app.aws.bucket'),
+                'Key'        => $s3_path,
+                'SourceFile' => $filepath,
+            ));
+        }catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
+    }
+
+    public function uploadS3FromLink($thumb_input,$s3_thumb_path){
+        try{
+            $s3 = \AWS::get('s3');
+
+            $s3->putObject(array(
+                'Bucket'     => Config::get('app.aws.bucket'),
+                'Key'        => $s3_thumb_path,
+                'ContentType' =>'image/jpeg',
+                'Body' => file_get_contents($thumb_input)
+            ));
+        }catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
+    }
+
+    public function resize_add_watermark($input,$width,$height){
+        try{
+            // open an image file
+            $img = Image::make($input);
+
+            // now you are able to resize the instance
+            if($width > $height){
+                // prevent possible upsizing
+                $img->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            }else{
+                // prevent possible upsizing
+                $img->resize(null, 1200, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            }
+
+            // and insert a watermark after resizing
+            $img->insert(public_path('images/watermark_small.png'),'bottom-right', 10, 10);
+
+            // finally we save the image as a new file
+            $filename = 'new_image_'.time().mt_rand(1,200).'.jpg';
+            $filepath = public_path($filename);
+            $img->save($filepath);
+            return $filepath;
+        }catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
     }
 
     public function batchUpdate($db, $collection, $update_data){

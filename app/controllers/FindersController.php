@@ -226,18 +226,8 @@ class FindersController extends \BaseController {
 				// 	}
 				// }
 				
-				//check whether finder inserted for new watermark update
-				$check_finder_exists_new_watermark = Watermark::where('finder_id', $finderarr['_id'])->exists();
-
-				//insert finder for new watermarking if not present in db
-				if(empty($check_finder_exists_new_watermark)){
-					$watermark_data = array(
-						'finder_id' => $finderarr['_id'],
-						'watermark_updated' => 0,
-						'created_at' => new MongoDate(time())
-					);
-					Watermark::insert($watermark_data);
-				}
+				//check whether finder inserted for new watermark update and add for new watermarking if not present in db
+				Queue::connection('redis')->push('FindersController@insert_for_watermark', array('finder_id'=>$finderarr['_id']),Config::get('app.queue'));
 
 				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
 					if(isset($finderarr['budget'])){
@@ -4183,19 +4173,9 @@ class FindersController extends \BaseController {
 				// 	}
 				// }
 
-				//check whether finder inserted for new watermark update
-				$check_finder_exists_new_watermark = Watermark::where('finder_id', $finderarr['_id'])->exists();
-
-				//insert finder for new watermarking if not present in db
-				if(empty($check_finder_exists_new_watermark)){
-					$watermark_data = array(
-						'finder_id' => $finderarr['_id'],
-						'watermark_updated' => 0,
-						'created_at' => new MongoDate(time())
-					);
-					Watermark::insert($watermark_data);
-				}
-
+				//check whether finder inserted for new watermark update and add for new watermarking if not present in db
+				Queue::connection('redis')->push('FindersController@insert_for_watermark', array('finder_id'=>$finderarr['_id']),Config::get('app.queue'));
+				
 				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
 					$finderarr['manual_trial_enable'] = '1';
 				}
@@ -8906,6 +8886,30 @@ class FindersController extends \BaseController {
 			}
 		}
 
+	}
+
+	public function insert_for_watermark($job,$finder){
+		try{
+			if($job){
+				$job->delete();
+			}
+
+			//check if exists
+			$check_finder_exists_new_watermark = Watermark::where('finder_id', $finder['finder_id'])->exists();
+
+			//insert finder for new watermarking if not present in db
+			if(empty($check_finder_exists_new_watermark)){
+				$watermark_data = array(
+					'finder_id' => $finder['finder_id'],
+					'watermark_updated' => 0,
+					'created_at' => new MongoDate(time())
+				);
+				Watermark::insert($watermark_data);
+			}
+		}catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
 	}
 
 }
