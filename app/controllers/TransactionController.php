@@ -10477,9 +10477,17 @@ class TransactionController extends \BaseController {
     }
 
     public function createPlusRewards(){
-        $order_id = 422205;
-        $data = Order::where('_id', $order_id)->first()->toArray();
-        return $this->plusService->createPlusRewards($data);
+        ini_set('max_execution_time', 0);
+        // $order_id = 422205;
+        // $data = Order::where('_id', $order_id)->first()->toArray();
+        $data = Order::active()->where('plus', 'exists', true)->where('communication.plus_email', 'exists', false)->get()->toArray();
+        // return count($data);
+        $orderIds = array();
+        foreach($data as $da){
+            $vou = $this->plusService->createPlusRewards($da);
+            array_push($orderIds, $da['_id']);
+        }
+        return $orderIds;
     }
 }
 
