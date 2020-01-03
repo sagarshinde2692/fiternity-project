@@ -11519,6 +11519,55 @@ Class Utilities {
         }
     }
 
+    public function onePassBookingRestrictionMessage(&$finder_response, $input){
+
+        if( 
+            (
+                empty($input['from'])
+                ||
+                $input['from'] != 'pass'
+            )
+        ){
+            return;
+        }
+
+        $restriction_message = config::get('pass.booking_restriction.finder_page');
+        $restriction_message['msg'] = '';
+        if(!empty($finder_response['finder']['onepass_max_booking_count']) && $finder_response['finder']['onepass_max_booking_count'] >0 && empty($input['corporate'])){
+            $restriction_message['msg'] = strtr($restriction_message['success'], ['left_session' => $finder_response['finder']['onepass_max_booking_count']]);
+
+            $restriction_message['max_count'] = $finder_response['finder']['onepass_max_booking_count'];
+        }
+        else if(!empty($input['corporate'])){
+            $input['corporate'] = strtolower($input['corporate']);
+
+            $corporate = \Pass::active()
+            ->where('pass_type', 'hybrid')
+            ->where('corporate', $input['corporate'])
+            ->where('max_booking_count', 'exists', true)
+            ->first(['max_booking_count']);
+
+            Log::info('corporate ::CVVDFVDFVD', [$corporate]);
+            if(!empty($corporate->max_booking_count)){
+                $restriction_message['msg'] = strtr($restriction_message['success_trial'], ['left_session' => $corporate->max_booking_count]);
+                $restriction_message['max_count'] = $corporate->max_booking_count;
+            }
+        }
+        else{
+            unset($restriction_message['max_count']);
+            $restriction_message['msg'] = $restriction_message['unlimited'];
+        }
+
+        unset($restriction_message['success']);
+        unset($restriction_message['success_trial']);
+        unset($restriction_message['unlimited']);
+        unset($restriction_message['failed']);
+        unset($finder_response['finder']['onepass_max_booking_count']);
+        if(!empty($restriction_message['msg'])){
+            $finder_response['finder']['onepass_session_message'] = $restriction_message;
+        }
+    }
+    
     public function checkForOtherWorkoutServices($finder_id, &$service_details){
         $services_ids = Service::active()
         ->where('finder_id', $finder_id)

@@ -11252,5 +11252,5 @@ class CustomerController extends \BaseController {
 				"msg" => "Something went wrong"
 			];
 		}
-    }
+	}
 }

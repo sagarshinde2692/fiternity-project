@@ -97,6 +97,7 @@ class FindersController extends \BaseController {
 
 		// Log::info($_SERVER['REQUEST_URI']);        
 
+		$request_params = Input::all();
 		$thirdPartySector = Request::header('sector');
 		$siteSource = Request::header('source');
 		$isThirdParty = (isset($thirdPartySector) && in_array($thirdPartySector, ['multiply', 'health']));
@@ -1458,6 +1459,7 @@ class FindersController extends \BaseController {
 
                 $response['finder']['type'] = !empty($finder['flags']['reward_type']) ?  $finder['flags']['reward_type'] : 2;
                 $response['finder']['sub_type'] = !empty($finder['flags']['cashback_type']) ?  $cashback_type_map[strval($finder['flags']['cashback_type'])] : null;
+                !empty($finder['flags']['onepass_max_booking_count']) ?  $response['finder']['onepass_max_booking_count'] = $finder['flags']['onepass_max_booking_count'] :null ;
 
 				// if($this->utilities->isIntegratedVendor($response['finder'])){
 				// 	$response['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
@@ -1591,6 +1593,7 @@ class FindersController extends \BaseController {
 		}
 
 		$this->multifitGymWebsiteVendorUpdate($response);
+		$this->utilities->onePassBookingRestrictionMessage($response, $request_params);
 
 		return Response::json($response);
 
@@ -5472,6 +5475,8 @@ class FindersController extends \BaseController {
             //Log::info('finder',[$finderData['finder']]);
             
             foreach($finderData['finder']['services'] as &$service){
+
+				
                 foreach($service['ratecard'] as &$ratecard){
                     if($ratecard['type'] == 'workout session' || $ratecard['type'] == 'trial'){
                         $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
@@ -5508,7 +5513,8 @@ class FindersController extends \BaseController {
 									)
 								)
 							) {
-                                $_allowSession = $allowSession['allow_session'];
+                                $premiumSessionCheck = $this->passService->isPremiumSessionAvailableV2($customer_id, $allowSession['pass_order'], $price, $finderData['finder']);
+                                $_allowSession = !empty($premiumSessionCheck['status']) ? $allowSession['allow_session'] : false;
 							}
                         }
                         if($_allowSession){
@@ -8822,8 +8828,11 @@ class FindersController extends \BaseController {
 							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+
+
 								$ratecards['price_text'] = 'Free for you';	
 							}
+
 						}
 					}
 				}
@@ -8835,8 +8844,11 @@ class FindersController extends \BaseController {
 							$creditApplicable = $allowSession && $ratecards['price']<$allowMaxAmount;
 							Log::info('credit appplicable"::::::', [$creditApplicable]);
 							if($creditApplicable['allow_session'] && (!empty($service['flags']['classpass_available']) && $service['flags']['classpass_available'])){
+
+
 								$ratecards['price_text'] = 'Free for you';	
 							}
+							
 						}
 					}
 				}

@@ -1378,6 +1378,30 @@ return [
         "description" => "A Fitternity exclusive pass that gives you membership privileges and unlimited access at Multifit Wellness and other 12,000+ fitness centers in India\nPS: OnePass is the only fitness membership that will never expire",
         "text" => "Limitless Workouts | Limitless Validity",
         "button_text" => "GET IT NOW"
+    ],
+
+    "booking_restriction" => [
+        'service_page' => [
+            'background_color' => '#0B445D',
+            'success' => 'You can only book left_session sessions here via trial OnePass.',
+            'failed' => 'You have exhausted your Session limit here.'
+        ],
+        'premium_session' =>[
+            'background_color' => '#0B445D',
+            'success_icon' => 'https://b.fitn.in/onepass/premium_success_icon.png',
+            'failed_icon' => 'https://b.fitn.in/onepass/premium_session_failed.png',
+            'success' => 'This is a premium booking. You can book only no_of_premium_session premium session using the trial OnePass.',
+            'failed' => 'You have exhausted your premium booking limit.'
+        ],
+
+        'finder_page' => [
+            'background_color' => '#0B445D',
+            'max_count' => 0,
+            'success_trial' => 'You can only book left_session sessions here via trial OnePass.',
+            'success' => 'Book left_session Sessions here per month with OnePass.',
+            'unlimited' => 'Book unlimited sessions here per month with OnePass.'      ,
+            'failed' => 'You have exhausted your Session limit here.'      
+        ],
     ]
 
 ];

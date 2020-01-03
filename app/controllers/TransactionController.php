@@ -1778,8 +1778,12 @@ class TransactionController extends \BaseController {
         // if(!empty($data['studio_extended_validity']) && $data['studio_extended_validity']) {
         //     $this->utilities->scheduleStudioBookings(null, $order_id);
         // }
-        
+        !empty($resp['data']['payment_details']['paymentgateway']['premiun_session_message']) ? $resp['data']['premiun_session_message'] = $resp['data']['payment_details']['paymentgateway']['premiun_session_message']: null;
+
+        unset($resp['data']["payment_details"]['paymentgateway']['premiun_session_message']);
+
         if(!empty($data['pass_booking']) && $data['pass_booking']){
+
             unset($resp['data']["quantity_details"]);
             $resp['data']['payment_modes']= [];
             unset($resp['data']["payment_details"]);
@@ -6659,6 +6663,11 @@ class TransactionController extends \BaseController {
             $allowSession = false;
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer) {
                 $allowSession = $this->passService->allowSession($data['amount_customer'], $customer_id, $data['schedule_date'], $data['finder_id']);
+                
+                if(!empty($allowSession['premiun_session_message'])){
+                    $payment_details['premiun_session_message'] = $allowSession['premiun_session_message'];
+                }
+
                 if(
                     !empty($allowSession['allow_session']) 
                     && 
@@ -7747,10 +7756,16 @@ class TransactionController extends \BaseController {
 
             //  commented on 9th Aug - Akhil
             if((!empty($data['typeofsession'])) && $data['typeofsession']=='trial-workout' && !(empty($data['customer_quantity'])) && $data['customer_quantity']==1) {
+                $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
                 if(!empty($decoded->customer->_id)) {
                     $scheduleDate = (!empty($data['slot']['date']))?$data['slot']['date']:null;
                     $passSession = $this->passService->allowSession($data['amount'], $decoded->customer->_id, $scheduleDate, $data['finder_id']);
                     Log::info('getCreditApplicable capture checkout response:::::::::', [$passSession]);
+
+                    if(!empty($onepassHoldCustomer) && !empty($passSession['premiun_session_message'])){
+                        $result['payment_details']['premiun_session_message'] = $passSession['premiun_session_message'];
+                    }
+
                     if(
                         $passSession['allow_session'] 
                         &&
