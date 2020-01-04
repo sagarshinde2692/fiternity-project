@@ -500,4 +500,11 @@ class PassController extends \BaseController {
         }
 
     }
+
+    public function listValidCouponsOfOnePass(){
+
+        $data = $this->passService->listValidCouponsOfOnePass('pass', ['red', 'black']);
+        $this->passService->formatCouponsForWeb($data);
+        return $data;
+    }
 }
