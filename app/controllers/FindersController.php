@@ -1511,7 +1511,7 @@ class FindersController extends \BaseController {
 				}
 				}
 	
-                $this->applyNoCostEMITag($response, "web");
+                $this->emi($response, "web");
 
                 Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -5562,7 +5562,7 @@ class FindersController extends \BaseController {
 				else if(!empty($finderData['finder']['finder_one_line'])) {
 					unset($finderData['finder']['finder_one_line']);
 				}
-				$this->applyNoCostEMITag($finderData, "app");	
+				$this->emi($finderData, "app");
 			}
 
         	if(checkAppVersionFromHeader(['ios'=>'5.2.90', 'android'=>5.33])){
@@ -9123,29 +9123,85 @@ class FindersController extends \BaseController {
 	 * @param $response
 	 * Tags ratecards where no cost emi is available
 	 */
-	public function applyNoCostEMITag(&$data, $source=null)
-	{	
-		if(!empty($data['finder']['services'])){
-			foreach($data['finder']['services'] as &$service){
-				foreach($service[getRatecardKey($source)] as &$ratecard){
-					$price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
-					
-						$emi_resp = $this->utilities->getEMIData(['amount'=>$price, 'finder_id'=>$ratecard['finder_id'], 'finder'=>$data['finder']]);
+	public function emi(&$data, $source=null)
+	{
+        $this->applyEmiTagToRatecard($data, $source);
+        $this->applyEmiTagToCoupon($data, $source);
+    }
 
-						if(!empty($emi_resp['no_cost_emi_applicable']) && checkDeviceForFeature('no-cost-emi')){
+    /**
+     * @param $data
+     * @param $source
+     */
+    public function applyEmiTagToRatecard(&$data, $source)
+    {
+        if (!empty($data['finder']['services'])) {
+            foreach ($data['finder']['services'] as &$service) {
+                foreach ($service[getRatecardKey($source)] as &$ratecard) {
 
-							$ratecard['emi_text'] = Config::get("app.no_cost_emi.finder_detail_ratecard", "NO COST EMI AVAILABLE");
-						
-						}else if(!empty($emi_resp['normal_emi_applicable'])){
+                    $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
+
+					$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price]);
+
+					if(!empty($emi_text)){
+                    	$ratecard['emi_text'] = $emi_text;
+					}
+
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $data
+     * @param $price
+     * @param $ratecard
+     * @return mixed
+     */
+    public function getEMIText($data)
+    {
+        $emi_resp = $this->utilities->getEMIData(['amount' => $data['price'], 'finder_id' => $data['finder']['_id'], 'finder' => $data['finder']]);
+
+		$emi_text = null;
+
+        if (!empty($emi_resp['no_cost_emi_applicable']) && checkDeviceForFeature('no-cost-emi')) {
+
+            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard", "NO COST EMI AVAILABLE");
+
+        } else if (!empty($emi_resp['normal_emi_applicable'])) {
+
+            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard_normal_text", "EMI AVAILABLE");
+
+        }
+        return $emi_text;
+    }
+
+	public function applyEmiTagToCoupon(&$data, $source){
+    
+		if($source == 'web'){
+			if(!empty($data['finder']['coupons'])){
+				foreach($data['finder']['coupons'] as &$coupon){
+					if(!empty($coupon['price'])){
+						foreach($coupon['price'] as &$price){
 							
-							$ratecard['emi_text'] = Config::get("app.no_cost_emi.finder_detail_ratecard_normal_text", "EMI AVAILABLE");
+							if(!empty($price['price'])){
 
+								$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price['price']]);
+								
+								if(!empty($emi_text)){
+								
+									$price['emi_text'] = $emi_text;
+								
+								}
+
+							}
 						}
 
-					
+					}
 				}
 			}
 		}
+
 	}
 
 }
