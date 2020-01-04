@@ -1423,5 +1423,6 @@ Route::post('decryptqrcode', 'ThirdPartyController@decryptQRCode');
 Route::get('renewalOnepass', 'DebugController@renewalOnepass');
 Route::get('removePassOrders/{email}', 'DebugController@removePassOrders');
 Route::get('createPlusRewards', 'TransactionController@createPlusRewards');
+Route::get('passcoupons', 'PassController@listValidCouponsOfOnePass');
 
 // Route::get('getcampaigndata', 'HomeController@getCampaignData');
