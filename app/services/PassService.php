@@ -124,7 +124,23 @@ class PassService {
                 // $passList = $passList->where('corporate', $source)->orderBy('duration')->get();
                 $passList = null;
                 if(!empty($corporateSource)) {
-                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $corporateSource)->orderBy('duration')->get();
+                    $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $corporateSource)->orderBy('duration')->get()->toArray();
+                    if($corporateSource == 'cred'){
+                        $credRedPassList = Pass::active()
+                        ->whereIn('show_on_front', [null, true])
+                        ->where('corporate', 'exists', false)
+                        ->where('pass_category', '!=', 'local')
+                        ->where('pass_type', 'red')
+                        ->whereIn('duration', [90,180,360])
+                        ->where('cities', 'mumbai')
+                        ->orderBy('duration')->get()->toArray();
+                        if(!empty($passList) && !empty($credRedPassList)){
+                            $passList = array_merge($passList, $credRedPassList);
+                        }
+                        else{
+                            $passList = !empty($passList) ? $passList : (!empty($credRedPassList) ? $credRedPassList : []);
+                        }
+                    }
                 }
                 if(empty($passList) || count($passList)<1) {
                     $passList = Pass::where('status', '1')->where('pass_category', '!=', 'local')->where('corporate', $source)->orderBy('duration')->get();
@@ -200,7 +216,7 @@ class PassService {
                 $passDetails['text'] = $brandingData['text'];
             }
 
-            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic'])) {
+            if(!empty($source) && in_array($source, ['sodexo', 'thelabellife', 'generic']) && !empty($pass['total_sessions'])) {
                 $passDetails['text'] = "(".$pass['total_sessions']." sessions pass)";
             }
             else if(!empty($source) && in_array($source, ['sbig'])) {
@@ -471,7 +487,9 @@ class PassService {
                     $customerreward = new CustomerReward();
                     $customer_id = !empty($data['customer_id']) ? $data['customer_id'] : null;
                     $customer_email = !empty($data['customer_email']) ? $data['customer_email'] : null;
-                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass);
+                    $customer_source = !empty($data['customer_source']) ? $data['customer_source'] : null;
+                    $corporate_source = !empty($data['corporate_source']) ? $data['corporate_source'] : null;
+                    $couponCheck = $customerreward->couponCodeDiscountCheck(null,$data["coupon_code"],$customer_id, null, null, null, null, $customer_email, $pass, null, null, $corporate_source, $customer_source);
 
                     Log::info("couponCheck");
                     Log::info($couponCheck);
