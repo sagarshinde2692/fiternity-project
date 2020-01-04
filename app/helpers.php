@@ -3331,6 +3331,10 @@ if (!function_exists(('geoLocationFinder'))){
           "not"=>$not
       ];
 
+        if(!empty($request['onepass_available'])){
+            $payload['onepass_available'] = true;
+        }
+        
         $url = Config::get('app.new_search_url')."/search/vendor";
 
         $finder = [];
