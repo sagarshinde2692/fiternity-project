@@ -3332,7 +3332,7 @@ if (!function_exists(('geoLocationFinder'))){
       ];
 
         if(!empty($request['onepass_available'])){
-            $payload['onepass_available'] = true;
+            $payload['pass'] = true;
         }
         
         $url = Config::get('app.new_search_url')."/search/vendor";
