@@ -1388,6 +1388,7 @@ Route::post('passsuccess', 'PassController@passSuccess');
 Route::get('orderpasshistory',  array('as' => 'customer.orderpasshistory','uses' => 'PassController@orderPassHistory'));
 Route::get('passtermscondition', 'PassController@passTermsAndCondition');
 Route::get('passfaq', 'PassController@passFrequentAskedQuestion');
+Route::get('nearbyvendor', 'PassController@nearByVendor');
 Route::post('razorpaywebhooks', 'RazorpayController@razorpayWebhooks');
 Route::any('subventiondataupdate/', array('as' => 'transaction.subventionDataUpdate','uses' => 'TransactionController@subventionDataUpdate'));
 
