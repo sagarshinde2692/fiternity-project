@@ -958,6 +958,8 @@ class PassService {
             
             if(
                 empty($finder) 
+				||
+				!empty($finder['flags']['mfp'])
                 || 
                 (
                     !empty($passOrder['pass_city_id']) 
