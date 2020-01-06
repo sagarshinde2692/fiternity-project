@@ -74,7 +74,7 @@ Class CouponService {
                         }
                     }
                     $discount_price = ($ratecard['special_price'] > 0)?$ratecard['special_price']:$ratecard['price'];
-                    $originalRateCard['price'][] = array($ratecard['_id'] => $discount_price);
+                    $originalRateCard['price'][] = ['ratecard_id'=>$ratecard['_id'], 'price'=>$discount_price];
                 } 
             }
             if($isCouponAppliedFlag) {
