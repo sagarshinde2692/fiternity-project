@@ -4977,8 +4977,7 @@ class FindersController extends \BaseController {
 					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
-				if(empty($data['finder']['flags']['state']) || !in_array($data['finder']['flags']['state'], ['closed', 'temporarily_shut'] )&& $data['finder']['membership'] != "disable"){ 
-					if(!in_array($data['finder']['_id'], Config::get('app.camp_excluded_vendor_id')) && empty($data['finder']['flags']['monsoon_flash_discount_disabled']) && (empty($data['finder']['brand_id']) || $data['finder']['brand_id'] != 88)){
+				if(campaignAvailable($response['finder'])){
 					   
 					   //   $vendor_page_without_login = false;
 					   // if(empty($jwt_token)){
@@ -4999,7 +4998,7 @@ class FindersController extends \BaseController {
 								unset($data['finder']['finder_one_line']);
 						   }
 					   }
-					 }
+					 
 				   }
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
