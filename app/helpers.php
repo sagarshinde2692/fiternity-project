@@ -4932,7 +4932,7 @@ if (!function_exists(('bookingsSumOnVendor'))){
                         'customer_id' => $customer_id,
                         'pass_order_id' => $passOrder['_id'],
                         'schedule_date_time' => [
-                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
+                            '$gte' => new \MongoDate($month_start->getTimestamp()),
                             '$lt' => new \MongoDate(($month_end->getTimestamp()))
                         ]
                     ]
