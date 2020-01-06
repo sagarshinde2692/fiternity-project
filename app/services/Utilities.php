@@ -10349,16 +10349,15 @@ Class Utilities {
 		//Log::info('order summary ::::::', [$orderSummary]);
 		foreach($slotsdata as &$slot){
                 
+            $slot['order_summary']['header'] = $orderSummary['header'];
+
+            if(campaignAvailable($finder)){
                 $slot['order_summary']['header'] = $orderSummary['header']."";
+            }
 
-                if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                    $slot['order_summary']['header'] = $orderSummary['header'];
-                
-
-                }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
-
-                    $slot['order_summary']['header'] = $orderSummary['header'];
-                }
+            if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
+                $slot['order_summary']['header'] = $orderSummary['header'];
+            }
 		}
 		return $slotsdata;
     }
@@ -10370,11 +10369,13 @@ Class Utilities {
 		foreach($slotsdata as &$slot){
             if(is_array($slot['data'])){
                 foreach($slot['data'] as &$sd){
-                    $sd['order_summary']['header'] = $orderSummary['header']."";
+                    $sd['order_summary']['header'] = $orderSummary['header'];
+
+                    if(campaignAvailable($finder)){
+                        $sd['order_summary']['header'] = $orderSummary['header']."";
+                    }
 
                     if(!empty($finder['flags']['mfp']) && $finder['flags']['mfp']){
-                        $sd['order_summary']['header'] = $orderSummary['header'];
-                    }else if(in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id'))){
                         $sd['order_summary']['header'] = $orderSummary['header'];
                     }
                 }

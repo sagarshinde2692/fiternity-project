@@ -5099,4 +5099,22 @@ if (!function_exists(('checkDeviceForFeature'))){
     }
 }
 
+if (!function_exists(('campaignAvailable'))){
+	
+    function campaignAvailable($finder){
+       try{
+            $campaign_available = false;
+            if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut']) && $finder['membership'] != "disable"){
+                if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($finder['flags']['monsoon_flash_discount_disabled'])) ){
+                    $campaign_available = true;
+                }
+            }
+
+            return $campaign_available;
+       }catch(Exception $e){
+           Log::info($e);
+           return false;
+       }
+   }
+}
 ?>
