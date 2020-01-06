@@ -4921,7 +4921,7 @@ if (!function_exists(('bookingsSumOnVendor'))){
             $month_end = $pass_end_date;
         }
 
-        Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
+        // Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
         $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
             $aggregate = [
                 [
@@ -4932,8 +4932,8 @@ if (!function_exists(('bookingsSumOnVendor'))){
                         'customer_id' => $customer_id,
                         'pass_order_id' => $passOrder['_id'],
                         'schedule_date_time' => [
-                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
-                            '$lt' => new \MongoDate(($month_end->getTimestamp()))
+                            '$gte' => new \MongoDate($month_start->getTimestamp()),
+                            '$lt' => new \MongoDate($month_end->getTimestamp())
                         ]
                     ]
                 ],
