@@ -4977,7 +4977,7 @@ class FindersController extends \BaseController {
 					// $this->applyFitsquadSection($data);
 					$data['finder']['finder_one_line'] = $this->getFinderOneLiner($data);
 				}
-				if(campaignAvailable($response['finder'])){
+				if(campaignAvailable($data['finder'])){
 					   
 					   //   $vendor_page_without_login = false;
 					   // if(empty($jwt_token)){
