@@ -6333,7 +6333,7 @@ class TransactionController extends \BaseController {
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             if(campaignAvailable($finder)){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Expires Soon ",'position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Extended To 10th Jan ",'position'=>$position++];
             }
         }
 
