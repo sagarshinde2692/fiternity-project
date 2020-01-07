@@ -1530,7 +1530,10 @@ class FindersController extends \BaseController {
 		if(!empty($siteSource) && strtolower($siteSource)=='multifit' && (empty($response['finder']['brand_id']) || !in_array($response['finder']['brand_id'], [88]))){
 			return Response::json("not found", 404);
 		}
-		
+		$facilitiesArray = array();
+		foreach($response['finder']['facilities'] as $fac){
+			array_push($facilitiesArray, $fac['name']); 
+		}
 		if(Request::header('Authorization') && Request::header('Authorization') != 'undefined'){
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
@@ -1540,15 +1543,32 @@ class FindersController extends \BaseController {
 			->where('finder_id', '=', (int) $response['finder']['_id'])
 			->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 			->get(array('id'));
+			
             $customer = Customer::where('email', $customer_email)->first();
             $response['register_loyalty'] = !empty($customer['loyalty']);
 			$response['trials_detials']              =      $customer_trials_with_vendors;
 			$response['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
-            $response['session_pack']                =      !empty($this->utilities->getAllExtendedValidityOrders(['customer_email'=>$customer_email]));
+			$response['session_pack']                =      !empty($this->utilities->getAllExtendedValidityOrders(['customer_email'=>$customer_email]));
+			
+			if(!empty($response['finder']['category']['_id']) && $response['finder']['category']['_id'] != 42 ){
+				if(empty($customer_trials_with_vendors->toArray())){
+					
+					if(!empty($response['finder']['facilities']) && (in_array( "Free Trial" , $facilitiesArray) || in_array( "free trial" , $facilitiesArray))){
+					    $response['trials_booked_status'] = false;
+					} else {
+						$response['trials_booked_status'] = true;
+					}
+				}
+			}
 		}else{
             $response['register_loyalty'] = false;
 			$response['trials_detials']              =      [];
-			$response['trials_booked_status']        =      false;
+			// $response['trials_booked_status']        =      false;
+			if(!empty($response['finder']['facilities']) && (in_array( "Free Trial" , $facilitiesArray) || in_array( "free trial" , $facilitiesArray))){
+				$response['trials_booked_status'] = false;
+			} else {
+				$response['trials_booked_status'] = true;
+			}
 		}
 
 
