@@ -4326,7 +4326,7 @@ class CustomerController extends \BaseController {
 			'header_sub_text' => 'WORKOUT WHEN YOU CAN, PAY WHEN YOU WORKOUT',
 			'subheader' => "Choose your fitness form, book a workout, pay for that session and go workout, it's that simple.",
             // 'knowmorelink' => 'know more',
-			'footer' => "50% Instant Cashback on Workout Sessions OR FLAT 20% Off",
+			'footer' => "50% Instant Cashback OR FLAT 20% Off on Workout Sessions ",
 			'button_text' => 'EXPLORE'
 		];
 
@@ -4430,7 +4430,7 @@ class CustomerController extends \BaseController {
                 "logo"=>"https://b.fitn.in/global/pps/fexclusive1.png",
                 "header"=>"EXPERIENCE FITNESS LIKE NEVER BEFORE!",
                 "subheader"=>"Book sessions and only pay for days you workout",
-                "footer"=>"50% Instant Cashback on Workout Sessions OR FLAT 20% Off"
+                "footer"=>"50% Instant Cashback OR FLAT 20% Off on Workout Sessions "
             ];
         }
 		

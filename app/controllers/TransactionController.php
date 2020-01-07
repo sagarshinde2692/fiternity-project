@@ -6108,6 +6108,9 @@ class TransactionController extends \BaseController {
 
         $position = 0;
 
+        Finder::$withoutAppends = true;
+        $finder = Finder::find($data['finder_id']);
+        
         $onepassHoldCustomer = $this->utilities->onepassHoldCustomer();
         if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']])) && !empty($data['type']) && $data['type'] == 'workout-session'){
             $booking_details_data["customer_name"] = ['field'=>'NAME','value'=>$data['customer_name'],'position'=>$position++];
@@ -6329,40 +6332,24 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Expires Soon ",'position'=>$position++];
-
-            if(!empty($data['brand_id']) && $data['brand_id']== 88){
-                if($data['ratecard_amount'] >= 8000){
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
-                }else{
-                    $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
-                }
+            if(campaignAvailable($finder)){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Extended To 10th Jan ",'position'=>$position++];
             }
-            
-            if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) ){ 
-                // if(!empty($data['finder_flags']['monsoon_flash_discount_disabled']) || in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id')) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){ 
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"",'position'=>$position++];
-                
-			}
         }
 
-        // if(!empty($data['type']) && $data['type'] == 'workout-session' && empty($data['finder_flags']['monsoon_campaign_pps'])){
         if(!empty($data['type']) && $data['type'] == 'workout-session'){
-            $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 50% instant cashback with this purchase, use code: CASH | Get FLAT 20% off on your workout session, use code: OFF20','position'=>$position++];
-
             // $first_session_free = $this->firstSessionFree($data);
             // if(!empty($first_session_free) && $first_session_free){
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
             // }
-            
+            if(campaignAvailable($finder)){
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 50% instant cashback with this purchase, use code: CASH | Get FLAT 20% off on your workout session, use code: OFF20','position'=>$position++];
+            }
+
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
                 $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
             }
 
-            if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) ){
-                // if((!empty($data['finder_flags']['mfp']) && $data['finder_flags']['mfp']) || (in_array($data['finder_id'], Config::get('app.camp_excluded_vendor_id'))) || !empty($data['finder_flags']['monsoon_flash_discount_disabled']) || (!empty($data['brand_id']) && $data['brand_id'] == 88) || (isset($data['finder_flags']['monsoon_flash_discount_per']) && $data['finder_flags']['monsoon_flash_discount_per'] == 0) || !(isset($data['finder_flags']['monsoon_flash_discount']) && isset($data['finder_flags']['monsoon_flash_discount_per']))){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>'','position'=>$position++];
-            }
         }
         
         $booking_details_all = [];
