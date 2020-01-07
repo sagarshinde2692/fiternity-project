@@ -842,7 +842,17 @@ class MigrationReverseController extends \BaseController {
 
             Log::info("before flush");
 
-            $this->flushFinderCacheMemoryByKey($entity);
+            $this->cacheapi->flushTagKey('finder_detail',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_ios',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$entity->slug);
+            $this->cacheapi->flushTagKey('finder_detail',($entity->slug).'-thirdp');
 
             Log::info("after flush");
             
@@ -1117,7 +1127,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1221,7 +1231,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($ratecart_exists->finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1258,7 +1268,7 @@ class MigrationReverseController extends \BaseController {
                 $hideOffers = Offer::where('ratecard_id', intval($id))->update(['hidden'=>true]);                
 
                 $finder = Finder::on($this->fitadmin)->find(intval($ratecard->finder_id));
-                $this->flushFinderCacheMemoryByKey($finder);
+                $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
                 $response = array('status' => 200, 'message' => 'Success');
             }
@@ -1393,7 +1403,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1530,7 +1540,7 @@ class MigrationReverseController extends \BaseController {
 
                 $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-                $this->flushFinderCacheMemoryByKey($finder);
+                $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
             }
             }else{
                 $serivce_ids    =   Service::where('_id',intval($vendorservice_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
@@ -1620,7 +1630,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1656,7 +1666,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1760,7 +1770,7 @@ class MigrationReverseController extends \BaseController {
             
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-            $this->flushFinderCacheMemoryByKey($finder);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1931,7 +1941,7 @@ class MigrationReverseController extends \BaseController {
 
                     try{
                         $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
-                        $this->flushFinderCacheMemoryByKey($finder);
+                        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
                     }catch(Exception $e){
                         Log::error($e);
 
@@ -2081,20 +2091,4 @@ class MigrationReverseController extends \BaseController {
 
     }
 
-    public function flushFinderCacheMemoryByKey($entity){
-
-        $this->cacheapi->flushTagKey('finder_detail',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_android',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios_5_1_5',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios_5_1_6',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios_5_2_9',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_ios_5_3',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_android_5_1_8',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_android_5_1_9',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail_android_5_3_3',$entity->slug);
-        $this->cacheapi->flushTagKey('finder_detail',($entity->slug).'-thirdp');
-    }
 }
