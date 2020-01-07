@@ -5664,15 +5664,8 @@ Class Utilities {
     public function busrtFinderCache($slug){
 
         \Cache::tags('finder_detail')->forget($slug);
-        \Cache::tags('finder_detail_android')->forget($slug);
-        \Cache::tags('finder_detail_ios')->forget($slug);
-        \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
-        \Cache::tags('finder_detail_ios_5_1_5')->forget($slug);
-        \Cache::tags('finder_detail_ios_5_1_6')->forget($slug);
-        \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
-        \Cache::tags('finder_detail_android_5_1_8')->forget($slug);
-        \Cache::tags('finder_detail_android_5_1_9')->forget($slug);
-        \Cache::tags('finder_detail_android_5_3_3')->forget($slug);
+        \Cache::tags('finder_detail_ios_5_3')->forget($slug);
+        \Cache::tags('finder_detail_android_5_3_4')->forget($slug);
         
     }
 
