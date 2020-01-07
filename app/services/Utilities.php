@@ -11204,7 +11204,7 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
                 return $return_arr;
@@ -11254,7 +11254,7 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
                 return $return_arr;
@@ -11306,7 +11306,7 @@ Class Utilities {
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
                 return $return_arr;
