@@ -616,7 +616,7 @@ return array(
         184     => 400
     ],
 
-	'app_oneliner_finder' => ' is applied on all the rates below. Offer Expires on 7th Jan. All prices are inclusive of GST.',
+	'app_oneliner_finder' => ' is applied on all the rates below. Offer Extended To 10th Jan. All prices are inclusive of GST.',
 
     'workout_results_categorywise'        =>   [
         65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
