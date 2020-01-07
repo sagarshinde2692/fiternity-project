@@ -5159,7 +5159,7 @@ class TransactionController extends \BaseController {
         $data['finder_flags'] = $finder_flags;
         $data['finder_notes'] = $finder_notes;
         $data['trial'] = !empty($finder['trial']) ? $finder['trial'] : 'auto';
-        $data['photos'] = $photos;
+        // $data['photos'] = $photos;
         $data['coverimage'] = $coverimage;
 
         if(!empty($brand_id)){
