@@ -1533,7 +1533,10 @@ class FindersController extends \BaseController {
 		if(!empty($siteSource) && strtolower($siteSource)=='multifit' && (empty($response['finder']['brand_id']) || !in_array($response['finder']['brand_id'], [88]))){
 			return Response::json("not found", 404);
 		}
-		
+		$facilitiesArray = array();
+		foreach($response['finder']['facilities'] as $fac){
+			array_push($facilitiesArray, $fac['name']); 
+		}
 		if(Request::header('Authorization') && Request::header('Authorization') != 'undefined'){
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
@@ -1552,10 +1555,7 @@ class FindersController extends \BaseController {
 			
 			if(!empty($response['finder']['category']['_id']) && $response['finder']['category']['_id'] != 42 ){
 				if(empty($customer_trials_with_vendors->toArray())){
-					$facilitiesArray = array();
-					foreach($response['finder']['facilities'] as $fac){
-						array_push($facilitiesArray, $fac['name']); 
-					}
+					
 					if(!empty($response['finder']['facilities']) && (in_array( "Free Trial" , $facilitiesArray) || in_array( "free trial" , $facilitiesArray))){
 					    $response['trials_booked_status'] = false;
 					} else {
@@ -1566,7 +1566,12 @@ class FindersController extends \BaseController {
 		}else{
             $response['register_loyalty'] = false;
 			$response['trials_detials']              =      [];
-			$response['trials_booked_status']        =      false;
+			// $response['trials_booked_status']        =      false;
+			if(!empty($response['finder']['facilities']) && (in_array( "Free Trial" , $facilitiesArray) || in_array( "free trial" , $facilitiesArray))){
+				$response['trials_booked_status'] = false;
+			} else {
+				$response['trials_booked_status'] = true;
+			}
 		}
 
 
