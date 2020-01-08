@@ -11180,7 +11180,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership".getLineBreaker()."Use Code: FIT2020. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "24 HOUR FLASH OFFER: Addnl FLAT 25% Off + 25% Cashback On 1 Year OnePass Membership, Use Code: FIT2020. | Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass Membership | 24 HR FLASH OFFER: FLAT 25% Off On 1 Year OnePass Membership (No Restrictions) | Use Code: FIT2020. Limited Slots";
                         }
 
                     }
@@ -11230,7 +11230,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership".getLineBreaker()."Use Code: FIT2020. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "24 HOUR FLASH OFFER: Addnl FLAT 25% Off + 25% Cashback On 1 Year OnePass Membership, Use Code: FIT2020. | Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass Membership | 24 HR FLASH OFFER: FLAT 25% Off On 1 Year OnePass Membership (No Restrictions) | Use Code: FIT2020. Limited Slots";
                         }
 
                     }
@@ -11282,7 +11282,7 @@ Class Utilities {
         
                         if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
                             $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership".getLineBreaker()."Use Code: FIT2020. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "24 HOUR FLASH OFFER: Addnl FLAT 25% Off + 25% Cashback On 1 Year OnePass Membership, Use Code: FIT2020. | Limited Slots";
+                            $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass Membership | 24 HR FLASH OFFER: FLAT 25% Off On 1 Year OnePass Membership (No Restrictions) | Use Code: FIT2020. Limited Slots";
                         }
 
                     }
