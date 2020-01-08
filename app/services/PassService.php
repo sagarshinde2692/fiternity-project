@@ -2280,6 +2280,24 @@ class PassService {
 
             $this->purchasedPassFormat($tabPassData, 'red', $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0);
         }
+        else if($passOrder['pass']['pass_type']=='hybrid') {
+            $totalDuration = $passOrder['pass']['duration'];
+            // $expiryDate = date("Y-m-d H:i:s", strtotime('+'.$totalDuration.' days', time()));
+            $expiryDate = date("Y-m-d H:i:s", strtotime($passOrder['end_date']));
+            $usageLeft = $this->getDateDifference($expiryDate);
+            
+            $session_left_hybrid = $this->getBookingsLeftForHybridPass($passOrder);
+
+            $session_left_hybrid['hybrid_session_expiry_check'] = $session_left_hybrid['this_month_session_left'] <= 1;
+
+            if(empty($usageLeft) || $usageLeft<0 || ($session_left_hybrid['this_month_session_left']==0 && $session_left_hybrid['last_month'])) {
+                $passExpired = true;
+            }
+
+            $homePassData['header'] = $passOrder['pass']['total_sessions'].' SESSIONS';
+
+            $this->purchasedPassFormat($homePassData, $passOrder['pass']['pass_type'], $passExpired, $passOrder, $notStarted, $usageLeft, $upcomingBookings, $pastBookings, 0, $session_left_hybrid);
+        }
         $tabPassData['pass_expired'] = $passExpired;
 
         // if(!$showTnC && !empty($tabPassData['terms'])) {
@@ -2363,6 +2381,34 @@ class PassService {
             unset($res['upcoming']);
         }
         return $res;
+    }
+
+    public function getBookingsLeftForHybridPass($passOrder){
+
+        $monthy_booking = $passOrder['monthly_total_sessions_used'];
+        $last_month = $monthy_booking[count($monthy_booking)-1];
+
+        $current_time  = strtotime('now');
+
+        $session_left = [
+            'this_month_session_left' => 0,
+            'last_month' => false
+        ];
+
+        foreach($monthy_booking as $key=>$value){
+            $start_date = $value['start_date']->toDateTime()->getTimestamp();
+            $end_date = $value['end_date']->toDateTime()->getTimestamp();
+            if($current_time >= $start_date && $current_time < $end_date){
+                $session_left['this_month_session_left'] = $passOrder['pass']['monthly_total_sessions']- $value['count'];
+                $session_left['month_last_date'] = (string)$value['end_date']->toDateTime()->format('d/M/Y');
+                if($key == (count($monthy_booking)-1)){
+                    $session_left['last_month']  = true;
+                }
+                break;
+            }
+        }
+
+        return $session_left;
     }
 
     public function upcomingPassBooking($customer, $data=null, $customer_id=null, $from=null){

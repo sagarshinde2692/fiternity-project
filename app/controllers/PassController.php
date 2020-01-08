@@ -254,6 +254,8 @@ class PassController extends \BaseController {
                 $query->orWhere(function($query1) {
                     $query1->where('end_date','>=',new MongoDate())->where('pass.pass_type','=','red');
                 })->orWhere(function($query1) {
+                    $query1->where('end_date','>=',new MongoDate())->where('pass.pass_type','=','hybrid');
+                })->orWhere(function($query1) {
                     $query1->where('pass.pass_type','=','black');
                 });
             })->orderBy('_id', 'desc')->first();
