@@ -867,7 +867,7 @@ class PassService {
             $aggregate = [
                 [
                     '$project' => [
-                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type', 'pass_city_id'
+                        '_id'=> 1, 'customer_id'=> 1, 'status'=> 1, 'type'=> 1, 'pass'=> 1, 'start_date'=> 1, 'end_date'=> 1, 'onepass_sessions_used'=> 1, 'onepass_sessions_total'=> 1, 'diff_sessions'=> ['$cmp'=> ['$onepass_sessions_total','$onepass_sessions_used']], 'pass_type'=> '$pass.pass_type', 'pass_city_id' => 1
                     ]
                 ],
                 [
@@ -876,7 +876,8 @@ class PassService {
                         'start_date' => ['$lte' => $scheduleDate],
                         '$or' => [
                             ['$and' => [['pass.pass_type' => 'red'], ['end_date' => ['$gt' => $scheduleDate]]]],
-                            ['$and' => [['pass.pass_type' => 'black'], ['diff_sessions' => ['$gt' => 0]]]]
+                            ['$and' => [['pass.pass_type' => 'black'], ['diff_sessions' => ['$gt' => 0]]]],
+                            ['$and' => [['pass.pass_type' => 'hybrid'], ['diff_sessions' => ['$gt' => 0]], ['end_date' => ['$gt' => $scheduleDate]]]]
                         ]
                     ]
                 ],
