@@ -4921,7 +4921,7 @@ if (!function_exists(('bookingsSumOnVendor'))){
             $month_end = $pass_end_date;
         }
 
-        Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
+        // Log::info('starting date:::', [$passOrder['start_date'], $today, $days, $month_start, $month_end, new \MongoDate(($month_end->getTimestamp()))]);
         $bookings = Booktrial::raw(function($collection) use ($customer_id, $passOrder, $month_start, $month_end){
             $aggregate = [
                 [
@@ -4932,8 +4932,8 @@ if (!function_exists(('bookingsSumOnVendor'))){
                         'customer_id' => $customer_id,
                         'pass_order_id' => $passOrder['_id'],
                         'schedule_date_time' => [
-                            '$gte' => new \MongoDate(strtotime($month_start->getTimestamp())),
-                            '$lt' => new \MongoDate(($month_end->getTimestamp()))
+                            '$gte' => new \MongoDate($month_start->getTimestamp()),
+                            '$lt' => new \MongoDate($month_end->getTimestamp())
                         ]
                     ]
                 ],
@@ -5099,4 +5099,22 @@ if (!function_exists(('checkDeviceForFeature'))){
     }
 }
 
+if (!function_exists(('campaignAvailable'))){
+	
+    function campaignAvailable($finder){
+       try{
+            $campaign_available = false;
+            if(empty($finder['flags']['state']) || !in_array($finder['flags']['state'], ['closed', 'temporarily_shut']) && $finder['membership'] != "disable"){
+                if(!in_array($finder['_id'], Config::get('app.camp_excluded_vendor_id')) && (empty($finder['flags']['monsoon_flash_discount_disabled'])) ){
+                    $campaign_available = true;
+                }
+            }
+
+            return $campaign_available;
+       }catch(Exception $e){
+           Log::info($e);
+           return false;
+       }
+   }
+}
 ?>
