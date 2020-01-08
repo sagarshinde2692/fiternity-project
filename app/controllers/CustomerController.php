@@ -4337,7 +4337,8 @@ class CustomerController extends \BaseController {
 		$passOrder = null;
 		//  commented on 9th Aug - Akhil
 		if(!empty($customeremail)) {
-			$passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->orderBy('_id', 'desc')->first();
+			// $passOrder = Order::where('status', '1')->where('type', 'pass')->where('customer_id', '=', $customer_id)->orderBy('_id', 'desc')->first();
+			$passOrder = $this->passService->getPassOrder($customer_id);
 			if(!empty($passOrder)) {
 				$passPurchased = true;
 			}
