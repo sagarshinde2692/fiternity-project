@@ -6762,7 +6762,7 @@ class TransactionController extends \BaseController {
                 'options'=>[
                         [
                                 'title' => 'Paypal',
-                                'subtitle' => 'Get 50% Instant Cashback Upto INR 300 (New Users Only)',
+                                'subtitle' => 'Get 50% Instant Cashback Upto INR 500 (New Users Only)',
                                 'value' => 'paypal'
                         ],
                         [
