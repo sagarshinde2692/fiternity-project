@@ -1862,14 +1862,6 @@ Class CustomerReward {
 
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
 
-        if(!empty($pass)){
-            if($pass['duration'] == 360){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not Valid");
-    
-                return $resp;
-            }
-        }
-
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
@@ -1893,6 +1885,14 @@ Class CustomerReward {
 
         $code = trim(strtoupper($couponCode));
         
+        if(!empty($pass)){
+            if($pass['duration'] == 360){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not Valid");
+    
+                return $resp;
+            }
+        }
+
         $utilities = new Utilities;
         
         if($utilities->isPPSReferralCode($couponCode)){
