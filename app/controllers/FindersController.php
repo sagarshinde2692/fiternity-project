@@ -9111,7 +9111,7 @@ class FindersController extends \BaseController {
 
         if (!empty($emi_resp['no_cost_emi_applicable']) && checkDeviceForFeature('no-cost-emi')) {
 
-            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard", "NO COST EMI AVAILABLE");
+            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard", "INTEREST FREE EMI AVAILABLE");
 
         } else if (!empty($emi_resp['normal_emi_applicable'])) {
 
@@ -9128,10 +9128,10 @@ class FindersController extends \BaseController {
 				foreach($data['finder']['coupons'] as &$coupon){
 					if(!empty($coupon['price'])){
 						foreach($coupon['price'] as &$price){
-							
-							if(!empty($price['price'])){
+							$keys = array_keys($price);
+							if(!empty($keys) && count($keys)>0 && !empty($price[$keys[0]])){
 
-								$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price['price']]);
+								$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price[$keys[0]]]);
 								
 								if(!empty($emi_text)){
 								
