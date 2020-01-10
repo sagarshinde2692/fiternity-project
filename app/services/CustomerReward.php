@@ -3609,8 +3609,10 @@ Class CustomerReward {
             return isset($data[$key[0]]) ? $data[$key[0]] : null;
         }
 
-        
-        return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
+        if(!empty($data[$key[0]])) {
+            return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
+        }
+        return null;
 
     }
 

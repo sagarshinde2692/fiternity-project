@@ -5457,7 +5457,7 @@ class FindersController extends \BaseController {
                         $price = !empty($ratecard['special_price']) ? $ratecard['special_price'] : $ratecard['price'];
 						Log::info("Price onepass ::",[$price]);
 						
-						if(empty($customer_trials_with_vendors->toArray())){
+						if(empty($customer_trials_with_vendors) || empty($customer_trials_with_vendors->toArray())){
                             if(!empty($finderData['finder']['facilities']) && in_array( "Free Trial" , $finderData['finder']['facilities'])){
 								$ratecard['cashback_on_trial'] = Config::get('app.first_free_string');
 							}
