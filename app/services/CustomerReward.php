@@ -1861,6 +1861,15 @@ Class CustomerReward {
     public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false, $corporate_source=null, $customer_source=null){
 
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
+
+        if(!empty($pass)){
+            if($pass['duration'] == 360){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Not Valid");
+    
+                return $resp;
+            }
+        }
+
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
