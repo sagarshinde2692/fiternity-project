@@ -9128,10 +9128,10 @@ class FindersController extends \BaseController {
 				foreach($data['finder']['coupons'] as &$coupon){
 					if(!empty($coupon['price'])){
 						foreach($coupon['price'] as &$price){
-							
-							if(!empty($price['price'])){
+							$keys = array_keys($price);
+							if(!empty($keys) && count($keys)>0 && !empty($price[$keys[0]])){
 
-								$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price['price']]);
+								$emi_text = $this->getEMIText(['finder'=>$data['finder'], 'price'=>$price[$keys[0]]]);
 								
 								if(!empty($emi_text)){
 								
