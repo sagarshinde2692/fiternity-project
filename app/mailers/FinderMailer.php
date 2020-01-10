@@ -832,16 +832,12 @@ Class FinderMailer extends Mailer {
 		$label = 'ClaimListing-Fitternity';
 
 		$data['fitternity_email'] = [
-			'dharatanna@fitternity.com',
-			'pranjalisalvi@fitternity.com',
-			'rahulsachdev@fitternity.com',
-			'vikramkhanna@fitternity.com',
-			'mitmehta@fitternity.com',
-			'kevalshah@fitternity.com',
-			'priyankapatel@fitternity.com',
-			'ismailbaig@fitternity.com',
-			'arvindraj@fitternity.com',
-			'shreyasjadhav@fitternity.com'
+			"mitmehta@fitternity.com",
+			"amlanbardhan@fitternity.com",
+			"pranjalisalvi@fitternity.com",
+			"aashnaagarwal@fitternity.com",
+			"sriragmenon@fitternity.com",
+			"tanvisolanki@fitternity.com"
 		];
 
 		/*if(isset($data['city_id']) && $data['city_id'] != ""){
