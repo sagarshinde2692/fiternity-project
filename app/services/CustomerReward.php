@@ -1884,14 +1884,6 @@ Class CustomerReward {
         }
 
         $code = trim(strtoupper($couponCode));
-        
-        if(!empty($pass)){
-            if($pass['duration'] == 360){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is Not Valid");
-    
-                return $resp;
-            }
-        }
 
         $utilities = new Utilities;
         
