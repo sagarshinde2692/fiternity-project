@@ -1162,7 +1162,7 @@ return array(
 	"no_cost_emi"=> [
         "minimum_amount_emi"=> 6000,
         "minimum_amount_no_cost_emi"=> 6000,
-        "finder_detail_ratecard_no_cost_text"=>"NO COST EMI AVAILABLE",
+        "finder_detail_ratecard_no_cost_text"=>"INTEREST FREE EMI AVAILABLE",
 		"duration_months"=> [3],
 		'finder_detail_ratecard_normal_text'=>"EMI AVAILABLE"
     ]

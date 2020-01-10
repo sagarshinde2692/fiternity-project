@@ -11432,13 +11432,15 @@ Class Utilities {
 			if(!empty($data['finder'])){
 				$finder = $data['finder'];
 			}else{
-				$finder = Finder::where('_id', $data['finder_id'])->where('flags.no_cost_emi_enabled', true)->first();
+				$finder = Finder::integratedMembership()
+                                ->where('_id', $data['finder_id'])
+                                // ->where('flags.no_cost_emi_enabled', true)
+                                ->first();
 			}
 
-
-			if(empty($finder['flags']['no_cost_emi_enabled'])){
-				return;
-			}
+			// if(empty($finder['flags']['no_cost_emi_enabled'])){
+			// 	return;
+			// }
 
 		}
 

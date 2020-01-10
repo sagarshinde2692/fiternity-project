@@ -9111,7 +9111,7 @@ class FindersController extends \BaseController {
 
         if (!empty($emi_resp['no_cost_emi_applicable']) && checkDeviceForFeature('no-cost-emi')) {
 
-            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard", "NO COST EMI AVAILABLE");
+            $emi_text = Config::get("app.no_cost_emi.finder_detail_ratecard", "INTEREST FREE EMI AVAILABLE");
 
         } else if (!empty($emi_resp['normal_emi_applicable'])) {
 
