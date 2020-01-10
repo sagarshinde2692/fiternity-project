@@ -1861,6 +1861,7 @@ Class CustomerReward {
     public function couponCodeDiscountCheck($ratecard=null,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null, $customer_email = null, $pass=null, $first_session_free = false, $corporate_discount_coupon = false, $corporate_source=null, $customer_source=null){
 
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
+
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
@@ -1884,6 +1885,14 @@ Class CustomerReward {
 
         $code = trim(strtoupper($couponCode));
         
+        if(!empty($pass)){
+            if($pass['duration'] == 360){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is Not Valid");
+    
+                return $resp;
+            }
+        }
+
         $utilities = new Utilities;
         
         if($utilities->isPPSReferralCode($couponCode)){
@@ -3609,8 +3618,10 @@ Class CustomerReward {
             return isset($data[$key[0]]) ? $data[$key[0]] : null;
         }
 
-        
-        return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
+        if(!empty($data[$key[0]])) {
+            return $this->getEmbeddedValue($data[$key[0]], implode('.', array_splice($key, 1)));
+        }
+        return null;
 
     }
 

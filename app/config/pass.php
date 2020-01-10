@@ -1206,7 +1206,7 @@ return [
     ],
 
     "cancel_onepass" => [
-        'text' => "Not Satisfied with Onepass?",
+        'text' => "Not Satisfied with Onepass",
         'button_text' => 'Cancel OnePass',
         'contact_no' => \Config::get('app.contact_us_customer_number_onepass'),
         'display_contact_no' => \Config::get('app.display_contact_us_customer_number_onepass'),

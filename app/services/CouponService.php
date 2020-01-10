@@ -69,11 +69,12 @@ Class CouponService {
                         $response=  $this->customerreward->verifyCouponFinderDetail($ratecard, $cval['code'],null, null, null, null, null, null, null, null, $corporate_discount_coupon = true,$vendor_page_without_login, $cval, $finder, $srval);
                         if(!isset($response['error_message'])) {
                             $isCouponAppliedFlag = true;
-                            $temp_coupon['price'][] = array($ratecard['_id'] => $response['data']['final_amount']);
+                            // $temp_coupon['price'][] = array($ratecard['_id'] => $response['data']['final_amount']);
+                            $temp_coupon['price'][] = ['ratecard_id'=>$ratecard['_id'], 'price'=>$response['data']['final_amount']];
                         }
                     }
                     $discount_price = ($ratecard['special_price'] > 0)?$ratecard['special_price']:$ratecard['price'];
-                    $originalRateCard['price'][] = array($ratecard['_id'] => $discount_price);
+                    $originalRateCard['price'][] = ['ratecard_id'=>$ratecard['_id'], 'price'=>$discount_price];
                 } 
             }
             if($isCouponAppliedFlag) {
