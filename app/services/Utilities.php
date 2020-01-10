@@ -11465,7 +11465,7 @@ Class Utilities {
 	}
 
 	public function getNoCostEmiDuration(){
-		return Config::get("app.no_cost_emi.duration_months", [3, 6]);
+		return Config::get("app.no_cost_emi.duration_months", [3]);
 	}
     
 	function getSBIGCouponCode($headerSource=null, $email, $passId, $pass=null) {
