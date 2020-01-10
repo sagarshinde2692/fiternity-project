@@ -11178,33 +11178,28 @@ Class Utilities {
                             $return_arr['msg_data'] = "Congratulations on your OnePass purchase. You will receive full 100% cashback as FitCash in your Fitternity account by 16th December 2019. Make the most of your FitCash to upgrade your OnePass. Kindly feel free to reach out to us on +917400062849 for queries";
                         }
         
-                        if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180])){
-                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                        if(!empty($pass['duration']) && in_array($pass['duration'], [30, 90, 180, 360])){
+                            $return_arr['text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise".getLineBreaker()."Use Code: IMFIT. Limited Slots";
                             $return_arr['purchase_summary_value'] = "Addnl FLAT 25% Off + 25% Cashback On OnePass Membership | 24 HR FLASH OFFER: FLAT 25% Off On 1 Year OnePass Membership (No Restrictions) | Use Code: FIT2020. Limited Slots";
-                        }
-
-                        if(!empty($pass['duration']) && in_array($pass['duration'], [360])){
-                            $return_arr['text'] = "Addnl FLAT 25% Off + 25% Cashback".getLineBreaker()."24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership".getLineBreaker()."Use Code: FIT2020. Limited Slots";
-                            $return_arr['purchase_summary_value'] = "";
                         }
 
                     }
 
                     if(!empty($pass['pass_type']) && $pass['pass_type'] == 'black'){
                         if(!empty($pass['duration']) && in_array($pass['duration'],[15, 30])){
-                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise".getLineBreaker()."Use Code: IMFIT. Limited Slots";
                             $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Extended To 10th Jan";
                         }
 
                         if(!empty($pass['duration']) && in_array($pass['duration'],[60, 100])){
-                            $return_arr['text'] = "FLAT 25% Off + 25% Cashback".getLineBreaker()."Use Code: FIT2020. Limited Slots";
+                            $return_arr['text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise".getLineBreaker()."Use Code: IMFIT. Limited Slots";
                             $return_arr['purchase_summary_value'] = "FLAT 25% Off + 25% Cashback On OnePass, Use Code: FIT2020. | Offer Extended To 10th Jan";
                         }
                     }
                 }
-                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
+                $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\n24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership\n\nUse Code: FIT2020. Limited Slots";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
+                $return_arr['footer_text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise Worth INR 2000\n\nOffer Expires On 14th Jan. Limited Slots Only.";
                 return $return_arr;
                 break;
             case "gurgaon":
@@ -11259,7 +11254,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\n24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership\n\nUse Code: FIT2020. Limited Slots";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
+                $return_arr['footer_text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise Worth INR 2000\n\nOffer Expires On 14th Jan. Limited Slots Only.";
                 return $return_arr;
                 break;
             case "hyderabad":
@@ -11316,7 +11311,7 @@ Class Utilities {
                 }
                 $return_arr['black_remarks_header'] = "\n\nFLAT 25% Off + 25% Cashback\n\nUse Code: FIT2020. Limited Slots\n\nOffer Extended To 10th Jan";
                 $return_arr['red_remarks_header'] = "\n\nAddnl Flat 25% Off + 25% Cashback\n\n24 HOUR FLASH OFFER: FLAT 25% Off (No Restrictions) On 1 Year OnePass Membership\n\nUse Code: FIT2020. Limited Slots";
-                $return_arr['footer_text'] = "FLAT 50% Off On Lowest Price OnePass Membership\n\nOffer Extended To 10th Jan.Limited Slots Only.";
+                $return_arr['footer_text'] = "FLAT 25% Off On OnePass Membership + Marvel Universe Fitness Merchandise Worth INR 2000\n\nOffer Expires On 14th Jan. Limited Slots Only.";
                 return $return_arr;
                 break;
             default: return $return_arr;

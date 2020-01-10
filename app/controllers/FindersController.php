@@ -5629,7 +5629,7 @@ class FindersController extends \BaseController {
 						}
                         if($ratecard['type'] == 'workout session' && isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
 							if(campaignAvailable($finder)){
-								$ratecard['remarks'] = "50% Instant Cashback On Booking Workout Sessions, Use Code: CASH | FLAT 20% Off, Use Code: OFF20";
+								$ratecard['remarks'] = "50% Instant Cashback, Use Code: PPS | FLAT 20% Off, Use Code: PPS20";
 							}
 						}
 						
@@ -8639,7 +8639,7 @@ class FindersController extends \BaseController {
 					
 					if(campaignAvailable($finder)){
 						if(in_array($rc['type'], ['membership', 'studio_extended_validity'])){
-							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 \n\nOffer Extended To 10th Jan");
+							$orderSummary['header'] = ucwords(strtr($orderSummary['header'], ['ratecard_name'=>$rc['validity'].' '.$rc['validity_type'].' Membership' ])."\n\nFLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships + Interest Free EMI | Use Code: FIT30 \n\nOffer Expires On 14th Jan");
 						}
 					}
                 }else{
@@ -8920,7 +8920,7 @@ class FindersController extends \BaseController {
 		if(isFinderIntegrated($finder) && isServiceIntegrated($finderservice)){
 			
 			if(campaignAvailable($finder)){
-				$rateCard['remarks'] = "50% Instant Cashback On Booking Workout Sessions, Use Code: CASH | FLAT 20% Off, Use Code: OFF20";
+				$rateCard['remarks'] = "50% Instant Cashback, Use Code: PPS | FLAT 20% Off, Use Code: PPS20";
 				$rateCard['remarks_imp'] = true;
 			}
 

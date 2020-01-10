@@ -6333,7 +6333,7 @@ class TransactionController extends \BaseController {
 
         if(!empty($data['type']) && $data['type'] == 'memberships' && empty($data['extended_validity'])){
             if(campaignAvailable($finder)){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships | Use Code: NE2020 | Offer Extended To 10th Jan ",'position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>"FLAT 30% Off On Lowest Prices Of Gyms & Studio Memberships + Interest Free EMI | Use Code: FIT30 | Offer Expires On 14th Jan",'position'=>$position++];
             }
         }
 
@@ -6343,7 +6343,7 @@ class TransactionController extends \BaseController {
             //     $booking_details_data["add_remark"] = ['field'=>'','value'=>'Apply code FREE to get this session for free','position'=>$position++];
             // }
             if(campaignAvailable($finder)){
-                $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 50% instant cashback with this purchase, use code: CASH | Get FLAT 20% off on your workout session, use code: OFF20','position'=>$position++];
+                $booking_details_data["add_remark"] = ['field'=>'','value'=>'You are eligilble for 50% instant cashback with this purchase, use code: PPS | Get FLAT 20% off on your workout session, use code: PPS20','position'=>$position++];
             }
 
             if(!empty($onepassHoldCustomer) && $onepassHoldCustomer && ($data['amount_customer'] < Config::get('pass.price_upper_limit') || $this->utilities->forcedOnOnepass(['flags' => $data['finder_flags']]))){
