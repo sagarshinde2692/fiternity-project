@@ -21,7 +21,8 @@
 		"iron-io/iron_worker": "1.*",
 		"pubnub/pubnub": "3.*",
 		"simplesoftwareio/simple-qrcode": "~1",
-		"intervention/image": "^2.5"
+		"intervention/image": "^2.5",
+		"vlucas/phpdotenv": "^4.1"
 	},
 	"autoload": {
 		"classmap": [

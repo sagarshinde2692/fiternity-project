@@ -2,7 +2,7 @@
 # IDE files
 .idea
 
-
+.env
 /bootstrap/compiled.php
 /vendor
 composer.phar

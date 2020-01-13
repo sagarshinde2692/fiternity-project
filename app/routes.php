@@ -16,8 +16,9 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 // });
 
 
-
-// require __DIR__.'/debug_routes.php';
+if(getenv('APP_ENV') != 'production'){
+	require __DIR__.'/debug_routes.php';
+}
 require __DIR__.'/analytics_routes.php';
 require __DIR__.'/testing_routes.php';
 
@@ -27,7 +28,7 @@ require __DIR__.'/testing_routes.php';
  // var_dump($queries);
 
 
-Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here...."; });
+Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here, runing in <u>".getenv('APP_ENV')."</u> environment"; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
 
