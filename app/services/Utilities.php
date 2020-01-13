@@ -2355,7 +2355,11 @@ Class Utilities {
         }
 
         if($this->checkCouponApplied()){
-            $query->where('for', 'wallet_recharge');
+            // $query->where('for', 'wallet_recharge');
+            $query->where(function($query1){
+                $query1->orWhere('for', 'wallet_recharge')
+                ->orwhere('flags.transactional_fitcash', true);
+            });
         }
 
         if(isset($data['buy_for_other']) && $data['buy_for_other'] == true ){
@@ -2665,7 +2669,11 @@ Class Utilities {
             }
 
             if($this->checkCouponApplied()){
-                $query->where('for', 'wallet_recharge');
+                // $query->where('for', 'wallet_recharge');
+                $query->where(function($query1){
+                    $query1->orWhere('for', 'wallet_recharge')
+                    ->orwhere('flags.transactional_fitcash', true);
+                });
             }
     
             if(isset($request['finder_id']) && $request['finder_id'] != ""){
