@@ -811,6 +811,11 @@ class MigrationReverseController extends \BaseController {
                 'poc'                                   => $finder_poc
             ];
 
+			if(intval($id) == 15709){
+				unset($insertData['lat']);
+				unset($insertData['lon']);
+			}
+
             if(!empty($insertData['flags']['monsoon_flash_discount']) && $insertData['flags']['monsoon_flash_discount'] == 'without_cap' && isset($insertData['flags']['monsoon_flash_discount_per'])){
                 unset($insertData['flags']['monsoon_flash_discount_per']);
             }
