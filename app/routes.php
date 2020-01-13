@@ -1427,3 +1427,4 @@ Route::get('createPlusRewards', 'TransactionController@createPlusRewards');
 Route::get('passcoupons', 'PassController@listValidCouponsOfOnePass');
 
 // Route::get('getcampaigndata', 'HomeController@getCampaignData');
+Route::get('resize-image','ImageManipulationController@resize_watermark_image');
