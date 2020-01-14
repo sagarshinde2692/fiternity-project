@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "34680881e0d657743c451aa3b620f107",
+    "content-hash": "b8e58b5cb8d70561c360b1c08277d36c",
     "packages": [
         {
             "name": "aloha/twilio",
@@ -3377,7 +3377,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
