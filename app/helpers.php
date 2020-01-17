@@ -2992,8 +2992,8 @@ if (!function_exists(('getHash'))){
         $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['service_name']));
         $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['finder_name']));
 
-        $key = 'gtKFFx';
-        $salt = 'eCwWELxi';
+        $key = '5ntOB3';
+		$salt = 'fAGAt25l';	
 
 		if(!empty($subvention_amt)){
 			$key = '5ntOB3';
