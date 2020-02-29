@@ -4,7 +4,7 @@
 #    service httpd stop        
 #fi
 
-isExistApp = `pgrep apache2`
+isExistApp = `pgrep nginx`
 if [[ -n  $isExistApp ]]; then
-    systemctl stop apache2
+    systemctl stop nginx
 fi
